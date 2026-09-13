@@ -445,3 +445,109 @@ body {
     0% { transform: translateY(0) scale(1); }
     100% { transform: translateY(-3px) scale(1.1); }
 }
+
+/* --- Goal 3: CSS Enemy Space Ships --- */
+.enemy-word {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    pointer-events: none;
+}
+
+.enemy-ship {
+    position: relative;
+    margin-bottom: 8px;
+    transition: transform 0.2s ease;
+}
+
+/* Scout Drone */
+.enemy-ship.scout {
+    width: 32px;
+    height: 18px;
+    background-color: var(--neon-blue);
+    clip-path: polygon(50% 100%, 0% 15%, 20% 0%, 80% 0%, 100% 15%);
+    box-shadow: 0 0 10px var(--neon-blue);
+    animation: scout-wobble 0.8s infinite alternate ease-in-out;
+}
+
+@keyframes scout-wobble {
+    0% { transform: translateY(0) rotate(-3deg); }
+    100% { transform: translateY(-2px) rotate(3deg); }
+}
+
+/* Fighter Drone */
+.enemy-ship.fighter {
+    width: 48px;
+    height: 22px;
+    background-color: var(--neon-pink);
+    clip-path: polygon(50% 100%, 100% 30%, 85% 0%, 65% 15%, 35% 15%, 15% 0%, 0% 30%);
+    box-shadow: 0 0 12px var(--neon-pink);
+    animation: fighter-pitch 1s infinite alternate ease-in-out;
+}
+
+@keyframes fighter-pitch {
+    0% { transform: scaleX(1); filter: brightness(0.95); }
+    100% { transform: scaleX(1.04); filter: brightness(1.15); }
+}
+
+/* Elite Cruiser */
+.enemy-ship.elite {
+    width: 64px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: elite-hover 1.4s infinite alternate ease-in-out;
+}
+
+.enemy-ship-body {
+    position: absolute;
+    width: 22px;
+    height: 26px;
+    background-color: var(--neon-yellow);
+    clip-path: polygon(50% 100%, 0% 20%, 100% 20%);
+    box-shadow: 0 0 12px var(--neon-yellow);
+    z-index: 2;
+}
+
+.enemy-ship-wings {
+    position: absolute;
+    width: 64px;
+    height: 10px;
+    background-color: var(--neon-red);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+    box-shadow: 0 0 12px var(--neon-red);
+    z-index: 1;
+}
+
+@keyframes elite-hover {
+    0% { transform: translateY(0) scale(0.98); }
+    100% { transform: translateY(-3px) scale(1.02); }
+}
+
+/* Engine flame pointing up */
+.thruster-glow-down {
+    position: absolute;
+    top: -12px;
+    left: calc(50% - 6px);
+    width: 12px;
+    height: 14px;
+    background: radial-gradient(circle at bottom, var(--neon-yellow) 0%, var(--neon-pink) 50%, transparent 100%);
+    animation: exhaust-flicker 0.1s infinite alternate ease-in-out;
+}
+
+/* Sleek dark HUD banner for text readout */
+.word-text-wrapper {
+    background: rgba(3, 1, 11, 0.85);
+    padding: 3px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+}

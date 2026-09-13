@@ -332,7 +332,7 @@ function spawnWord() {
 
     const id = wordIdCounter++;
     const xPercent = 10 + Math.random() * 80; // 10% to 90%
-    const yPx = -20; // Spawn off screen top
+    const yPx = -40; // Spawn off screen top (increased for ships)
 
     const element = document.createElement('div');
     element.className = 'enemy-word';
@@ -341,22 +341,37 @@ function spawnWord() {
 
     // Goal 2: 20% chance to designate as a Shield Word
     const isShieldWord = Math.random() < 0.20;
+
+    // Goal 3: Determine ship class and structural HTML based on word length
+    let shipClass = 'ship-scout';
+    let shipHTML = '<div class="enemy-ship scout"><div class="thruster-glow-down"></div></div>';
+    
+    if (wordText.length > 5 && wordText.length <= 8) {
+        shipClass = 'ship-fighter';
+        shipHTML = '<div class="enemy-ship fighter"><div class="thruster-glow-down"></div></div>';
+    } else if (wordText.length > 8) {
+        shipClass = 'ship-elite';
+        shipHTML = '<div class="enemy-ship elite"><div class="enemy-ship-body"></div><div class="enemy-ship-wings"></div><div class="thruster-glow-down"></div></div>';
+    }
+    
+    element.classList.add(shipClass);
+
+    // Set up nested inner HTML
+    let innerHTML = shipHTML;
+    
     if (isShieldWord) {
         element.classList.add('shield-word');
-        const shieldSpan = document.createElement('span');
-        shieldSpan.innerText = "🛡️ ";
-        shieldSpan.className = "shield-icon";
-        element.appendChild(shieldSpan);
+        innerHTML += '<span class="shield-icon">🛡️ </span>';
     }
 
-    // Inject spans for styling typed vs untyped characters
-    wordText.split('').forEach((char, index) => {
-        const span = document.createElement('span');
-        span.innerText = char;
-        span.className = 'untyped';
-        element.appendChild(span);
+    // Wrap word text inside a HUD banner
+    innerHTML += '<div class="word-text-wrapper">';
+    wordText.split('').forEach(char => {
+        innerHTML += `<span class="untyped">${char}</span>`;
     });
+    innerHTML += '</div>';
 
+    element.innerHTML = innerHTML;
     wordsContainer.appendChild(element);
 
     const speed = baseSpeed + Math.random() * 0.4; // slight speed variance
@@ -613,6 +628,23 @@ function createExplosion(x, y) {
     }
 }
 
+// --- Wire Event Listeners ---
+
+window.addEventListener('keydown', handleKeyPress);
+
+startBtn.addEventListener('click', () => {
+    sounds.init();
+    startGame();
+});
+
+restartBtn.addEventListener('click', () => {
+    sounds.init();
+    startGame();
+});
+
+document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
+document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
+
 function updateStats() {
     if (!startTime) return;
     const elapsedMinutes = (new Date() - startTime) / 60000;
@@ -635,20 +667,3 @@ function endGame() {
     // Show game over modal
     gameOverScreen.classList.add('active');
 }
-
-// --- Wire Event Listeners ---
-
-window.addEventListener('keydown', handleKeyPress);
-
-startBtn.addEventListener('click', () => {
-    sounds.init();
-    startGame();
-});
-
-restartBtn.addEventListener('click', () => {
-    sounds.init();
-    startGame();
-});
-
-document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
-document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
