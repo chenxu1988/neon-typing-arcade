@@ -1,0 +1,11 @@
+# Local large audio assets
+Chiptune interlude pack/
+
+# Local configuration & workspace caches
+.gemini/
+.env
+
+# System junk files
+.DS_Store
+Thumbs.db
+desktop.ini
