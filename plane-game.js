@@ -20,6 +20,9 @@ let wordIdCounter = 0;
 let spawnInterval = null;
 let animationFrameId = null;
 
+// Goal 2: Shield state
+let shieldActive = false;
+
 // Difficulty scaling
 let baseSpeed = 1.0;
 let currentSpawnDelay = 2200; // ms
@@ -30,6 +33,7 @@ const wordsContainer = document.getElementById('words-container');
 const lasersContainer = document.getElementById('lasers-container');
 const explosionsContainer = document.getElementById('explosions-container');
 const playerPlane = document.getElementById('player-plane');
+const playerShield = document.getElementById('player-shield');
 const scoreVal = document.getElementById('score-val');
 const wpmVal = document.getElementById('wpm-val');
 const livesContainer = document.getElementById('lives-container');
@@ -200,6 +204,68 @@ class SoundManager {
         osc1.stop(this.ctx.currentTime + 0.3);
         osc2.stop(this.ctx.currentTime + 0.3);
     }
+
+    playShieldUp() {
+        if (!this.soundEnabled) return;
+        this.init();
+        
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        // High sweeping chime for shield online
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.35);
+
+        gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.08, this.ctx.currentTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.35);
+    }
+
+    playShieldDown() {
+        if (!this.soundEnabled) return;
+        this.init();
+        
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        // Low buzz + crash noise
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(350, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(60, this.ctx.currentTime + 0.25);
+
+        const bufferSize = this.ctx.sampleRate * 0.25;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+        const noiseNode = this.ctx.createBufferSource();
+        noiseNode.buffer = buffer;
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
+
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        noiseNode.connect(noiseGain);
+        noiseGain.connect(this.ctx.destination);
+
+        osc.start();
+        noiseNode.start();
+        
+        osc.stop(this.ctx.currentTime + 0.25);
+        noiseNode.stop(this.ctx.currentTime + 0.25);
+    }
 }
 
 const sounds = new SoundManager();
@@ -217,6 +283,10 @@ function startGame() {
     baseSpeed = 1.0;
     currentSpawnDelay = 2200;
     gameActive = true;
+    
+    // Reset Goal 2: Shield state
+    shieldActive = false;
+    playerShield.className = '';
 
     // Reset HUD
     scoreVal.innerText = "0";
@@ -269,6 +339,16 @@ function spawnWord() {
     element.style.left = `${xPercent}%`;
     element.style.top = `${yPx}px`;
 
+    // Goal 2: 20% chance to designate as a Shield Word
+    const isShieldWord = Math.random() < 0.20;
+    if (isShieldWord) {
+        element.classList.add('shield-word');
+        const shieldSpan = document.createElement('span');
+        shieldSpan.innerText = "🛡️ ";
+        shieldSpan.className = "shield-icon";
+        element.appendChild(shieldSpan);
+    }
+
     // Inject spans for styling typed vs untyped characters
     wordText.split('').forEach((char, index) => {
         const span = document.createElement('span');
@@ -288,7 +368,8 @@ function spawnWord() {
         x: xPercent,
         y: yPx,
         typedCount: 0,
-        speed: speed
+        speed: speed,
+        isShield: isShieldWord
     });
 
     // Scale difficulty gradually
@@ -317,12 +398,16 @@ function gameLoop() {
         w.element.style.top = `${w.y}px`;
 
         if (w.y >= hitThreshold) {
-            // Player takes hit!
-            playerTakeHit();
-            
             // Remove word
             w.element.remove();
             words.splice(i, 1);
+
+            // Handle hit: shield active vs shield inactive
+            if (shieldActive) {
+                shatterShield();
+            } else {
+                playerTakeHit();
+            }
 
             // If we just lost our active target, reset target
             if (targetedWord && targetedWord.id === w.id) {
@@ -349,6 +434,26 @@ function playerTakeHit() {
     if (lives <= 0) {
         endGame();
     }
+}
+
+function shatterShield() {
+    shieldActive = false;
+    sounds.playShieldDown();
+    
+    // Trigger CSS shatter animation
+    playerShield.classList.remove('active');
+    playerShield.classList.add('shattering');
+    setTimeout(() => {
+        playerShield.classList.remove('shattering');
+    }, 400);
+}
+
+function activateShield() {
+    shieldActive = true;
+    sounds.playShieldUp();
+    
+    playerShield.classList.remove('shattering');
+    playerShield.classList.add('active');
 }
 
 function updateLivesUI() {
@@ -400,7 +505,8 @@ function handleKeyPress(e) {
 }
 
 function processCorrectChar() {
-    const spans = targetedWord.element.querySelectorAll('span');
+    // Select spans ignoring the shield-icon to match index accurately
+    const spans = targetedWord.element.querySelectorAll('span:not(.shield-icon)');
     spans[targetedWord.typedCount].className = 'typed';
     
     targetedWord.typedCount++;
@@ -466,6 +572,11 @@ function destroyTarget() {
     const y = (wordRect.top + wordRect.height / 2) - areaRect.top;
 
     createExplosion(x, y);
+
+    // Goal 2: If we completed a Shield Word, activate the player's shield!
+    if (targetedWord.isShield) {
+        activateShield();
+    }
 
     // Remove targeted word
     targetedWord.element.remove();

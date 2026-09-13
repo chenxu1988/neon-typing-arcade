@@ -359,3 +359,89 @@ body {
     color: #b0bec5;
     margin-bottom: 30px;
 }
+
+/* --- Goal 2: Player Energy Shield --- */
+#player-shield {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    width: 100px;
+    height: 90px;
+    border: 3px solid var(--neon-green);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--neon-green), inset 0 0 10px var(--neon-green);
+    opacity: 0;
+    transform: scale(0.7);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+    z-index: 10;
+}
+
+#player-shield.active {
+    opacity: 1;
+    transform: scale(1);
+    animation: shield-glow 1.5s infinite alternate ease-in-out;
+}
+
+#player-shield.shattering {
+    animation: shield-shatter 0.4s forwards ease-out;
+}
+
+@keyframes shield-glow {
+    0% {
+        box-shadow: 0 0 10px var(--neon-green), inset 0 0 5px var(--neon-green);
+        filter: brightness(1);
+    }
+    100% {
+        box-shadow: 0 0 25px var(--neon-green), inset 0 0 15px var(--neon-green);
+        filter: brightness(1.3);
+    }
+}
+
+@keyframes shield-shatter {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        border-color: var(--neon-red);
+        box-shadow: 0 0 30px var(--neon-red), inset 0 0 20px var(--neon-red);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.4);
+        border-color: transparent;
+        box-shadow: none;
+    }
+}
+
+/* --- Shield Word custom styles --- */
+.enemy-word.shield-word .untyped {
+    color: var(--neon-green) !important;
+    text-shadow: var(--green-glow) !important;
+}
+
+.enemy-word.shield-word .typed {
+    color: #fff !important;
+    text-shadow: 0 0 10px #fff !important;
+}
+
+.enemy-word.shield-word.targeted {
+    transform: translate(-50%, -50%) scale(1.15);
+    text-shadow: var(--green-glow) !important;
+}
+
+.enemy-word.shield-word.targeted .untyped {
+    color: var(--neon-green) !important;
+}
+
+.shield-icon {
+    display: inline-block;
+    color: var(--neon-green);
+    margin-right: 6px;
+    text-shadow: var(--green-glow);
+    animation: float-icon 0.8s infinite alternate ease-in-out;
+}
+
+@keyframes float-icon {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-3px) scale(1.1); }
+}
