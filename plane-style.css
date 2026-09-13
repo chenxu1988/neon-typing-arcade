@@ -613,3 +613,130 @@ body {
     0% { filter: brightness(1); height: 12px; }
     100% { filter: brightness(1.4); height: 16px; }
 }
+
+/* --- Screen Shake Effect --- */
+.screen-shake {
+    animation: shake-animation 0.22s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake-animation {
+    0%, 100% { transform: translate(0, 0); }
+    10%, 30%, 50%, 70%, 90% { transform: translate(-3px, -1.5px); }
+    20%, 40%, 60%, 80% { transform: translate(3px, 1.5px); }
+}
+
+/* --- Boss Mothership Styles --- */
+#enemy-boss {
+    position: absolute;
+    top: -150px; /* Starts hidden off-screen top */
+    left: 50%;
+    width: 160px;
+    height: 80px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: top 2s cubic-bezier(0.175, 0.885, 0.32, 1.25);
+    z-index: 6;
+}
+
+#enemy-boss.active {
+    top: 50px; /* Descends and hovers */
+}
+
+.boss-ship {
+    position: relative;
+    width: 160px;
+    height: 50px;
+    animation: boss-hover-animation 2s infinite alternate ease-in-out;
+}
+
+.boss-core {
+    position: absolute;
+    top: 10px;
+    left: 50px;
+    width: 60px;
+    height: 38px;
+    background: linear-gradient(to bottom, #424242, #181818);
+    clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+    border: 2px solid var(--neon-red);
+    box-shadow: 0 0 15px var(--neon-red);
+    z-index: 3;
+}
+
+.boss-eye {
+    position: absolute;
+    top: 14px;
+    left: 70px;
+    width: 20px;
+    height: 10px;
+    background-color: var(--neon-red);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--neon-red);
+    animation: eye-pulse-animation 0.4s infinite alternate ease-in-out;
+    z-index: 4;
+}
+
+.boss-wings {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 160px;
+    height: 14px;
+    background: linear-gradient(to right, var(--neon-pink) 0%, #1a237e 30%, #1a237e 70%, var(--neon-pink) 100%);
+    clip-path: polygon(0% 0%, 100% 0%, 85% 100%, 15% 100%);
+    box-shadow: 0 0 15px var(--neon-pink);
+    z-index: 2;
+}
+
+/* Boss Health Bar container */
+#boss-health-container {
+    width: 110px;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--neon-red);
+    border-radius: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 8px rgba(255, 7, 58, 0.4);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#enemy-boss.active #boss-health-container {
+    opacity: 1;
+}
+
+#boss-health-bar {
+    width: 100%;
+    height: 100%;
+    background-color: var(--neon-red);
+    box-shadow: 0 0 10px var(--neon-red);
+    transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes boss-hover-animation {
+    0% { transform: translateY(0) scaleY(1); }
+    100% { transform: translateY(-5px) scaleY(1.05); }
+}
+
+@keyframes eye-pulse-animation {
+    0% { filter: brightness(0.85); box-shadow: 0 0 8px var(--neon-red); }
+    100% { filter: brightness(1.45); box-shadow: 0 0 16px var(--neon-red); }
+}
+
+/* Plasma Bomb style (Fired by Boss) */
+.enemy-word.plasma-bomb {
+    animation: bomb-flicker 0.4s infinite alternate;
+}
+
+.enemy-word.plasma-bomb .word-text-wrapper {
+    border-color: var(--neon-red) !important;
+    box-shadow: 0 0 18px var(--neon-red) !important;
+    background: rgba(255, 7, 58, 0.18) !important;
+}
+
+@keyframes bomb-flicker {
+    0% { filter: brightness(0.9); }
+    100% { filter: brightness(1.2); }
+}

@@ -27,6 +27,12 @@ let shieldActive = false;
 let comboStreak = 0;
 let scoreMultiplier = 1.0;
 
+// Extra Goals: Boss Battle state
+let bossActive = false;
+let bossHp = 5;
+let bossMaxHp = 5;
+let lastBossMilestone = 0;
+
 // Difficulty scaling
 let baseSpeed = 1.0;
 let currentSpawnDelay = 2200; // ms
@@ -46,6 +52,10 @@ const livesContainer = document.getElementById('lives-container');
 const comboHud = document.getElementById('combo-hud');
 const comboVal = document.getElementById('combo-val');
 const multVal = document.getElementById('mult-val');
+
+// Extra Goals: Boss HUD elements
+const enemyBoss = document.getElementById('enemy-boss');
+const bossHealthBar = document.getElementById('boss-health-bar');
 
 // Screen overlays
 const startScreen = document.getElementById('start-screen');
@@ -330,6 +340,11 @@ function startGame() {
     comboHud.style.opacity = '0';
     comboHud.style.transform = 'scale(0.8)';
 
+    // Reset Boss Battle state
+    bossActive = false;
+    lastBossMilestone = 0;
+    enemyBoss.classList.remove('active');
+
     // Reset HUD
     scoreVal.innerText = "0";
     wpmVal.innerText = "0";
@@ -356,7 +371,7 @@ function startGame() {
 }
 
 function spawnWord() {
-    if (!gameActive) return;
+    if (!gameActive || bossActive) return;
 
     const randomIndex = Math.floor(Math.random() * dictionary.length);
     const text = dictionary[randomIndex];
@@ -426,10 +441,11 @@ function spawnWord() {
         y: yPx,
         typedCount: 0,
         speed: speed,
-        isShield: isShieldWord
+        isShield: isShieldWord,
+        isBossBomb: false
     });
 
-    // Scale difficulty gradually
+    // Scale difficulty gradually (only if no boss active)
     if (score > 0 && score % 100 === 0) {
         baseSpeed += 0.05;
         scaleSpawnRate();
@@ -437,6 +453,7 @@ function spawnWord() {
 }
 
 function scaleSpawnRate() {
+    if (bossActive) return;
     currentSpawnDelay = Math.max(1200, currentSpawnDelay - 100);
     clearInterval(spawnInterval);
     spawnInterval = setInterval(spawnWord, currentSpawnDelay);
@@ -455,6 +472,8 @@ function gameLoop() {
         w.element.style.top = `${w.y}px`;
 
         if (w.y >= hitThreshold) {
+            const wasBossBomb = w.isBossBomb;
+
             // Remove word
             w.element.remove();
             words.splice(i, 1);
@@ -474,6 +493,11 @@ function gameLoop() {
                 targetedWord = null;
                 updatePlanePosition();
             }
+
+            // If the boss bomb breached, let the boss spawn another after a short delay
+            if (wasBossBomb && bossActive && bossHp > 0) {
+                setTimeout(spawnBossBomb, 1500);
+            }
         }
     }
 
@@ -484,6 +508,7 @@ function playerTakeHit() {
     lives--;
     sounds.playHit();
     updateLivesUI();
+    triggerScreenShake();
 
     // Flash screen red
     gameArea.classList.add('screen-hit');
@@ -499,6 +524,7 @@ function playerTakeHit() {
 function shatterShield() {
     shieldActive = false;
     sounds.playShieldDown();
+    triggerScreenShake();
     
     // Trigger CSS shatter animation
     playerShield.className = 'shattering';
@@ -512,6 +538,13 @@ function activateShield() {
     sounds.playShieldUp();
     
     playerShield.className = 'active';
+}
+
+function triggerScreenShake() {
+    gameArea.classList.add('screen-shake');
+    setTimeout(() => {
+        gameArea.classList.remove('screen-shake');
+    }, 220);
 }
 
 function updateLivesUI() {
@@ -548,6 +581,7 @@ function handleKeyPress(e) {
             processCorrectChar();
         } else {
             resetCombo();
+            triggerScreenShake();
             errors++;
         }
     } else {
@@ -557,6 +591,7 @@ function handleKeyPress(e) {
             processCorrectChar();
         } else {
             resetCombo();
+            triggerScreenShake();
             errors++;
         }
     }
@@ -649,16 +684,179 @@ function destroyTarget() {
         activateShield();
     }
 
+    const wasBossBomb = targetedWord.isBossBomb;
+
     // Remove targeted word
     targetedWord.element.remove();
     words = words.filter(w => w.id !== targetedWord.id);
     
     // Goal 4: Award score multiplied by current multiplier
-    score += Math.round(targetedWord.word.length * 10 * scoreMultiplier);
+    const pointsGained = Math.round(targetedWord.word.length * 10 * scoreMultiplier);
+    score += pointsGained;
     scoreVal.innerText = score;
 
     targetedWord = null;
     updatePlanePosition();
+
+    // --- Extra Goals: Boss Battle Logic ---
+    if (wasBossBomb && bossActive) {
+        // Fire secondary quantum blast from the bomb explosion center up to the boss core!
+        fireBossCoreLaser(x, y);
+        
+        bossHp--;
+        bossHealthBar.style.width = `${(bossHp / bossMaxHp) * 100}%`;
+
+        if (bossHp <= 0) {
+            defeatBoss();
+        } else {
+            // Spawn next bomb after a short delay
+            setTimeout(spawnBossBomb, 1500);
+        }
+    } else if (!bossActive) {
+        // Trigger Boss Battle every 1000 points
+        const scoreMilestone = Math.floor(score / 1000);
+        if (scoreMilestone > lastBossMilestone) {
+            lastBossMilestone = scoreMilestone;
+            triggerBossBattle();
+        }
+    }
+}
+
+function fireBossCoreLaser(startX, startY) {
+    // Boss core is at top center of game area
+    const endX = gameArea.clientWidth / 2;
+    const endY = 80; // approximate center Y of active boss
+
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+    const laser = document.createElement('div');
+    laser.className = 'laser mult-5'; // Massive heavy blast to the boss!
+    laser.style.width = `${distance}px`;
+    laser.style.left = `${startX}px`;
+    laser.style.top = `${startY}px`;
+    laser.style.transform = `rotate(${angle}deg)`;
+
+    lasersContainer.appendChild(laser);
+    setTimeout(() => {
+        laser.remove();
+        triggerScreenShake(); // shake screen when boss gets hit!
+    }, 150);
+}
+
+function triggerBossBattle() {
+    bossActive = true;
+    bossHp = 5;
+    bossMaxHp = 5;
+
+    // Halt normal spawner
+    clearInterval(spawnInterval);
+
+    // Slide boss mothership in!
+    enemyBoss.classList.add('active');
+    bossHealthBar.style.width = '100%';
+
+    // Shake screen dramatically on boss entrance
+    sounds.playHit();
+    triggerScreenShake();
+    setTimeout(triggerScreenShake, 300);
+
+    // Wait for existing normal words to clear before starting the assault
+    const checkClear = setInterval(() => {
+        if (words.length === 0) {
+            clearInterval(checkClear);
+            setTimeout(spawnBossBomb, 1800);
+        }
+    }, 200);
+}
+
+function spawnBossBomb() {
+    if (!bossActive || bossHp <= 0 || !gameActive) return;
+
+    // Pick a challenging medium/long word
+    const bossDict = dictionary.filter(w => w.length >= 6);
+    const randomIndex = Math.floor(Math.random() * bossDict.length);
+    const wordText = bossDict[randomIndex];
+
+    const id = wordIdCounter++;
+    const xPercent = 50; // Descends directly from boss core center!
+    const yPx = 110; // Top coordinates under the boss cockpit
+
+    const element = document.createElement('div');
+    element.className = 'enemy-word plasma-bomb'; // Custom plasma styling
+    element.style.left = `${xPercent}%`;
+    element.style.top = `${yPx}px`;
+
+    // Set up nested inner HTML (no standard ship, styled as a glowing projectile)
+    let innerHTML = '<div class="enemy-ship scout" style="background-color: var(--neon-red); box-shadow: 0 0 15px var(--neon-red);"><div class="thruster-glow-down"></div></div>';
+    
+    // Wrap word text inside HUD banner
+    innerHTML += '<div class="word-text-wrapper">';
+    wordText.split('').forEach(char => {
+        innerHTML += `<span class="untyped">${char}</span>`;
+    });
+    innerHTML += '</div>';
+
+    element.innerHTML = innerHTML;
+    wordsContainer.appendChild(element);
+
+    // Plasma bombs travel fast!
+    const speed = 1.6 * baseSpeed;
+
+    words.push({
+        id: id,
+        word: wordText,
+        element: element,
+        x: xPercent,
+        y: yPx,
+        typedCount: 0,
+        speed: speed,
+        isShield: false,
+        isBossBomb: true
+    });
+}
+
+function defeatBoss() {
+    bossActive = false;
+    
+    // Giant multiple explosions around the boss
+    const centerX = gameArea.clientWidth / 2;
+    const centerY = 80;
+
+    sounds.playExplosion();
+    createExplosion(centerX, centerY);
+    
+    setTimeout(() => {
+        sounds.playExplosion();
+        createExplosion(centerX - 40, centerY - 15);
+    }, 150);
+
+    setTimeout(() => {
+        sounds.playExplosion();
+        createExplosion(centerX + 40, centerY - 15);
+        triggerScreenShake();
+    }, 300);
+
+    setTimeout(() => {
+        sounds.playExplosion();
+        createExplosion(centerX, centerY - 30);
+    }, 450);
+
+    // Slide boss out
+    enemyBoss.classList.remove('active');
+
+    // Massive score bonus!
+    score += 500;
+    scoreVal.innerText = score;
+
+    // Increase base speed slightly to ramp up next wave
+    baseSpeed += 0.2;
+
+    // Resume standard spawning
+    clearInterval(spawnInterval);
+    spawnInterval = setInterval(spawnWord, currentSpawnDelay);
 }
 
 function createExplosion(x, y) {
