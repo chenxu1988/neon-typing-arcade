@@ -23,6 +23,10 @@ let animationFrameId = null;
 // Goal 2: Shield state
 let shieldActive = false;
 
+// Goal 4: Combo and Multipliers
+let comboStreak = 0;
+let scoreMultiplier = 1.0;
+
 // Difficulty scaling
 let baseSpeed = 1.0;
 let currentSpawnDelay = 2200; // ms
@@ -37,6 +41,11 @@ const playerShield = document.getElementById('player-shield');
 const scoreVal = document.getElementById('score-val');
 const wpmVal = document.getElementById('wpm-val');
 const livesContainer = document.getElementById('lives-container');
+
+// Goal 4: Combo HUD elements
+const comboHud = document.getElementById('combo-hud');
+const comboVal = document.getElementById('combo-val');
+const multVal = document.getElementById('mult-val');
 
 // Screen overlays
 const startScreen = document.getElementById('start-screen');
@@ -266,6 +275,32 @@ class SoundManager {
         osc.stop(this.ctx.currentTime + 0.25);
         noiseNode.stop(this.ctx.currentTime + 0.25);
     }
+
+    playComboUp() {
+        if (!this.soundEnabled) return;
+        this.init();
+
+        // Rapid series of 3 short ascending chime tones
+        const time = this.ctx.currentTime;
+        const freqs = [523.25, 659.25, 783.99]; // C5, E5, G5
+        
+        freqs.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, time + idx * 0.08);
+
+            gain.gain.setValueAtTime(0.06, time + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + idx * 0.08 + 0.15);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(time + idx * 0.08);
+            osc.stop(time + idx * 0.08 + 0.15);
+        });
+    }
 }
 
 const sounds = new SoundManager();
@@ -287,6 +322,13 @@ function startGame() {
     // Reset Goal 2: Shield state
     shieldActive = false;
     playerShield.className = '';
+
+    // Reset Goal 4: Combo state
+    comboStreak = 0;
+    scoreMultiplier = 1.0;
+    comboHud.className = 'hud-item';
+    comboHud.style.opacity = '0';
+    comboHud.style.transform = 'scale(0.8)';
 
     // Reset HUD
     scoreVal.innerText = "0";
@@ -417,6 +459,9 @@ function gameLoop() {
             w.element.remove();
             words.splice(i, 1);
 
+            // Breach reset combo streak
+            resetCombo();
+
             // Handle hit: shield active vs shield inactive
             if (shieldActive) {
                 shatterShield();
@@ -456,10 +501,9 @@ function shatterShield() {
     sounds.playShieldDown();
     
     // Trigger CSS shatter animation
-    playerShield.classList.remove('active');
-    playerShield.classList.add('shattering');
+    playerShield.className = 'shattering';
     setTimeout(() => {
-        playerShield.classList.remove('shattering');
+        playerShield.className = '';
     }, 400);
 }
 
@@ -467,8 +511,7 @@ function activateShield() {
     shieldActive = true;
     sounds.playShieldUp();
     
-    playerShield.classList.remove('shattering');
-    playerShield.classList.add('active');
+    playerShield.className = 'active';
 }
 
 function updateLivesUI() {
@@ -504,6 +547,7 @@ function handleKeyPress(e) {
             targetedWord.element.classList.add('targeted');
             processCorrectChar();
         } else {
+            resetCombo();
             errors++;
         }
     } else {
@@ -512,6 +556,7 @@ function handleKeyPress(e) {
         if (typedChar === targetChar) {
             processCorrectChar();
         } else {
+            resetCombo();
             errors++;
         }
     }
@@ -525,6 +570,9 @@ function processCorrectChar() {
     spans[targetedWord.typedCount].className = 'typed';
     
     targetedWord.typedCount++;
+
+    // Increment combo streak!
+    incrementCombo();
 
     // Fire laser from plane nose to the targeted word
     sounds.playLaser();
@@ -552,14 +600,22 @@ function fireLaser(wordElement) {
     const x2 = (wordRect.left + wordRect.width / 2) - areaRect.left;
     const y2 = (wordRect.top + wordRect.height / 2) - areaRect.top;
 
-    // Draw thin laser beam element
+    // Draw laser beam
     const dx = x2 - x1;
     const dy = y2 - y1;
     const distance = Math.sqrt(dx * dx + dy * dy);
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
     const laser = document.createElement('div');
-    laser.className = 'laser';
+    
+    // Goal 4: Assign dynamic laser classes based on multiplier strength
+    let laserMultClass = 'mult-1';
+    if (scoreMultiplier === 1.5) laserMultClass = 'mult-1-5';
+    else if (scoreMultiplier === 2.0) laserMultClass = 'mult-2';
+    else if (scoreMultiplier === 3.0) laserMultClass = 'mult-3';
+    else if (scoreMultiplier === 5.0) laserMultClass = 'mult-5';
+
+    laser.className = `laser ${laserMultClass}`;
     laser.style.width = `${distance}px`;
     laser.style.left = `${x1}px`;
     laser.style.top = `${y1}px`;
@@ -597,7 +653,8 @@ function destroyTarget() {
     targetedWord.element.remove();
     words = words.filter(w => w.id !== targetedWord.id);
     
-    score += targetedWord.word.length * 10;
+    // Goal 4: Award score multiplied by current multiplier
+    score += Math.round(targetedWord.word.length * 10 * scoreMultiplier);
     scoreVal.innerText = score;
 
     targetedWord = null;
@@ -625,6 +682,51 @@ function createExplosion(x, y) {
         
         // Cleanup particle
         setTimeout(() => p.remove(), 600);
+    }
+}
+
+// --- Goal 4: Combo & Multiplier Engine ---
+
+function incrementCombo() {
+    comboStreak++;
+    
+    // Calculate new multiplier
+    let nextMult = 1.0;
+    if (comboStreak >= 50) nextMult = 5.0;
+    else if (comboStreak >= 30) nextMult = 3.0;
+    else if (comboStreak >= 20) nextMult = 2.0;
+    else if (comboStreak >= 10) nextMult = 1.5;
+
+    // Check for multiplier level up
+    if (nextMult > scoreMultiplier) {
+        sounds.playComboUp();
+        
+        // Trigger CSS HUD bounce
+        comboHud.classList.add('level-up');
+        setTimeout(() => {
+            comboHud.classList.remove('level-up');
+        }, 400);
+    }
+
+    scoreMultiplier = nextMult;
+    updateComboUI();
+}
+
+function resetCombo() {
+    comboStreak = 0;
+    scoreMultiplier = 1.0;
+    updateComboUI();
+}
+
+function updateComboUI() {
+    if (comboStreak === 0) {
+        comboHud.classList.remove('active');
+        comboHud.style.opacity = '0';
+        comboHud.style.transform = 'scale(0.8)';
+    } else {
+        comboHud.classList.add('active');
+        comboVal.innerText = comboStreak;
+        multVal.innerText = scoreMultiplier.toFixed(1);
     }
 }
 
