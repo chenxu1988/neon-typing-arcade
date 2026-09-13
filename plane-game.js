@@ -1,11 +1,28 @@
-// --- Word Dictionary ---
-const dictionary = [
+// --- Word Dictionaries ---
+const scifiDictionary = [
     "laser", "plasma", "meteor", "proton", "cosmos", "orbit", "vector", "matrix", "shield", "warp",
     "photon", "comet", "beacon", "energy", "fusion", "quantum", "gravity", "nebula", "galaxy", "rocket",
     "stellar", "neutron", "asteroid", "engine", "signal", "module", "system", "thruster", "sensor", "core",
     "nanite", "hologram", "cyberspace", "android", "titanium", "velocity", "generator", "overdrive", "catalyst", "hyperdrive",
     "horizon", "vortex", "starlight", "pulsar", "singularity", "dimension", "telemetry", "spectrum", "satellite", "atmosphere"
 ];
+
+const lausdGrade3 = [
+    "friend", "school", "because", "before", "people", "would", "about", "could", "write", "glowing",
+    "character", "sentence", "paragraph", "author", "chapter", "compare", "contrast", "describe", "explain", "detail",
+    "fraction", "multiply", "divide", "explore", "energy", "matter", "source", "nature", "history", "culture",
+    "opinion", "purpose", "influence", "reason", "support", "creature", "habitat", "protect", "observe", "discover"
+];
+
+const lausdGrade4 = [
+    "accident", "balance", "calmness", "daughter", "excitement", "frighten", "gather", "honest", "imagine", "journal",
+    "boundary", "capture", "horizon", "constant", "telescope", "analyze", "conclude", "evidence", "inference", "summarize",
+    "metaphor", "simile", "narrative", "dialogue", "adjective", "adverb", "pronoun", "preposition", "conjunction", "punctuation",
+    "ecosystem", "producer", "consumer", "organism", "environment", "adaptation", "government", "constitution", "citizen", "heritage"
+];
+
+// Current active word pool
+let activeDictionary = [];
 
 // --- Game State Variables ---
 let score = 0;
@@ -60,10 +77,11 @@ const multVal = document.getElementById('mult-val');
 const enemyBoss = document.getElementById('enemy-boss');
 const bossHealthBar = document.getElementById('boss-health-bar');
 
-// Screen overlays
+// Screen overlays & Selectors
 const startScreen = document.getElementById('start-screen');
 const gameOverScreen = document.getElementById('game-over-screen');
 const pauseScreen = document.getElementById('pause-screen');
+const vocabSelect = document.getElementById('vocab-select');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
 const resumeBtn = document.getElementById('resume-btn');
@@ -334,6 +352,16 @@ function startGame() {
     currentSpawnDelay = 2200;
     gameActive = true;
     
+    // Choose active vocabulary pool based on start-screen selector
+    const selectedVocab = vocabSelect.value;
+    if (selectedVocab === 'grade3') {
+        activeDictionary = lausdGrade3;
+    } else if (selectedVocab === 'grade4') {
+        activeDictionary = lausdGrade4;
+    } else {
+        activeDictionary = scifiDictionary;
+    }
+
     // Reset Goal 2: Shield state
     shieldActive = false;
     playerShield.className = '';
@@ -382,15 +410,15 @@ function startGame() {
 function spawnWord() {
     if (!gameActive || bossActive || gamePaused) return;
 
-    const randomIndex = Math.floor(Math.random() * dictionary.length);
-    const text = dictionary[randomIndex];
+    const randomIndex = Math.floor(Math.random() * activeDictionary.length);
+    const text = activeDictionary[randomIndex];
     
     // Choose starting letter that isn't already spawned to avoid instant collision in lock-on
     const activeFirstLetters = words.map(w => w.word[0]);
     let wordText = text;
     if (activeFirstLetters.includes(text[0])) {
         // Find alternative
-        const alternatives = dictionary.filter(w => !activeFirstLetters.includes(w[0]));
+        const alternatives = activeDictionary.filter(w => !activeFirstLetters.includes(w[0]));
         if (alternatives.length > 0) {
             wordText = alternatives[Math.floor(Math.random() * alternatives.length)];
         }
@@ -816,10 +844,10 @@ function triggerBossBattle() {
 function spawnBossBomb() {
     if (!bossActive || bossHp <= 0 || !gameActive || gamePaused) return;
 
-    // Pick a challenging medium/long word
-    const bossDict = dictionary.filter(w => w.length >= 6);
+    // Pick a challenging medium/long word from the active pool
+    const bossDict = activeDictionary.filter(w => w.length >= 6);
     const randomIndex = Math.floor(Math.random() * bossDict.length);
-    const wordText = bossDict[randomIndex];
+    const wordText = bossDict.length > 0 ? bossDict[randomIndex] : activeDictionary[Math.floor(Math.random() * activeDictionary.length)];
 
     const id = wordIdCounter++;
     const xPercent = 50; // Descends directly from boss core center!

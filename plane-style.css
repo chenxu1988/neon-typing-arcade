@@ -740,3 +740,48 @@ body {
     0% { filter: brightness(0.9); }
     100% { filter: brightness(1.2); }
 }
+
+/* --- Vocabulary Selection Dropdown --- */
+.selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 35px;
+    z-index: 10;
+}
+
+.selection-label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #a5a2c2;
+    text-shadow: 0 0 5px rgba(255,255,255,0.15);
+}
+
+.neon-select {
+    background-color: #03010b;
+    border: 2px solid var(--neon-blue);
+    border-radius: 8px;
+    color: #fff;
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+    transition: all 0.25s ease;
+    letter-spacing: 1px;
+}
+
+.neon-select:focus, .neon-select:hover {
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 18px rgba(255, 0, 127, 0.35);
+    color: var(--neon-pink);
+}
+
+.neon-select option {
+    background-color: #0d0926;
+    color: #fff;
+}
