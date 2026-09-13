@@ -33,6 +33,9 @@ let bossHp = 5;
 let bossMaxHp = 5;
 let lastBossMilestone = 0;
 
+// Extra Goals: Pause State
+let gamePaused = false;
+
 // Difficulty scaling
 let baseSpeed = 1.0;
 let currentSpawnDelay = 2200; // ms
@@ -60,8 +63,10 @@ const bossHealthBar = document.getElementById('boss-health-bar');
 // Screen overlays
 const startScreen = document.getElementById('start-screen');
 const gameOverScreen = document.getElementById('game-over-screen');
+const pauseScreen = document.getElementById('pause-screen');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
+const resumeBtn = document.getElementById('resume-btn');
 const finalScoreVal = document.getElementById('final-score-val');
 const finalWpmVal = document.getElementById('final-wpm-val');
 
@@ -345,6 +350,10 @@ function startGame() {
     lastBossMilestone = 0;
     enemyBoss.classList.remove('active');
 
+    // Reset Pause state
+    gamePaused = false;
+    pauseScreen.classList.remove('active');
+
     // Reset HUD
     scoreVal.innerText = "0";
     wpmVal.innerText = "0";
@@ -371,7 +380,7 @@ function startGame() {
 }
 
 function spawnWord() {
-    if (!gameActive || bossActive) return;
+    if (!gameActive || bossActive || gamePaused) return;
 
     const randomIndex = Math.floor(Math.random() * dictionary.length);
     const text = dictionary[randomIndex];
@@ -460,7 +469,7 @@ function scaleSpawnRate() {
 }
 
 function gameLoop() {
-    if (!gameActive) return;
+    if (!gameActive || gamePaused) return;
 
     const areaHeight = gameArea.clientHeight;
     // Word hits bottom threshold (approx. plane position)
@@ -558,8 +567,40 @@ function updateLivesUI() {
     });
 }
 
+function togglePause() {
+    if (!gameActive) return;
+
+    gamePaused = !gamePaused;
+
+    if (gamePaused) {
+        pauseScreen.classList.add('active');
+        clearInterval(spawnInterval);
+        if (sounds.bgmEnabled) {
+            sounds.bgmController.audio.pause();
+        }
+    } else {
+        pauseScreen.classList.remove('active');
+        if (sounds.bgmEnabled) {
+            sounds.bgmController.audio.play().catch(e => console.log(e));
+        }
+        if (!bossActive) {
+            spawnInterval = setInterval(spawnWord, currentSpawnDelay);
+        }
+        animationFrameId = requestAnimationFrame(gameLoop);
+    }
+}
+
 function handleKeyPress(e) {
     if (!gameActive) return;
+    
+    // Pause key triggers (Escape only to avoid conflicts with typing 'p')
+    if (e.key === 'Escape') {
+        e.preventDefault();
+        togglePause();
+        return;
+    }
+
+    if (gamePaused) return; // ignore all other keypresses when paused
     if (e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt') return;
 
     sounds.init();
@@ -773,7 +814,7 @@ function triggerBossBattle() {
 }
 
 function spawnBossBomb() {
-    if (!bossActive || bossHp <= 0 || !gameActive) return;
+    if (!bossActive || bossHp <= 0 || !gameActive || gamePaused) return;
 
     // Pick a challenging medium/long word
     const bossDict = dictionary.filter(w => w.length >= 6);
@@ -940,6 +981,11 @@ startBtn.addEventListener('click', () => {
 restartBtn.addEventListener('click', () => {
     sounds.init();
     startGame();
+});
+
+resumeBtn.addEventListener('click', () => {
+    sounds.init();
+    togglePause();
 });
 
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
