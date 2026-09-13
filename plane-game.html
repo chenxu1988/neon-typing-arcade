@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Plane Typing Adventure</title>
+    <link rel="stylesheet" href="plane-style.css">
+</head>
+<body>
+    <div id="game-container">
+        <header id="hud">
+            <div class="hud-item">SCORE: <span id="score-val">0</span></div>
+            <div class="hud-item">WPM: <span id="wpm-val">0</span></div>
+            <div id="lives-container">
+                <span class="heart active">❤️</span>
+                <span class="heart active">❤️</span>
+                <span class="heart active">❤️</span>
+            </div>
+            <div class="hud-controls">
+                <button id="bgm-toggle" class="control-btn" title="Toggle Music">🎵 Music: Off</button>
+                <button id="sound-toggle" class="control-btn active" title="Toggle Sound">🔊 Sound: On</button>
+            </div>
+        </header>
+
+        <main id="game-area">
+            <!-- Background starfield -->
+            <div class="starfield"></div>
+            
+            <!-- Dynamic elements: lasers, explosions, falling words will be added here -->
+            <div id="words-container"></div>
+            <div id="lasers-container"></div>
+            <div id="explosions-container"></div>
+
+            <!-- Player Plane -->
+            <div id="player-plane">
+                <div class="thruster-glow"></div>
+                <div class="plane-body"></div>
+                <div class="plane-wings"></div>
+                <div class="plane-nose"></div>
+            </div>
+        </main>
+
+        <!-- Start Game Screen -->
+        <div id="start-screen" class="modal active">
+            <h1 class="neon-title">NEON PLANE TYPING</h1>
+            <p class="subtitle">Lock onto incoming targets by typing their first letter. Complete the word to fire quantum torpedoes. Don't let them breach your defense lines!</p>
+            <button id="start-btn" class="action-btn">LAUNCH MISSION</button>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over-screen" class="modal">
+            <h1 class="neon-title error">MISSION FAILED</h1>
+            <p class="subtitle">Your hulls collapsed from the kinetic impact of un-typed debris.</p>
+            <div class="final-score">SCORE: <span id="final-score-val">0</span></div>
+            <div class="final-stats">WPM: <span id="final-wpm-val">0</span></div>
+            <button id="restart-btn" class="action-btn">REDEPLOY</button>
+        </div>
+    </div>
+    <script src="plane-game.js"></script>
+</body>
+</html>

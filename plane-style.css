@@ -1,0 +1,361 @@
+:root {
+    --bg-dark: #070314;
+    --neon-blue: #00f0ff;
+    --neon-pink: #ff007f;
+    --neon-green: #39ff14;
+    --neon-yellow: #fffb00;
+    --neon-red: #ff073a;
+    --font-glow: 0 0 10px rgba(0, 240, 255, 0.6), 0 0 20px rgba(0, 240, 255, 0.4);
+    --pink-glow: 0 0 10px rgba(255, 0, 127, 0.6), 0 0 20px rgba(255, 0, 127, 0.4);
+    --green-glow: 0 0 10px rgba(57, 255, 20, 0.6), 0 0 20px rgba(57, 255, 20, 0.3);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-dark);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+}
+
+#game-container {
+    width: 95vw;
+    max-width: 900px;
+    height: 85vh;
+    background-color: #0d0926;
+    border: 4px solid var(--neon-blue);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.3), inset 0 0 15px rgba(0, 240, 255, 0.15);
+}
+
+#hud {
+    background-color: rgba(13, 9, 38, 0.95);
+    border-bottom: 2px solid var(--neon-blue);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-size: 1.1rem;
+    z-index: 10;
+}
+
+.hud-item {
+    text-shadow: var(--font-glow);
+}
+
+#lives-container {
+    display: flex;
+    gap: 8px;
+    font-size: 1.3rem;
+}
+
+.heart {
+    filter: grayscale(100%) opacity(0.3);
+    transition: all 0.3s ease;
+}
+
+.heart.active {
+    filter: none;
+    transform: scale(1.1);
+    text-shadow: 0 0 8px rgba(255, 7, 58, 0.8);
+}
+
+.hud-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    background: transparent;
+    border: 2px solid var(--neon-blue);
+    color: var(--neon-blue);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.control-btn:hover {
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.control-btn.active {
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+}
+
+.control-btn.active:hover {
+    background: var(--neon-pink);
+    color: #fff;
+    box-shadow: 0 0 10px var(--neon-pink);
+}
+
+#game-area {
+    flex: 1;
+    position: relative;
+    background-color: #03010b;
+    overflow: hidden;
+}
+
+/* Background starfield */
+.starfield {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+        radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+    background-size: 550px 550px, 350px 350px, 250px 250px;
+    background-position: 0 0, 40px 60px, 130px 270px;
+    animation: starfield-scrolling 15s linear infinite;
+    opacity: 0.5;
+}
+
+@keyframes starfield-scrolling {
+    from { background-position: 0 0, 40px 60px, 130px 270px; }
+    to { background-position: 0 550px, 40px 410px, 130px 820px; }
+}
+
+/* Player Plane - Sleek Space Fighter */
+#player-plane {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    width: 60px;
+    height: 50px;
+    transform: translateX(-50%);
+    transition: left 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 5;
+}
+
+.plane-body {
+    position: absolute;
+    top: 12px;
+    left: 20px;
+    width: 20px;
+    height: 32px;
+    background: linear-gradient(to bottom, #ffffff, var(--neon-blue), #0d0926);
+    border-radius: 4px 4px 10px 10px;
+    box-shadow: 0 0 12px var(--neon-blue);
+    z-index: 2;
+}
+
+.plane-nose {
+    position: absolute;
+    top: -2px;
+    left: 25px;
+    width: 10px;
+    height: 16px;
+    background-color: #fff;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    box-shadow: 0 -4px 10px #fff;
+    z-index: 3;
+}
+
+.plane-wings {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    width: 60px;
+    height: 12px;
+    background: linear-gradient(to right, var(--neon-pink) 0%, var(--neon-blue) 40%, var(--neon-blue) 60%, var(--neon-pink) 100%);
+    border-radius: 3px;
+    box-shadow: 0 0 10px var(--neon-blue);
+    z-index: 1;
+}
+
+.thruster-glow {
+    position: absolute;
+    bottom: -16px;
+    left: 23px;
+    width: 14px;
+    height: 22px;
+    background: radial-gradient(circle at top, var(--neon-yellow) 0%, var(--neon-pink) 50%, transparent 100%);
+    animation: exhaust-flicker 0.12s infinite ease-in-out;
+}
+
+@keyframes exhaust-flicker {
+    0%, 100% { transform: scaleY(1); opacity: 0.8; }
+    50% { transform: scaleY(1.3); opacity: 1; filter: brightness(1.2); }
+}
+
+/* Screen damage flash */
+.screen-hit {
+    animation: red-flash 0.3s ease-out;
+}
+
+@keyframes red-flash {
+    0%, 100% { box-shadow: none; }
+    50% { box-shadow: inset 0 0 50px rgba(255, 7, 58, 0.85); }
+}
+
+/* Falling Enemy Words */
+.enemy-word {
+    position: absolute;
+    font-size: 1.4rem;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(255,255,255,0.4);
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+}
+
+.enemy-word span {
+    transition: color 0.1s ease;
+}
+
+.enemy-word .typed {
+    color: var(--neon-pink);
+    text-shadow: var(--pink-glow);
+}
+
+.enemy-word .untyped {
+    color: #fff;
+}
+
+.enemy-word.targeted {
+    transform: translate(-50%, -50%) scale(1.15);
+    text-shadow: var(--font-glow);
+}
+
+.enemy-word.targeted .untyped {
+    color: var(--neon-blue);
+}
+
+/* Laser Beam lines */
+.laser {
+    position: absolute;
+    height: 4px;
+    background: linear-gradient(to right, #ffffff, var(--neon-blue), var(--neon-pink));
+    border-radius: 2px;
+    transform-origin: left center;
+    pointer-events: none;
+    box-shadow: 0 0 10px var(--neon-blue);
+    animation: fade-out-laser 0.12s forwards linear;
+    z-index: 4;
+}
+
+@keyframes fade-out-laser {
+    0% { opacity: 1; height: 5px; }
+    100% { opacity: 0; height: 1px; }
+}
+
+/* Explosion particle */
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 6;
+    animation: particle-explode 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes particle-explode {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+}
+
+/* Modals & Screens */
+.modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(3, 1, 11, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.neon-title {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+    text-align: center;
+    color: var(--neon-blue);
+    text-shadow: var(--font-glow);
+}
+
+.neon-title.error {
+    color: var(--neon-red);
+    text-shadow: 0 0 10px rgba(255, 7, 58, 0.6), 0 0 20px rgba(255, 7, 58, 0.4);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #a5a2c2;
+    margin-bottom: 40px;
+    text-align: center;
+    max-width: 80%;
+    line-height: 1.6;
+}
+
+.action-btn {
+    background: transparent;
+    border: 3px solid var(--neon-blue);
+    color: var(--neon-blue);
+    padding: 12px 32px;
+    font-size: 1.25rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    outline: none;
+}
+
+.action-btn:hover {
+    background-color: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 25px var(--neon-blue);
+    transform: scale(1.05);
+}
+
+.final-score {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px rgba(255, 251, 0, 0.5);
+    margin-bottom: 10px;
+}
+
+.final-stats {
+    font-size: 1.2rem;
+    color: #b0bec5;
+    margin-bottom: 30px;
+}
