@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinosaur Adventure Typing</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <header id="stats-bar">
+            <div class="stat">Level: <span id="level-val">1</span></div>
+            <div class="stat">WPM: <span id="wpm-val">0</span></div>
+            <div class="stat">Accuracy: <span id="accuracy-val">100</span>%</div>
+            <div class="sound-controls">
+                <button id="bgm-toggle" class="control-btn" title="Toggle Music">🎵 Music: Off</button>
+                <button id="sound-toggle" class="control-btn active" title="Toggle Sound">🔊 Sound: On</button>
+            </div>
+        </header>
+
+        <main id="game-board">
+            <div id="environment">
+                <div id="dino-sprite" class="dino-idle">
+                    <div class="dino-tail">
+                        <div class="dino-spike spike-tail"></div>
+                    </div>
+                    <div class="dino-body">
+                        <div class="dino-spike spike-1"></div>
+                        <div class="dino-spike spike-2"></div>
+                        <div class="dino-spike spike-3"></div>
+                        <div class="dino-arm"></div>
+                    </div>
+                    <div class="dino-neck"></div>
+                    <div class="dino-head">
+                        <div class="dino-eye"></div>
+                        <div class="dino-snout"></div>
+                    </div>
+                    <div class="dino-leg leg-left"></div>
+                    <div class="dino-leg leg-right"></div>
+                </div>
+            </div>
+            
+            <div id="display-container">
+                <div id="sentence-display">
+                    <!-- Sentences will be injected here with spans for highlighting -->
+                    <span class="placeholder">Type to start the adventure!</span>
+                </div>
+            </div>
+        </main>
+
+        <footer id="input-area">
+            <p class="hint">Press any key to start typing!</p>
+        </footer>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
