@@ -109,8 +109,57 @@ body {
 #game-area {
     flex: 1;
     position: relative;
-    background-color: #03010b;
+    background: #03010b url('assets/space-nebula-bg.png') center/cover no-repeat;
     overflow: hidden;
+    transition: background 1.2s ease, box-shadow 0.5s ease;
+}
+
+#game-area.stage-1 {
+    background: #03010b url('assets/space-nebula-bg.png') center/cover no-repeat;
+}
+
+#game-area.stage-2 {
+    background: #040814 url('assets/stage2-asteroid-bg.png') center/cover no-repeat;
+}
+
+#game-area.stage-3 {
+    background: #08020f url('assets/stage3-void-bg.png') center/cover no-repeat;
+}
+
+.stage-banner {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.85);
+    padding: 16px 36px;
+    border: 2px solid var(--neon-blue);
+    border-radius: 14px;
+    background: rgba(5, 2, 18, 0.9);
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.55);
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-align: center;
+    text-shadow: var(--font-glow);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.stage-banner.active {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#game-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(3, 1, 11, 0.35) 0%, rgba(3, 1, 11, 0.65) 100%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* Background starfield */
@@ -135,62 +184,45 @@ body {
     to { background-position: 0 550px, 40px 410px, 130px 820px; }
 }
 
-/* Player Plane - Sleek Space Fighter */
+/* Player Plane - Cartoony Sprite Fighter */
 #player-plane {
     position: absolute;
-    bottom: 30px;
+    bottom: 24px;
     left: 50%;
-    width: 60px;
-    height: 50px;
+    width: 78px;
+    height: 78px;
     transform: translateX(-50%);
-    transition: left 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: left 0.14s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 5;
 }
 
-.plane-body {
-    position: absolute;
-    top: 12px;
-    left: 20px;
-    width: 20px;
-    height: 32px;
-    background: linear-gradient(to bottom, #ffffff, var(--neon-blue), #0d0926);
-    border-radius: 4px 4px 10px 10px;
-    box-shadow: 0 0 12px var(--neon-blue);
+.player-sprite {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.75));
+    transition: transform 0.14s ease;
     z-index: 2;
 }
 
-.plane-nose {
-    position: absolute;
-    top: -2px;
-    left: 25px;
-    width: 10px;
-    height: 16px;
-    background-color: #fff;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    box-shadow: 0 -4px 10px #fff;
-    z-index: 3;
+#player-plane.bank-left .player-sprite {
+    transform: rotate(-14deg) scale(1.05);
 }
 
-.plane-wings {
-    position: absolute;
-    top: 18px;
-    left: 0;
-    width: 60px;
-    height: 12px;
-    background: linear-gradient(to right, var(--neon-pink) 0%, var(--neon-blue) 40%, var(--neon-blue) 60%, var(--neon-pink) 100%);
-    border-radius: 3px;
-    box-shadow: 0 0 10px var(--neon-blue);
-    z-index: 1;
+#player-plane.bank-right .player-sprite {
+    transform: rotate(14deg) scale(1.05);
 }
 
 .thruster-glow {
     position: absolute;
-    bottom: -16px;
-    left: 23px;
+    bottom: -10px;
+    left: 32px;
     width: 14px;
-    height: 22px;
+    height: 20px;
     background: radial-gradient(circle at top, var(--neon-yellow) 0%, var(--neon-pink) 50%, transparent 100%);
     animation: exhaust-flicker 0.12s infinite ease-in-out;
+    z-index: 1;
 }
 
 @keyframes exhaust-flicker {
@@ -243,22 +275,109 @@ body {
     color: var(--neon-blue);
 }
 
-/* Laser Beam lines */
-.laser {
+/* Plasma Bolt & Muzzle / Impact FX */
+.plasma-bolt {
     position: absolute;
-    height: 4px;
-    background: linear-gradient(to right, #ffffff, var(--neon-blue), var(--neon-pink));
-    border-radius: 2px;
-    transform-origin: left center;
+    width: 34px;
+    height: 8px;
+    border-radius: 999px;
+    transform-origin: center center;
     pointer-events: none;
-    box-shadow: 0 0 10px var(--neon-blue);
-    animation: fade-out-laser 0.12s forwards linear;
     z-index: 4;
+    background: linear-gradient(to right, transparent 0%, var(--neon-blue) 45%, #ffffff 100%);
+    box-shadow: 0 0 12px var(--neon-blue), 0 0 22px var(--neon-blue);
+    animation: bolt-travel 0.11s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
 }
 
-@keyframes fade-out-laser {
-    0% { opacity: 1; height: 5px; }
-    100% { opacity: 0; height: 1px; }
+@keyframes bolt-travel {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(var(--angle)) scaleX(0.7);
+    }
+    100% {
+        opacity: 0.95;
+        transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--angle)) scaleX(1.25);
+    }
+}
+
+.plasma-bolt.mult-1 {
+    background: linear-gradient(to right, transparent 0%, var(--neon-blue) 45%, #ffffff 100%);
+    box-shadow: 0 0 12px var(--neon-blue), 0 0 22px var(--neon-blue);
+}
+
+.plasma-bolt.mult-1-5 {
+    height: 10px;
+    width: 40px;
+    background: linear-gradient(to right, transparent 0%, #e040fb 45%, #ffffff 100%);
+    box-shadow: 0 0 14px #e040fb, 0 0 26px var(--neon-pink);
+}
+
+.plasma-bolt.mult-2 {
+    height: 11px;
+    width: 44px;
+    background: linear-gradient(to right, transparent 0%, #ff5722 40%, var(--neon-yellow) 85%, #ffffff 100%);
+    box-shadow: 0 0 16px #ff5722, 0 0 28px var(--neon-yellow);
+}
+
+.plasma-bolt.mult-3 {
+    height: 13px;
+    width: 50px;
+    background: linear-gradient(to right, transparent 0%, var(--neon-yellow) 40%, #ffffff 100%);
+    box-shadow: 0 0 20px var(--neon-yellow), 0 0 34px #ffeb3b;
+}
+
+.plasma-bolt.mult-5 {
+    height: 16px;
+    width: 58px;
+    background: linear-gradient(to right, transparent 0%, var(--neon-green) 40%, #ffffff 100%);
+    box-shadow: 0 0 24px var(--neon-green), 0 0 42px rgba(57, 255, 20, 0.85);
+}
+
+.muzzle-flash {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff 0%, var(--neon-blue) 45%, transparent 75%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 6;
+    animation: flash-pop 0.1s ease-out forwards;
+}
+
+.impact-spark {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff 0%, var(--neon-pink) 45%, transparent 75%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 6;
+    animation: flash-pop 0.16s ease-out forwards;
+}
+
+@keyframes flash-pop {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.4); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+}
+
+.boss-beam {
+    position: absolute;
+    height: 14px;
+    border-radius: 7px;
+    transform-origin: left center;
+    pointer-events: none;
+    background: linear-gradient(to right, #ffffff, var(--neon-green), #81c784);
+    box-shadow: 0 0 30px var(--neon-green), 0 0 50px rgba(57, 255, 20, 0.7);
+    z-index: 6;
+    animation: fade-out-beam 0.16s forwards linear;
+}
+
+@keyframes fade-out-beam {
+    0% { opacity: 1; height: 14px; }
+    100% { opacity: 0; height: 4px; }
 }
 
 /* Explosion particle */
@@ -446,7 +565,7 @@ body {
     100% { transform: translateY(-3px) scale(1.1); }
 }
 
-/* --- Goal 3: CSS Enemy Space Ships --- */
+/* --- Enemy Space Ship Sprites --- */
 .enemy-word {
     position: absolute;
     display: flex;
@@ -457,86 +576,71 @@ body {
     pointer-events: none;
 }
 
+.enemy-word.targeted::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    width: 68px;
+    height: 68px;
+    border: 2px dashed var(--neon-blue);
+    border-radius: 50%;
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.55);
+    animation: reticle-spin 3s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes reticle-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 .enemy-ship {
     position: relative;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
+    object-fit: contain;
     transition: transform 0.2s ease;
 }
 
-/* Scout Drone */
-.enemy-ship.scout {
-    width: 32px;
-    height: 18px;
-    background-color: var(--neon-blue);
-    clip-path: polygon(50% 100%, 0% 15%, 20% 0%, 80% 0%, 100% 15%);
-    box-shadow: 0 0 10px var(--neon-blue);
+.enemy-ship.scout-sprite {
+    width: 46px;
+    height: 46px;
+    filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.7));
     animation: scout-wobble 0.8s infinite alternate ease-in-out;
 }
 
 @keyframes scout-wobble {
-    0% { transform: translateY(0) rotate(-3deg); }
-    100% { transform: translateY(-2px) rotate(3deg); }
+    0% { transform: translateY(0) rotate(-4deg); }
+    100% { transform: translateY(-3px) rotate(4deg); }
 }
 
-/* Fighter Drone */
-.enemy-ship.fighter {
-    width: 48px;
-    height: 22px;
-    background-color: var(--neon-pink);
-    clip-path: polygon(50% 100%, 100% 30%, 85% 0%, 65% 15%, 35% 15%, 15% 0%, 0% 30%);
-    box-shadow: 0 0 12px var(--neon-pink);
+.enemy-ship.fighter-sprite {
+    width: 60px;
+    height: 60px;
+    filter: drop-shadow(0 0 10px rgba(255, 0, 127, 0.75));
     animation: fighter-pitch 1s infinite alternate ease-in-out;
 }
 
 @keyframes fighter-pitch {
-    0% { transform: scaleX(1); filter: brightness(0.95); }
-    100% { transform: scaleX(1.04); filter: brightness(1.15); }
+    0% { transform: scale(0.98); filter: drop-shadow(0 0 8px rgba(255, 0, 127, 0.65)); }
+    100% { transform: scale(1.04); filter: drop-shadow(0 0 14px rgba(255, 0, 127, 0.9)); }
 }
 
-/* Elite Cruiser */
-.enemy-ship.elite {
-    width: 64px;
-    height: 28px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.enemy-ship.elite-sprite {
+    width: 76px;
+    height: 76px;
+    filter: drop-shadow(0 0 12px rgba(255, 251, 0, 0.75));
     animation: elite-hover 1.4s infinite alternate ease-in-out;
-}
-
-.enemy-ship-body {
-    position: absolute;
-    width: 22px;
-    height: 26px;
-    background-color: var(--neon-yellow);
-    clip-path: polygon(50% 100%, 0% 20%, 100% 20%);
-    box-shadow: 0 0 12px var(--neon-yellow);
-    z-index: 2;
-}
-
-.enemy-ship-wings {
-    position: absolute;
-    width: 64px;
-    height: 10px;
-    background-color: var(--neon-red);
-    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
-    box-shadow: 0 0 12px var(--neon-red);
-    z-index: 1;
 }
 
 @keyframes elite-hover {
     0% { transform: translateY(0) scale(0.98); }
-    100% { transform: translateY(-3px) scale(1.02); }
+    100% { transform: translateY(-4px) scale(1.03); }
 }
 
-/* Engine flame pointing up */
-.thruster-glow-down {
-    position: absolute;
-    top: -12px;
-    left: calc(50% - 6px);
-    width: 12px;
-    height: 14px;
-    background: radial-gradient(circle at bottom, var(--neon-yellow) 0%, var(--neon-pink) 50%, transparent 100%);
-    animation: exhaust-flicker 0.1s infinite alternate ease-in-out;
+.enemy-ship.bomb-sprite {
+    width: 46px;
+    height: 54px;
+    filter: drop-shadow(0 0 14px rgba(255, 7, 58, 0.9));
 }
 
 /* Sleek dark HUD banner for text readout */
@@ -628,10 +732,10 @@ body {
 /* --- Boss Mothership Styles --- */
 #enemy-boss {
     position: absolute;
-    top: -150px; /* Starts hidden off-screen top */
+    top: -180px; /* Starts hidden off-screen top */
     left: 50%;
-    width: 160px;
-    height: 80px;
+    width: 190px;
+    height: 130px;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
@@ -641,52 +745,45 @@ body {
 }
 
 #enemy-boss.active {
-    top: 50px; /* Descends and hovers */
+    top: 26px; /* Descends and hovers */
 }
 
 .boss-ship {
     position: relative;
-    width: 160px;
-    height: 50px;
+    width: 190px;
+    height: 105px;
     animation: boss-hover-animation 2s infinite alternate ease-in-out;
 }
 
-.boss-core {
-    position: absolute;
-    top: 10px;
-    left: 50px;
-    width: 60px;
-    height: 38px;
-    background: linear-gradient(to bottom, #424242, #181818);
-    clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
-    border: 2px solid var(--neon-red);
-    box-shadow: 0 0 15px var(--neon-red);
-    z-index: 3;
+.boss-sprite {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 18px rgba(255, 0, 127, 0.8));
+    transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.boss-eye {
-    position: absolute;
-    top: 14px;
-    left: 70px;
-    width: 20px;
-    height: 10px;
-    background-color: var(--neon-red);
-    border-radius: 50%;
-    box-shadow: 0 0 12px var(--neon-red);
-    animation: eye-pulse-animation 0.4s infinite alternate ease-in-out;
-    z-index: 4;
+#enemy-boss.bank-left .boss-sprite {
+    transform: rotate(7deg);
 }
 
-.boss-wings {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 160px;
-    height: 14px;
-    background: linear-gradient(to right, var(--neon-pink) 0%, #1a237e 30%, #1a237e 70%, var(--neon-pink) 100%);
-    clip-path: polygon(0% 0%, 100% 0%, 85% 100%, 15% 100%);
-    box-shadow: 0 0 15px var(--neon-pink);
-    z-index: 2;
+#enemy-boss.bank-right .boss-sprite {
+    transform: rotate(-7deg);
+}
+
+#enemy-boss.boss-hit .boss-sprite {
+    filter: brightness(2.4) drop-shadow(0 0 28px #ffffff);
+    transform: translateY(-10px) scale(0.95);
+}
+
+#enemy-boss.boss-enraged .boss-sprite {
+    filter: drop-shadow(0 0 26px rgba(255, 7, 58, 1)) saturate(1.4);
+    animation: boss-enraged-pulse 0.45s infinite alternate ease-in-out;
+}
+
+@keyframes boss-enraged-pulse {
+    0% { filter: drop-shadow(0 0 18px rgba(255, 7, 58, 0.85)) brightness(1); }
+    100% { filter: drop-shadow(0 0 34px rgba(255, 7, 58, 1)) brightness(1.25); }
 }
 
 /* Boss Health Bar container */
@@ -713,6 +810,122 @@ body {
     background-color: var(--neon-red);
     box-shadow: 0 0 10px var(--neon-red);
     transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Boss Mega Beam Charge Bar */
+#boss-charge-container {
+    width: 110px;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--neon-yellow);
+    border-radius: 3px;
+    margin-top: 4px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#boss-charge-container.hidden {
+    display: none;
+}
+
+.boss-name-label {
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: #fff;
+    text-shadow: 0 0 8px var(--neon-pink);
+    margin-top: 2px;
+    white-space: nowrap;
+}
+
+#enemy-boss.boss-stage-1 .boss-sprite {
+    filter: drop-shadow(0 0 18px rgba(255, 0, 127, 0.85));
+}
+
+#enemy-boss.boss-stage-2 .boss-sprite {
+    filter: hue-rotate(155deg) saturate(1.2) drop-shadow(0 0 20px rgba(0, 229, 255, 0.9));
+}
+
+#enemy-boss.boss-stage-3 .boss-sprite {
+    filter: hue-rotate(-35deg) contrast(1.15) drop-shadow(0 0 22px rgba(255, 7, 58, 0.95));
+}
+
+#enemy-boss.boss-blink .boss-sprite {
+    animation: boss-blink-fx 0.28s ease-out;
+}
+
+@keyframes boss-blink-fx {
+    0% { opacity: 1; transform: scale(1); }
+    40% { opacity: 0.15; transform: scale(0.65); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+#enemy-boss.active #boss-charge-container {
+    opacity: 1;
+}
+
+#boss-charge-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(to right, var(--neon-yellow), #ff6d00, var(--neon-red));
+    box-shadow: 0 0 8px var(--neon-yellow);
+    transition: width 0.08s linear;
+}
+
+/* Boss Shield Dome */
+.boss-shield-dome {
+    position: absolute;
+    top: -12px;
+    left: -14px;
+    width: 218px;
+    height: 132px;
+    border: 3px solid var(--neon-yellow);
+    border-radius: 50%;
+    box-shadow: 0 0 22px var(--neon-yellow), inset 0 0 18px rgba(0, 240, 255, 0.45);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    z-index: 8;
+}
+
+#enemy-boss.boss-shielded .boss-shield-dome {
+    opacity: 1;
+    transform: scale(1);
+    animation: shield-glow 1s infinite alternate ease-in-out;
+}
+
+/* Boss Shield-Breaker Word */
+.enemy-word.shield-breaker .word-text-wrapper {
+    border: 2px solid var(--neon-yellow) !important;
+    box-shadow: 0 0 20px var(--neon-yellow), 0 0 32px rgba(255, 251, 0, 0.45) !important;
+    background: rgba(255, 251, 0, 0.16) !important;
+}
+
+.enemy-word.shield-breaker .untyped {
+    color: var(--neon-yellow) !important;
+    text-shadow: 0 0 10px var(--neon-yellow) !important;
+}
+
+/* Boss Mega Beam Blast */
+.boss-mega-beam {
+    position: absolute;
+    top: 100px;
+    width: 58px;
+    height: calc(100% - 100px);
+    transform: translateX(-50%);
+    background: linear-gradient(to right, rgba(255, 7, 58, 0.2), var(--neon-red) 25%, #ffffff 50%, var(--neon-red) 75%, rgba(255, 7, 58, 0.2));
+    box-shadow: 0 0 36px var(--neon-red), 0 0 70px var(--neon-yellow);
+    pointer-events: none;
+    z-index: 9;
+    animation: mega-beam-fire 0.55s ease-out forwards;
+}
+
+@keyframes mega-beam-fire {
+    0% { opacity: 0.95; width: 22px; }
+    25% { opacity: 1; width: 72px; }
+    100% { opacity: 0; width: 12px; }
 }
 
 @keyframes boss-hover-animation {
@@ -784,4 +997,148 @@ body {
 .neon-select option {
     background-color: #0d0926;
     color: #fff;
+}
+
+/* --- Selection Row & Best Score Banner --- */
+.selection-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 18px;
+    z-index: 10;
+}
+
+.selection-row .selection-container {
+    margin-bottom: 0;
+}
+
+.sector-best-banner {
+    font-size: 0.95rem;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 8px rgba(255, 251, 0, 0.45);
+    margin-bottom: 24px;
+    padding: 6px 16px;
+    border: 1px solid rgba(255, 251, 0, 0.35);
+    border-radius: 20px;
+    background: rgba(255, 251, 0, 0.06);
+}
+
+.new-record-badge {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 12px rgba(255, 251, 0, 0.8);
+    margin-bottom: 10px;
+    animation: combo-bounce 0.8s infinite alternate ease-in-out;
+}
+
+/* --- Practice Words Panel --- */
+.practice-words-container {
+    max-width: 82%;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.practice-title {
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+    color: #a5a2c2;
+    margin-bottom: 10px;
+}
+
+.practice-pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.practice-pill {
+    background: rgba(255, 0, 127, 0.14);
+    border: 1px solid var(--neon-pink);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.practice-pill:not(.flawless) {
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.practice-pill:not(.flawless):hover {
+    background: rgba(255, 0, 127, 0.35);
+    transform: scale(1.06);
+}
+
+.practice-pill.flawless {
+    background: rgba(57, 255, 20, 0.14);
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+}
+
+/* --- Gentle Hint Pulse on Wrong Key --- */
+.enemy-word .untyped.hint-pulse {
+    color: var(--neon-yellow) !important;
+    text-shadow: 0 0 12px var(--neon-yellow), 0 0 20px var(--neon-red) !important;
+    transform: scale(1.3);
+    display: inline-block;
+}
+
+/* --- EMP Slow-Mo & Heal Power-ups --- */
+#emp-hud {
+    color: #80d8ff;
+    text-shadow: 0 0 10px #00b0ff;
+    animation: combo-bounce 0.7s infinite alternate ease-in-out;
+}
+
+#game-area.emp-active {
+    box-shadow: inset 0 0 45px rgba(0, 176, 255, 0.35);
+}
+
+.enemy-word.emp-word .untyped {
+    color: #80d8ff !important;
+    text-shadow: 0 0 10px #00b0ff !important;
+}
+
+.enemy-word.heal-word .untyped {
+    color: #ff80ab !important;
+    text-shadow: 0 0 10px var(--neon-pink) !important;
+}
+
+.powerup-icon {
+    display: inline-block;
+    margin-right: 6px;
+    animation: float-icon 0.8s infinite alternate ease-in-out;
+}
+
+/* --- Floating Score / Power-Up Popup --- */
+.floating-text {
+    position: absolute;
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px rgba(255, 251, 0, 0.8);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 8;
+    animation: float-up-fade 0.85s ease-out forwards;
+}
+
+.floating-text.powerup {
+    color: var(--neon-green);
+    text-shadow: var(--green-glow);
+    font-size: 1.15rem;
+}
+
+@keyframes float-up-fade {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.9); }
+    100% { opacity: 0; transform: translate(-50%, -95px) scale(1.15); }
 }

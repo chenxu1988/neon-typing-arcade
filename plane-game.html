@@ -1,24 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neon Plane Typing Adventure</title>
     <link rel="stylesheet" href="plane-style.css">
 </head>
+
 <body>
     <div id="game-container">
         <header id="hud">
             <div class="hud-item">SCORE: <span id="score-val">0</span></div>
+            <div class="hud-item">STAGE: <span id="stage-val">1</span></div>
+            <div class="hud-item">WAVE: <span id="wave-val">1</span></div>
             <div class="hud-item">WPM: <span id="wpm-val">0</span></div>
-            <div class="hud-item" id="combo-hud" style="opacity: 0; transform: scale(0.8); transition: all 0.3s ease;">COMBO: <span id="combo-val">0</span> (<span id="mult-val">1.0</span>x)</div>
+            <div class="hud-item">ACC: <span id="acc-val">100%</span></div>
+            <div class="hud-item" id="combo-hud" style="opacity: 0; transform: scale(0.8); transition: all 0.3s ease;">
+                COMBO: <span id="combo-val">0</span> (<span id="mult-val">1.0</span>x)</div>
+            <div class="hud-item" id="emp-hud" style="display: none;">❄️ SLOW-MO</div>
             <div id="lives-container">
                 <span class="heart active">❤️</span>
                 <span class="heart active">❤️</span>
                 <span class="heart active">❤️</span>
             </div>
             <div class="hud-controls">
-                <button id="bgm-toggle" class="control-btn" title="Toggle Music">🎵 Music: Off</button>
+                <button id="voice-toggle" class="control-btn active" title="Toggle Word Pronunciation">🗣️ Voice: On</button>
+                <button id="bgm-toggle" class="control-btn active" title="Toggle Music">🎵 Music: On</button>
                 <button id="sound-toggle" class="control-btn active" title="Toggle Sound">🔊 Sound: On</button>
             </div>
         </header>
@@ -26,21 +34,25 @@
         <main id="game-area">
             <!-- Background starfield -->
             <div class="starfield"></div>
-            
+
             <!-- Dynamic elements: lasers, explosions, falling words will be added here -->
             <div id="words-container"></div>
             <div id="lasers-container"></div>
             <div id="explosions-container"></div>
+            <div id="stage-banner" class="stage-banner"></div>
 
             <!-- Boss Mothership -->
             <div id="enemy-boss">
+                <div class="boss-shield-dome"></div>
                 <div class="boss-ship">
-                    <div class="boss-wings"></div>
-                    <div class="boss-core"></div>
-                    <div class="boss-eye"></div>
+                    <img src="assets/boss-mothership.png" class="boss-sprite" alt="Boss Mothership">
                 </div>
+                <div id="boss-name-label" class="boss-name-label"></div>
                 <div id="boss-health-container">
                     <div id="boss-health-bar"></div>
+                </div>
+                <div id="boss-charge-container" title="Mega Beam Charge">
+                    <div id="boss-charge-bar"></div>
                 </div>
             </div>
 
@@ -48,25 +60,38 @@
             <div id="player-plane">
                 <div id="player-shield"></div>
                 <div class="thruster-glow"></div>
-                <div class="plane-body"></div>
-                <div class="plane-wings"></div>
-                <div class="plane-nose"></div>
+                <img src="assets/player-plane.png" class="player-sprite" alt="Player Plane">
             </div>
         </main>
 
         <!-- Start Game Screen -->
         <div id="start-screen" class="modal active">
             <h1 class="neon-title">NEON PLANE TYPING</h1>
-            <p class="subtitle">Lock onto incoming targets by typing their first letter. Complete the word to fire quantum torpedoes. Don't let them breach your defense lines!</p>
-            
-            <div class="selection-container">
-                <label for="vocab-select" class="selection-label">CHOOSE TARGET SECTOR:</label>
-                <select id="vocab-select" class="neon-select">
-                    <option value="scifi">🛸 Quantum Cosmos (Sci-Fi)</option>
-                    <option value="grade3">🎒 LAUSD Grade 3 ELA</option>
-                    <option value="grade4">🚀 LAUSD Grade 4 ELA</option>
-                </select>
+            <p class="subtitle">Type a word's first letter to lock on, and finish it to fire! Press <span
+                    style="color: var(--neon-pink)">TAB</span> or <span style="color: var(--neon-pink)">BACKSPACE</span>
+                to switch targets, <span style="color: var(--neon-pink)">ESC</span> to pause.</p>
+
+            <div class="selection-row">
+                <div class="selection-container">
+                    <label for="vocab-select" class="selection-label">TARGET SECTOR:</label>
+                    <select id="vocab-select" class="neon-select">
+                        <option value="scifi">🛸 Quantum Cosmos (Sci-Fi)</option>
+                        <option value="grade3">🎒 LAUSD Grade 3 ELA</option>
+                        <option value="grade4">🚀 LAUSD Grade 4 ELA</option>
+                    </select>
+                </div>
+
+                <div class="selection-container">
+                    <label for="difficulty-select" class="selection-label">DIFFICULTY:</label>
+                    <select id="difficulty-select" class="neon-select">
+                        <option value="easy">🌱 Easy (Kid-Friendly)</option>
+                        <option value="normal" selected>⚡ Normal (Arcade)</option>
+                        <option value="hard">🔥 Hard (Ace Pilot)</option>
+                    </select>
+                </div>
             </div>
+
+            <div id="sector-best-banner" class="sector-best-banner">BEST: 0 PTS | 0 WPM | 0% ACC</div>
 
             <button id="start-btn" class="action-btn">LAUNCH MISSION</button>
         </div>
@@ -75,18 +100,23 @@
         <div id="game-over-screen" class="modal">
             <h1 class="neon-title error">MISSION FAILED</h1>
             <p class="subtitle">Your hulls collapsed from the kinetic impact of un-typed debris.</p>
+            <div id="new-record-badge" class="new-record-badge" style="display: none;">🏆 NEW SECTOR HIGH SCORE!</div>
             <div class="final-score">SCORE: <span id="final-score-val">0</span></div>
-            <div class="final-stats">WPM: <span id="final-wpm-val">0</span></div>
+            <div class="final-stats">WPM: <span id="final-wpm-val">0</span> &nbsp;|&nbsp; ACCURACY: <span
+                    id="final-acc-val">100%</span> &nbsp;|&nbsp; WAVE: <span id="final-wave-val">1</span></div>
+            <div id="practice-words-container" class="practice-words-container"></div>
             <button id="restart-btn" class="action-btn">REDEPLOY</button>
         </div>
 
         <!-- Pause Screen -->
         <div id="pause-screen" class="modal">
             <h1 class="neon-title">MISSION PAUSED</h1>
-            <p class="subtitle">System diagnostics nominal. Press <span style="color: var(--neon-pink)">ESC</span> or click below to resume flight.</p>
+            <p class="subtitle">System diagnostics nominal. Press <span style="color: var(--neon-pink)">ESC</span> or
+                click below to resume flight.</p>
             <button id="resume-btn" class="action-btn">RESUME SYSTEM</button>
         </div>
     </div>
     <script src="plane-game.js"></script>
 </body>
+
 </html>

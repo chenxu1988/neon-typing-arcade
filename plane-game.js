@@ -21,36 +21,145 @@ const lausdGrade4 = [
     "ecosystem", "producer", "consumer", "organism", "environment", "adaptation", "government", "constitution", "citizen", "heritage"
 ];
 
+const DIFFICULTY_PRESETS = {
+    easy: { baseSpeed: 0.65, spawnDelay: 2700, minSpawnDelay: 1600, speedStep: 0.04, delayStep: 80, bossChargeMs: 14000 },
+    normal: { baseSpeed: 0.95, spawnDelay: 2200, minSpawnDelay: 1200, speedStep: 0.06, delayStep: 100, bossChargeMs: 12000 },
+    hard: { baseSpeed: 1.3, spawnDelay: 1750, minSpawnDelay: 950, speedStep: 0.08, delayStep: 110, bossChargeMs: 10000 }
+};
+
+const STAGES = [
+    {
+        id: 1,
+        name: 'STAGE 1: NEON NEBULA',
+        cssClass: 'stage-1',
+        track: 'stage1',
+        enemies: {
+            scout: '<img src="assets/enemy-scout.png" class="enemy-ship scout-sprite" alt="">',
+            fighter: '<img src="assets/enemy-fighter.png" class="enemy-ship fighter-sprite" alt="">',
+            elite: '<img src="assets/enemy-elite.png" class="enemy-ship elite-sprite" alt="">'
+        }
+    },
+    {
+        id: 2,
+        name: 'STAGE 2: CYBER ASTEROID BELT',
+        cssClass: 'stage-2',
+        track: 'stage2',
+        enemies: {
+            scout: '<img src="assets/s2-scout.png" class="enemy-ship scout-sprite" alt="">',
+            fighter: '<img src="assets/s2-fighter.png" class="enemy-ship fighter-sprite" alt="">',
+            elite: '<svg class="enemy-ship elite-sprite" viewBox="0 0 80 80"><polygon points="40,74 12,32 6,12 28,22 40,8 52,22 74,12 68,32" fill="#00838f" stroke="#071824" stroke-width="3.5"/><polygon points="40,62 24,34 40,18 56,34" fill="#ffb300" stroke="#071824" stroke-width="3"/><circle cx="40" cy="40" r="8" fill="#00e5ff" stroke="#fff" stroke-width="2"/></svg>'
+        }
+    },
+    {
+        id: 3,
+        name: 'STAGE 3: DARK VOID',
+        cssClass: 'stage-3',
+        track: 'stage3',
+        enemies: {
+            scout: '<img src="assets/s3-scout.png" class="enemy-ship scout-sprite" alt="">',
+            fighter: '<svg class="enemy-ship fighter-sprite" viewBox="0 0 64 64"><path d="M32 58 L6 20 Q20 28 32 10 Q44 28 58 20 Z" fill="#4a148c" stroke="#ff007f" stroke-width="3"/><polygon points="32,48 24,28 32,18 40,28" fill="#ff007f"/><circle cx="32" cy="33" r="5" fill="#fff"/></svg>',
+            elite: '<svg class="enemy-ship elite-sprite" viewBox="0 0 80 80"><polygon points="40,74 6,24 20,10 34,26 40,8 46,26 60,10 74,24" fill="#2a0845" stroke="#ff007f" stroke-width="3.5"/><polygon points="40,60 22,32 40,16 58,32" fill="#c2185b" stroke="#120024" stroke-width="2.5"/><circle cx="40" cy="38" r="9" fill="#ff073a" stroke="#fff" stroke-width="2"/></svg>'
+        }
+    }
+];
+
+const BOSS_CONFIGS = [
+    {
+        name: 'NEBULA MOTHERSHIP',
+        cssClass: 'boss-stage-1',
+        hasEscorts: true,
+        maxEscorts: 2,
+        escortsOnlyEnraged: false,
+        hasShieldPhase: false,
+        hasMegaBeam: false,
+        chargeMult: 1.0,
+        hasBlink: false,
+        dualSalvo: false
+    },
+    {
+        name: 'AEGIS CORE',
+        cssClass: 'boss-stage-2',
+        hasEscorts: false,
+        maxEscorts: 0,
+        escortsOnlyEnraged: false,
+        hasShieldPhase: true,
+        hasMegaBeam: true,
+        chargeMult: 1.0,
+        hasBlink: false,
+        dualSalvo: false
+    },
+    {
+        name: 'VOID DREADNOUGHT',
+        cssClass: 'boss-stage-3',
+        hasEscorts: true,
+        maxEscorts: 1,
+        escortsOnlyEnraged: true,
+        hasShieldPhase: false,
+        hasMegaBeam: true,
+        chargeMult: 1.25,
+        hasBlink: true,
+        dualSalvo: true
+    }
+];
+
+const STORAGE_KEY = 'neonPlaneTypingStats';
+
 // Current active word pool
 let activeDictionary = [];
+let activeSector = 'scifi';
+let activeDifficulty = DIFFICULTY_PRESETS.normal;
 
 // --- Game State Variables ---
 let score = 0;
 let lives = 3;
+const MAX_LIVES = 3;
 let totalTyped = 0;
 let errors = 0;
 let startTime = null;
+let pausedAt = null;
+let totalPausedMs = 0;
 let gameActive = false;
 let words = [];
 let targetedWord = null;
 let wordIdCounter = 0;
 let spawnInterval = null;
 let animationFrameId = null;
+let lastFrameTime = 0;
 
-// Goal 2: Shield state
+// Educational: per-word mistake tracking
+let wordMistakes = new Map();
+
+// Power-up states
 let shieldActive = false;
+let empActive = false;
+let empTimeout = null;
 
-// Goal 4: Combo and Multipliers
+// Combo and Multipliers
 let comboStreak = 0;
 let scoreMultiplier = 1.0;
 
-// Extra Goals: Boss Battle state
+// Boss & Wave state
+let stage = 1;
+let wave = 1;
+let nextSpeedMilestone = 150;
 let bossActive = false;
+let bossBattleStarted = false;
+let activeBossConfig = BOSS_CONFIGS[0];
+let bossLevel = 0;
 let bossHp = 5;
 let bossMaxHp = 5;
-let lastBossMilestone = 0;
+let bossX = 50; // percentage across arena (22..78)
+let bossDir = 1; // 1 = right, -1 = left
+let bossEnraged = false;
+let bossShielded = false;
+let bossShieldUsed = false;
+let bossCharge = 0; // 0..1
+let nextBossScore = 1000;
+let bossClearInterval = null;
+let bossBombTimeout = null;
+let bossEscortInterval = null;
 
-// Extra Goals: Pause State
+// Pause State
 let gamePaused = false;
 
 // Difficulty scaling
@@ -65,55 +174,274 @@ const explosionsContainer = document.getElementById('explosions-container');
 const playerPlane = document.getElementById('player-plane');
 const playerShield = document.getElementById('player-shield');
 const scoreVal = document.getElementById('score-val');
+const stageVal = document.getElementById('stage-val');
+const waveVal = document.getElementById('wave-val');
+const stageBanner = document.getElementById('stage-banner');
 const wpmVal = document.getElementById('wpm-val');
+const accVal = document.getElementById('acc-val');
+const empHud = document.getElementById('emp-hud');
 const livesContainer = document.getElementById('lives-container');
 
-// Goal 4: Combo HUD elements
+// Combo HUD elements
 const comboHud = document.getElementById('combo-hud');
 const comboVal = document.getElementById('combo-val');
 const multVal = document.getElementById('mult-val');
 
-// Extra Goals: Boss HUD elements
+// Boss HUD elements
 const enemyBoss = document.getElementById('enemy-boss');
+const bossNameLabel = document.getElementById('boss-name-label');
 const bossHealthBar = document.getElementById('boss-health-bar');
+const bossChargeContainer = document.getElementById('boss-charge-container');
+const bossChargeBar = document.getElementById('boss-charge-bar');
 
 // Screen overlays & Selectors
 const startScreen = document.getElementById('start-screen');
 const gameOverScreen = document.getElementById('game-over-screen');
 const pauseScreen = document.getElementById('pause-screen');
 const vocabSelect = document.getElementById('vocab-select');
+const difficultySelect = document.getElementById('difficulty-select');
+const sectorBestBanner = document.getElementById('sector-best-banner');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
 const resumeBtn = document.getElementById('resume-btn');
 const finalScoreVal = document.getElementById('final-score-val');
 const finalWpmVal = document.getElementById('final-wpm-val');
+const finalAccVal = document.getElementById('final-acc-val');
+const finalWaveVal = document.getElementById('final-wave-val');
+const newRecordBadge = document.getElementById('new-record-badge');
+const practiceWordsContainer = document.getElementById('practice-words-container');
 
-// --- Standard HTML5 Audio Controller for bgm.ogg ---
+// --- Persistence Helpers ---
+function loadAllStats() {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch {
+        return {};
+    }
+}
+
+function getSectorStats(sector) {
+    const all = loadAllStats();
+    return all[sector] || { highScore: 0, bestWpm: 0, bestAcc: 0 };
+}
+
+function saveSectorStats(sector, runScore, runWpm, runAcc) {
+    const all = loadAllStats();
+    const prev = all[sector] || { highScore: 0, bestWpm: 0, bestAcc: 0 };
+    const isNewRecord = runScore > prev.highScore && runScore > 0;
+
+    all[sector] = {
+        highScore: Math.max(prev.highScore, runScore),
+        bestWpm: Math.max(prev.bestWpm, runWpm),
+        bestAcc: Math.max(prev.bestAcc, runAcc)
+    };
+
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    } catch {
+        // Ignore storage quota errors
+    }
+    return isNewRecord;
+}
+
+function updateSectorBestBanner() {
+    const stats = getSectorStats(vocabSelect.value);
+    sectorBestBanner.innerText = `BEST: ${stats.highScore} PTS | ${stats.bestWpm} WPM | ${stats.bestAcc}% ACC`;
+}
+
+// --- Procedural Chiptune Music Sequencer (Zero external dependencies) ---
+const NOTE_FREQ = {
+    C2: 65.41, D2: 73.42, E2: 82.41, F2: 87.31, G2: 98.00, A2: 110.00, B2: 123.47,
+    C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
+    C4: 261.63, D4: 293.66, Eb4: 311.13, E4: 329.63, F4: 349.23, Fs4: 369.99, G4: 392.00, Gs4: 415.30, A4: 440.00, Bb4: 466.16, B4: 493.88,
+    C5: 523.25, D5: 587.33, Eb5: 622.25, E5: 659.25, F5: 698.46, Fs5: 739.99, G5: 783.99, A5: 880.00, B5: 987.77,
+    C6: 1046.50
+};
+
+const CHIPTUNE_TRACKS = {
+    stage1: {
+        bpm: 134,
+        leadWave: 'square',
+        lead: [
+            'E5', null, 'G5', null, 'A5', null, 'G5', 'E5',
+            'D5', null, 'E5', 'G5', 'E5', null, 'C5', null,
+            'F5', null, 'A5', null, 'G5', null, 'E5', 'D5',
+            'C5', null, 'D5', 'E5', 'G5', null, null, null
+        ],
+        bass: [
+            'C3', 'C3', 'G3', 'C3', 'A2', 'A2', 'E3', 'A2',
+            'F2', 'F2', 'C3', 'F2', 'G2', 'G2', 'D3', 'G2',
+            'C3', 'C3', 'G3', 'C3', 'A2', 'A2', 'E3', 'A2',
+            'F2', 'F2', 'G2', 'G2', 'C3', null, 'G2', null
+        ]
+    },
+    stage2: {
+        bpm: 142,
+        leadWave: 'sawtooth',
+        lead: [
+            'D5', null, 'F5', 'A5', 'G5', null, 'F5', 'D5',
+            'C5', null, 'E5', 'G5', 'F5', null, 'E5', null,
+            'Bb4', null, 'D5', 'F5', 'A5', null, 'G5', 'F5',
+            'E5', 'F5', 'G5', 'A5', 'D5', null, null, null
+        ],
+        bass: [
+            'D2', 'D3', 'D2', 'D3', 'D2', 'D3', 'A2', 'D3',
+            'C2', 'C3', 'C2', 'C3', 'F2', 'F3', 'C3', 'A2',
+            'B2', 'B2', 'F2', 'B2', 'G2', 'G2', 'D3', 'G2',
+            'A2', 'A2', 'E3', 'A2', 'D2', null, 'A2', null
+        ]
+    },
+    stage3: {
+        bpm: 150,
+        leadWave: 'square',
+        lead: [
+            'E5', 'B4', 'G5', 'B4', 'Fs5', 'B4', 'E5', 'D5',
+            'C5', 'G4', 'E5', 'G4', 'D5', 'A4', 'Fs5', 'D5',
+            'E5', 'B4', 'G5', 'A5', 'B5', null, 'G5', 'E5',
+            'Fs5', 'E5', 'D5', 'B4', 'E5', null, null, null
+        ],
+        bass: [
+            'E2', 'E3', 'E2', 'E3', 'D2', 'D3', 'D2', 'D3',
+            'C2', 'C3', 'C2', 'C3', 'B2', 'B2', 'D3', 'B2',
+            'E2', 'E3', 'E2', 'E3', 'G2', 'G3', 'E3', 'G2',
+            'B2', 'B2', 'Fs4', 'B2', 'E2', null, 'B2', null
+        ]
+    },
+    boss: {
+        bpm: 162,
+        leadWave: 'sawtooth',
+        lead: [
+            'E5', 'E5', null, 'G5', 'Fs5', 'E5', 'Eb5', 'E5',
+            'C5', 'C5', null, 'E5', 'D5', 'C5', 'B4', null,
+            'A4', 'C5', 'E5', 'A5', 'G5', 'Fs5', 'E5', 'D5',
+            'B4', 'Eb5', 'Fs5', 'B5', 'E5', null, 'B4', null
+        ],
+        bass: [
+            'E2', 'E2', 'E3', 'E2', 'E2', 'E2', 'G2', 'B2',
+            'C2', 'C2', 'C3', 'C2', 'B2', 'B2', 'G2', 'Fs4',
+            'A2', 'A2', 'E3', 'A2', 'D2', 'D2', 'A2', 'D2',
+            'B2', 'B2', 'Eb4', 'B2', 'E2', 'E2', 'B2', null
+        ]
+    }
+};
+
 class BGMController {
     constructor() {
-        this.audio = new Audio('bgm.ogg');
-        this.audio.loop = true;
-        this.audio.volume = 0.25;
+        this.currentTrack = 'stage1';
         this.isPlaying = false;
+        this.step = 0;
+        this.timerId = null;
+        this.ctx = null;
+    }
+
+    setContext(ctx) {
+        this.ctx = ctx;
+    }
+
+    setTrack(trackName) {
+        if (!CHIPTUNE_TRACKS[trackName]) trackName = 'stage1';
+        if (this.currentTrack === trackName) return;
+        this.currentTrack = trackName;
+        this.step = 0;
+        if (this.isPlaying) {
+            this.restartLoop();
+        }
     }
 
     start() {
-        if (this.isPlaying) return;
+        if (this.isPlaying || !this.ctx) return;
         this.isPlaying = true;
-        this.audio.play().catch(err => {
-            console.log("Play deferred or bgm.ogg not found.", err);
-            this.isPlaying = false;
-            const btn = document.getElementById('bgm-toggle');
-            if (btn) {
-                btn.innerText = '🎵 Music: Off';
-                btn.classList.remove('active');
-            }
-        });
+        this.step = 0;
+        this.restartLoop();
     }
 
     stop() {
         this.isPlaying = false;
-        this.audio.pause();
+        if (this.timerId) {
+            clearInterval(this.timerId);
+            this.timerId = null;
+        }
+    }
+
+    restartLoop() {
+        if (this.timerId) {
+            clearInterval(this.timerId);
+            this.timerId = null;
+        }
+        const track = CHIPTUNE_TRACKS[this.currentTrack];
+        const stepMs = (60 / track.bpm / 2) * 1000; // 8th-note grid
+        this.playStep();
+        this.timerId = setInterval(() => this.playStep(), stepMs);
+    }
+
+    playTone(freq, duration, type, volume) {
+        if (!this.ctx || !freq) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration);
+    }
+
+    playDrum(isKick) {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        if (isKick) {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(135, now);
+            osc.frequency.exponentialRampToValueAtTime(38, now + 0.09);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.09);
+        } else {
+            // Crisp short hi-hat tick
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(980, now);
+            gain.gain.setValueAtTime(0.012, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.025);
+        }
+    }
+
+    playStep() {
+        if (!this.isPlaying || !this.ctx || this.ctx.state !== 'running') return;
+        const track = CHIPTUNE_TRACKS[this.currentTrack];
+        const idx = this.step % track.lead.length;
+        const stepSec = 60 / track.bpm / 2;
+
+        const leadNote = track.lead[idx];
+        const bassNote = track.bass[idx];
+
+        if (leadNote && NOTE_FREQ[leadNote]) {
+            this.playTone(NOTE_FREQ[leadNote], stepSec * 0.85, track.leadWave, 0.032);
+        }
+        if (bassNote && NOTE_FREQ[bassNote]) {
+            this.playTone(NOTE_FREQ[bassNote], stepSec * 0.9, 'triangle', 0.055);
+        }
+
+        if (idx % 4 === 0) {
+            this.playDrum(true);
+        } else if (idx % 2 === 1) {
+            this.playDrum(false);
+        }
+
+        this.step++;
     }
 }
 
@@ -121,13 +449,15 @@ class SoundManager {
     constructor() {
         this.ctx = null;
         this.soundEnabled = true;
-        this.bgmEnabled = false;
+        this.bgmEnabled = true;
+        this.voiceEnabled = true;
         this.bgmController = new BGMController();
     }
 
     init() {
         if (!this.ctx) {
             this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            this.bgmController.setContext(this.ctx);
         }
         if (this.ctx.state === 'suspended') {
             this.ctx.resume();
@@ -164,14 +494,48 @@ class SoundManager {
         btn.blur();
     }
 
+    toggleVoice() {
+        this.voiceEnabled = !this.voiceEnabled;
+        const btn = document.getElementById('voice-toggle');
+        if (this.voiceEnabled) {
+            btn.innerText = '🗣️ Voice: On';
+            btn.classList.add('active');
+        } else {
+            btn.innerText = '🔇 Voice: Off';
+            btn.classList.remove('active');
+            this.stopSpeech();
+        }
+        btn.blur();
+    }
+
+    speakWord(word, force = false) {
+        if ((!this.voiceEnabled && !force) || !('speechSynthesis' in window) || !word) return;
+        try {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(word);
+            utter.lang = 'en-US';
+            utter.rate = 0.95;
+            utter.pitch = 1.05;
+            utter.volume = 1.0;
+            window.speechSynthesis.speak(utter);
+        } catch {
+            // Ignore speech synthesis errors on restricted environments
+        }
+    }
+
+    stopSpeech() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+    }
+
     playLaser() {
         if (!this.soundEnabled) return;
         this.init();
-        
+
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 
-        // Laser "pew" frequency sweep
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(880, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(110, this.ctx.currentTime + 0.12);
@@ -189,12 +553,11 @@ class SoundManager {
     playExplosion() {
         if (!this.soundEnabled) return;
         this.init();
-        
-        // Synthesizing a low explosive rumble with bandpassed noise
-        const bufferSize = this.ctx.sampleRate * 0.4; // 0.4s
+
+        const bufferSize = this.ctx.sampleRate * 0.4;
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
-        
+
         for (let i = 0; i < bufferSize; i++) {
             data[i] = Math.random() * 2 - 1;
         }
@@ -229,9 +592,9 @@ class SoundManager {
 
         osc1.type = 'sawtooth';
         osc2.type = 'sawtooth';
-        
+
         osc1.frequency.setValueAtTime(130, this.ctx.currentTime);
-        osc2.frequency.setValueAtTime(127, this.ctx.currentTime); // detuned low buzz
+        osc2.frequency.setValueAtTime(127, this.ctx.currentTime);
 
         gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
@@ -242,7 +605,7 @@ class SoundManager {
 
         osc1.start();
         osc2.start();
-        
+
         osc1.stop(this.ctx.currentTime + 0.3);
         osc2.stop(this.ctx.currentTime + 0.3);
     }
@@ -250,11 +613,10 @@ class SoundManager {
     playShieldUp() {
         if (!this.soundEnabled) return;
         this.init();
-        
+
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 
-        // High sweeping chime for shield online
         osc.type = 'sine';
         osc.frequency.setValueAtTime(220, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.35);
@@ -273,11 +635,10 @@ class SoundManager {
     playShieldDown() {
         if (!this.soundEnabled) return;
         this.init();
-        
+
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 
-        // Low buzz + crash noise
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(350, this.ctx.currentTime);
         osc.frequency.linearRampToValueAtTime(60, this.ctx.currentTime + 0.25);
@@ -304,7 +665,7 @@ class SoundManager {
 
         osc.start();
         noiseNode.start();
-        
+
         osc.stop(this.ctx.currentTime + 0.25);
         noiseNode.stop(this.ctx.currentTime + 0.25);
     }
@@ -313,10 +674,9 @@ class SoundManager {
         if (!this.soundEnabled) return;
         this.init();
 
-        // Rapid series of 3 short ascending chime tones
         const time = this.ctx.currentTime;
-        const freqs = [523.25, 659.25, 783.99]; // C5, E5, G5
-        
+        const freqs = [523.25, 659.25, 783.99];
+
         freqs.forEach((freq, idx) => {
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
@@ -334,49 +694,145 @@ class SoundManager {
             osc.stop(time + idx * 0.08 + 0.15);
         });
     }
+
+    playUnlock() {
+        if (!this.soundEnabled) return;
+        this.init();
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(420, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(240, this.ctx.currentTime + 0.09);
+
+        gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.09);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.09);
+    }
 }
 
 const sounds = new SoundManager();
 
 // --- Core Game Functions ---
 
+function clearBossTimers() {
+    if (bossClearInterval) {
+        clearInterval(bossClearInterval);
+        bossClearInterval = null;
+    }
+    if (bossBombTimeout) {
+        clearTimeout(bossBombTimeout);
+        bossBombTimeout = null;
+    }
+    if (bossEscortInterval) {
+        clearInterval(bossEscortInterval);
+        bossEscortInterval = null;
+    }
+}
+
+function clearEmpTimer() {
+    if (empTimeout) {
+        clearTimeout(empTimeout);
+        empTimeout = null;
+    }
+    empActive = false;
+    empHud.style.display = 'none';
+    gameArea.classList.remove('emp-active');
+}
+
+function getCurrentStageConfig() {
+    return STAGES[(stage - 1) % STAGES.length];
+}
+
+function applyStageTheme(showBanner = false) {
+    const cfg = getCurrentStageConfig();
+    gameArea.classList.remove('stage-1', 'stage-2', 'stage-3');
+    gameArea.classList.add(cfg.cssClass);
+    stageVal.innerText = stage;
+    sounds.bgmController.setTrack(cfg.track);
+
+    if (showBanner) {
+        const cycleNote = stage > STAGES.length ? ` (LOOP ${Math.ceil(stage / STAGES.length)})` : '';
+        stageBanner.innerText = `${cfg.name}${cycleNote}`;
+        stageBanner.classList.add('active');
+        setTimeout(() => stageBanner.classList.remove('active'), 2200);
+    }
+}
+
 function startGame() {
+    clearBossTimers();
+    clearEmpTimer();
+    sounds.stopSpeech();
+
     score = 0;
-    lives = 3;
+    lives = MAX_LIVES;
     totalTyped = 0;
     errors = 0;
-    startTime = new Date();
+    startTime = Date.now();
+    pausedAt = null;
+    totalPausedMs = 0;
     targetedWord = null;
     words = [];
-    baseSpeed = 1.0;
-    currentSpawnDelay = 2200;
+    wordMistakes = new Map();
+
+    // Load difficulty preset
+    activeDifficulty = DIFFICULTY_PRESETS[difficultySelect.value] || DIFFICULTY_PRESETS.normal;
+    baseSpeed = activeDifficulty.baseSpeed;
+    currentSpawnDelay = activeDifficulty.spawnDelay;
     gameActive = true;
-    
+
     // Choose active vocabulary pool based on start-screen selector
-    const selectedVocab = vocabSelect.value;
-    if (selectedVocab === 'grade3') {
+    activeSector = vocabSelect.value;
+    if (activeSector === 'grade3') {
         activeDictionary = lausdGrade3;
-    } else if (selectedVocab === 'grade4') {
+    } else if (activeSector === 'grade4') {
         activeDictionary = lausdGrade4;
     } else {
         activeDictionary = scifiDictionary;
     }
 
-    // Reset Goal 2: Shield state
+    // Reset Shield state
     shieldActive = false;
     playerShield.className = '';
 
-    // Reset Goal 4: Combo state
+    // Reset Combo state
     comboStreak = 0;
     scoreMultiplier = 1.0;
     comboHud.className = 'hud-item';
     comboHud.style.opacity = '0';
     comboHud.style.transform = 'scale(0.8)';
 
-    // Reset Boss Battle state
+    // Reset Stage, Wave & Boss state
+    stage = 1;
+    wave = 1;
+    nextSpeedMilestone = 150;
     bossActive = false;
-    lastBossMilestone = 0;
-    enemyBoss.classList.remove('active');
+    bossBattleStarted = false;
+    bossLevel = 0;
+    bossX = 50;
+    bossDir = 1;
+    bossEnraged = false;
+    bossShielded = false;
+    bossShieldUsed = false;
+    bossCharge = 0;
+    bossChargeBar.style.width = '0%';
+    nextBossScore = 1000;
+    enemyBoss.classList.remove('active', 'bank-left', 'bank-right', 'boss-hit', 'boss-enraged', 'boss-shielded', 'boss-stage-1', 'boss-stage-2', 'boss-stage-3', 'boss-blink');
+    bossNameLabel.innerText = '';
+    bossChargeContainer.classList.add('hidden');
+    enemyBoss.style.left = '50%';
+    stageBanner.classList.remove('active');
+
+    applyStageTheme(true);
+    if (sounds.bgmEnabled) {
+        sounds.bgmController.start();
+    }
 
     // Reset Pause state
     gamePaused = false;
@@ -384,7 +840,9 @@ function startGame() {
 
     // Reset HUD
     scoreVal.innerText = "0";
+    waveVal.innerText = "1";
     wpmVal.innerText = "0";
+    accVal.innerText = "100%";
     updateLivesUI();
 
     // Clear containers
@@ -401,64 +859,82 @@ function startGame() {
 
     // Start Spawner and Loop
     if (spawnInterval) clearInterval(spawnInterval);
+    spawnWord();
     spawnInterval = setInterval(spawnWord, currentSpawnDelay);
-    
+
     if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    lastFrameTime = performance.now();
     animationFrameId = requestAnimationFrame(gameLoop);
+}
+
+function pickNextWord() {
+    const activeFirstLetters = words.map(w => w.word[0].toLowerCase());
+    const activeWordsSet = new Set(words.map(w => w.word));
+
+    // Spaced repetition: 35% chance to replay a struggled word if any exist
+    if (wordMistakes.size > 0 && Math.random() < 0.35) {
+        const struggled = Array.from(wordMistakes.keys()).filter(
+            w => !activeWordsSet.has(w) && !activeFirstLetters.includes(w[0].toLowerCase())
+        );
+        if (struggled.length > 0) {
+            return struggled[Math.floor(Math.random() * struggled.length)];
+        }
+    }
+
+    const available = activeDictionary.filter(w => !activeFirstLetters.includes(w[0].toLowerCase()));
+    const pool = available.length > 0 ? available : activeDictionary;
+    return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function choosePowerUp() {
+    const roll = Math.random();
+    if (roll < 0.12) return 'shield';
+    if (roll < 0.22) return 'emp';
+    if (lives < MAX_LIVES && roll < 0.30) return 'heal';
+    return 'none';
 }
 
 function spawnWord() {
     if (!gameActive || bossActive || gamePaused) return;
 
-    const randomIndex = Math.floor(Math.random() * activeDictionary.length);
-    const text = activeDictionary[randomIndex];
-    
-    // Choose starting letter that isn't already spawned to avoid instant collision in lock-on
-    const activeFirstLetters = words.map(w => w.word[0]);
-    let wordText = text;
-    if (activeFirstLetters.includes(text[0])) {
-        // Find alternative
-        const alternatives = activeDictionary.filter(w => !activeFirstLetters.includes(w[0]));
-        if (alternatives.length > 0) {
-            wordText = alternatives[Math.floor(Math.random() * alternatives.length)];
-        }
-    }
-
+    const wordText = pickNextWord();
     const id = wordIdCounter++;
-    const xPercent = 10 + Math.random() * 80; // 10% to 90%
-    const yPx = -40; // Spawn off screen top (increased for ships)
+    const xPercent = 10 + Math.random() * 80;
+    const yPx = -40;
 
     const element = document.createElement('div');
     element.className = 'enemy-word';
     element.style.left = `${xPercent}%`;
     element.style.top = `${yPx}px`;
 
-    // Goal 2: 20% chance to designate as a Shield Word
-    const isShieldWord = Math.random() < 0.20;
+    const powerUp = choosePowerUp();
 
-    // Goal 3: Determine ship class and structural HTML based on word length
+    const stageCfg = getCurrentStageConfig();
     let shipClass = 'ship-scout';
-    let shipHTML = '<div class="enemy-ship scout"><div class="thruster-glow-down"></div></div>';
-    
+    let shipHTML = stageCfg.enemies.scout;
+
     if (wordText.length > 5 && wordText.length <= 8) {
         shipClass = 'ship-fighter';
-        shipHTML = '<div class="enemy-ship fighter"><div class="thruster-glow-down"></div></div>';
+        shipHTML = stageCfg.enemies.fighter;
     } else if (wordText.length > 8) {
         shipClass = 'ship-elite';
-        shipHTML = '<div class="enemy-ship elite"><div class="enemy-ship-body"></div><div class="enemy-ship-wings"></div><div class="thruster-glow-down"></div></div>';
+        shipHTML = stageCfg.enemies.elite;
     }
-    
+
     element.classList.add(shipClass);
 
-    // Set up nested inner HTML
     let innerHTML = shipHTML;
-    
-    if (isShieldWord) {
+    if (powerUp === 'shield') {
         element.classList.add('shield-word');
         innerHTML += '<span class="shield-icon">🛡️ </span>';
+    } else if (powerUp === 'emp') {
+        element.classList.add('emp-word');
+        innerHTML += '<span class="powerup-icon">❄️ </span>';
+    } else if (powerUp === 'heal') {
+        element.classList.add('heal-word');
+        innerHTML += '<span class="powerup-icon">❤️ </span>';
     }
 
-    // Wrap word text inside a HUD banner
     innerHTML += '<div class="word-text-wrapper">';
     wordText.split('').forEach(char => {
         innerHTML += `<span class="untyped">${char}</span>`;
@@ -468,7 +944,7 @@ function spawnWord() {
     element.innerHTML = innerHTML;
     wordsContainer.appendChild(element);
 
-    const speed = baseSpeed + Math.random() * 0.4; // slight speed variance
+    const speed = baseSpeed + Math.random() * 0.35;
 
     words.push({
         id: id,
@@ -478,67 +954,99 @@ function spawnWord() {
         y: yPx,
         typedCount: 0,
         speed: speed,
-        isShield: isShieldWord,
+        powerUp: powerUp,
         isBossBomb: false
     });
+}
 
-    // Scale difficulty gradually (only if no boss active)
-    if (score > 0 && score % 100 === 0) {
-        baseSpeed += 0.05;
-        scaleSpawnRate();
+function checkDifficultyProgression() {
+    if (bossActive) return;
+
+    while (score >= nextSpeedMilestone) {
+        wave++;
+        waveVal.innerText = wave;
+        baseSpeed += activeDifficulty.speedStep;
+        currentSpawnDelay = Math.max(activeDifficulty.minSpawnDelay, currentSpawnDelay - activeDifficulty.delayStep);
+        clearInterval(spawnInterval);
+        spawnInterval = setInterval(spawnWord, currentSpawnDelay);
+        nextSpeedMilestone += 150 + wave * 25;
     }
 }
 
-function scaleSpawnRate() {
-    if (bossActive) return;
-    currentSpawnDelay = Math.max(1200, currentSpawnDelay - 100);
-    clearInterval(spawnInterval);
-    spawnInterval = setInterval(spawnWord, currentSpawnDelay);
-}
-
-function gameLoop() {
+function gameLoop(timestamp) {
     if (!gameActive || gamePaused) return;
 
+    const dt = lastFrameTime ? Math.min((timestamp - lastFrameTime) / 16.667, 3) : 1;
+    lastFrameTime = timestamp;
+
+    const speedFactor = empActive ? 0.45 : 1.0;
     const areaHeight = gameArea.clientHeight;
-    // Word hits bottom threshold (approx. plane position)
     const hitThreshold = areaHeight - 80;
+
+    // Smooth horizontal Boss patrol & Mega Beam charge
+    if (bossActive && bossHp > 0) {
+        const patrolSpeed = (0.24 + Math.min(bossLevel * 0.04, 0.16)) * (bossEnraged ? 1.55 : 1.0) * speedFactor * dt;
+        bossX += bossDir * patrolSpeed;
+        if (bossX >= 78) {
+            bossX = 78;
+            bossDir = -1;
+        } else if (bossX <= 22) {
+            bossX = 22;
+            bossDir = 1;
+        }
+        enemyBoss.style.left = `${bossX}%`;
+        enemyBoss.classList.toggle('bank-left', bossDir < 0);
+        enemyBoss.classList.toggle('bank-right', bossDir > 0);
+
+        if (bossBattleStarted && activeBossConfig.hasMegaBeam) {
+            const chargeMs = activeDifficulty.bossChargeMs || 12000;
+            bossCharge += ((16.667 * dt) / chargeMs) * activeBossConfig.chargeMult * speedFactor;
+            bossChargeBar.style.width = `${Math.min(100, bossCharge * 100)}%`;
+            if (bossCharge >= 1) {
+                fireBossMegaBeam();
+            }
+        }
+    }
 
     for (let i = words.length - 1; i >= 0; i--) {
         const w = words[i];
-        w.y += w.speed;
+        w.y += w.speed * speedFactor * dt;
         w.element.style.top = `${w.y}px`;
 
         if (w.y >= hitThreshold) {
             const wasBossBomb = w.isBossBomb;
+            const wasShieldBreaker = w.isShieldBreaker;
+            recordWordMistake(w.word);
 
-            // Remove word
             w.element.remove();
             words.splice(i, 1);
 
-            // Breach reset combo streak
             resetCombo();
 
-            // Handle hit: shield active vs shield inactive
             if (shieldActive) {
                 shatterShield();
             } else {
                 playerTakeHit();
             }
 
-            // If we just lost our active target, reset target
             if (targetedWord && targetedWord.id === w.id) {
                 targetedWord = null;
                 updatePlanePosition();
             }
 
-            // If the boss bomb breached, let the boss spawn another after a short delay
-            if (wasBossBomb && bossActive && bossHp > 0) {
-                setTimeout(spawnBossBomb, 1500);
+            if (wasShieldBreaker && bossActive && bossShielded && bossHp > 0) {
+                bossBombTimeout = setTimeout(spawnBossShieldBreaker, 1500);
+            } else if (wasBossBomb && bossActive && !bossShielded && bossHp > 0 && words.filter(item => item.isBossBomb).length === 0) {
+                bossBombTimeout = setTimeout(spawnBossSalvo, 1500);
             }
         }
     }
 
     animationFrameId = requestAnimationFrame(gameLoop);
+}
+
+function recordWordMistake(word) {
+    wordMistakes.set(word, (wordMistakes.get(word) || 0) + 1);
 }
 
 function playerTakeHit() {
@@ -547,7 +1055,6 @@ function playerTakeHit() {
     updateLivesUI();
     triggerScreenShake();
 
-    // Flash screen red
     gameArea.classList.add('screen-hit');
     setTimeout(() => {
         gameArea.classList.remove('screen-hit');
@@ -562,8 +1069,7 @@ function shatterShield() {
     shieldActive = false;
     sounds.playShieldDown();
     triggerScreenShake();
-    
-    // Trigger CSS shatter animation
+
     playerShield.className = 'shattering';
     setTimeout(() => {
         playerShield.className = '';
@@ -573,8 +1079,27 @@ function shatterShield() {
 function activateShield() {
     shieldActive = true;
     sounds.playShieldUp();
-    
     playerShield.className = 'active';
+}
+
+function activateEmp() {
+    clearEmpTimer();
+    empActive = true;
+    empHud.style.display = 'block';
+    gameArea.classList.add('emp-active');
+    sounds.playShieldUp();
+
+    empTimeout = setTimeout(() => {
+        clearEmpTimer();
+    }, 5000);
+}
+
+function activateHeal() {
+    if (lives < MAX_LIVES) {
+        lives++;
+        updateLivesUI();
+        sounds.playComboUp();
+    }
 }
 
 function triggerScreenShake() {
@@ -601,52 +1126,84 @@ function togglePause() {
     gamePaused = !gamePaused;
 
     if (gamePaused) {
+        pausedAt = Date.now();
+        sounds.stopSpeech();
         pauseScreen.classList.add('active');
         clearInterval(spawnInterval);
         if (sounds.bgmEnabled) {
-            sounds.bgmController.audio.pause();
+            sounds.bgmController.stop();
         }
     } else {
+        if (pausedAt) {
+            totalPausedMs += Date.now() - pausedAt;
+            pausedAt = null;
+        }
         pauseScreen.classList.remove('active');
         if (sounds.bgmEnabled) {
-            sounds.bgmController.audio.play().catch(e => console.log(e));
+            sounds.bgmController.start();
         }
         if (!bossActive) {
             spawnInterval = setInterval(spawnWord, currentSpawnDelay);
         }
+        lastFrameTime = performance.now();
         animationFrameId = requestAnimationFrame(gameLoop);
     }
 }
 
+function unlockTarget() {
+    if (!targetedWord) return;
+    targetedWord.element.classList.remove('targeted');
+    targetedWord = null;
+    updatePlanePosition();
+    sounds.playUnlock();
+}
+
+function pulseNextExpectedHint() {
+    if (!targetedWord) return;
+    const spans = targetedWord.element.querySelectorAll('.word-text-wrapper span');
+    const nextSpan = spans[targetedWord.typedCount];
+    if (!nextSpan) return;
+    nextSpan.classList.remove('hint-pulse');
+    void nextSpan.offsetWidth; // trigger reflow for repeated mistypes
+    nextSpan.classList.add('hint-pulse');
+    setTimeout(() => nextSpan.classList.remove('hint-pulse'), 450);
+}
+
 function handleKeyPress(e) {
     if (!gameActive) return;
-    
-    // Pause key triggers (Escape only to avoid conflicts with typing 'p')
+
     if (e.key === 'Escape') {
         e.preventDefault();
         togglePause();
         return;
     }
 
-    if (gamePaused) return; // ignore all other keypresses when paused
-    if (e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt') return;
+    if (gamePaused) return;
+
+    // Allow Tab or Backspace to switch/unlock targets without penalty
+    if (e.key === 'Tab' || e.key === 'Backspace') {
+        e.preventDefault();
+        unlockTarget();
+        return;
+    }
+
+    // Ignore modifier, navigation, and non-letter keys
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key.length !== 1 || !/^[a-z]$/i.test(e.key)) return;
 
     sounds.init();
-
-    // Prevent scrolling
-    if (e.key === ' ') {
-        e.preventDefault();
-    }
 
     const typedChar = e.key.toLowerCase();
     totalTyped++;
 
     if (!targetedWord) {
-        // Attempt to lock onto a new target starting with this letter
-        const match = words.find(w => w.word[0].toLowerCase() === typedChar);
-        if (match) {
-            targetedWord = match;
+        // Lock onto the lowest matching word (closest to breaching)
+        const matches = words.filter(w => w.word[0].toLowerCase() === typedChar);
+        if (matches.length > 0) {
+            matches.sort((a, b) => b.y - a.y);
+            targetedWord = matches[0];
             targetedWord.element.classList.add('targeted');
+            sounds.speakWord(targetedWord.word);
             processCorrectChar();
         } else {
             resetCombo();
@@ -654,11 +1211,12 @@ function handleKeyPress(e) {
             errors++;
         }
     } else {
-        // Locked target active, compare key with next untyped letter
         const targetChar = targetedWord.word[targetedWord.typedCount].toLowerCase();
         if (typedChar === targetChar) {
             processCorrectChar();
         } else {
+            recordWordMistake(targetedWord.word);
+            pulseNextExpectedHint();
             resetCombo();
             triggerScreenShake();
             errors++;
@@ -669,24 +1227,17 @@ function handleKeyPress(e) {
 }
 
 function processCorrectChar() {
-    // Select spans ignoring the shield-icon to match index accurately
-    const spans = targetedWord.element.querySelectorAll('span:not(.shield-icon)');
+    const spans = targetedWord.element.querySelectorAll('.word-text-wrapper span');
     spans[targetedWord.typedCount].className = 'typed';
-    
-    targetedWord.typedCount++;
 
-    // Increment combo streak!
+    targetedWord.typedCount++;
     incrementCombo();
 
-    // Fire laser from plane nose to the targeted word
     sounds.playLaser();
     fireLaser(targetedWord.element);
-
-    // Dynamic plane tracking
     updatePlanePosition();
 
     if (targetedWord.typedCount >= targetedWord.word.length) {
-        // Word complete, destroy it!
         destroyTarget();
     }
 }
@@ -696,51 +1247,82 @@ function fireLaser(wordElement) {
     const planeRect = playerPlane.getBoundingClientRect();
     const wordRect = wordElement.getBoundingClientRect();
 
-    // Plane nose coordinates relative to game area
     const x1 = (planeRect.left + planeRect.width / 2) - areaRect.left;
-    const y1 = planeRect.top - areaRect.top;
+    const y1 = planeRect.top - areaRect.top + 6;
 
-    // Word target coordinates relative to game area
     const x2 = (wordRect.left + wordRect.width / 2) - areaRect.left;
     const y2 = (wordRect.top + wordRect.height / 2) - areaRect.top;
 
-    // Draw laser beam
     const dx = x2 - x1;
     const dy = y2 - y1;
-    const distance = Math.sqrt(dx * dx + dy * dy);
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
-    const laser = document.createElement('div');
-    
-    // Goal 4: Assign dynamic laser classes based on multiplier strength
-    let laserMultClass = 'mult-1';
-    if (scoreMultiplier === 1.5) laserMultClass = 'mult-1-5';
-    else if (scoreMultiplier === 2.0) laserMultClass = 'mult-2';
-    else if (scoreMultiplier === 3.0) laserMultClass = 'mult-3';
-    else if (scoreMultiplier === 5.0) laserMultClass = 'mult-5';
+    let boltMultClass = 'mult-1';
+    if (scoreMultiplier === 1.5) boltMultClass = 'mult-1-5';
+    else if (scoreMultiplier === 2.0) boltMultClass = 'mult-2';
+    else if (scoreMultiplier === 3.0) boltMultClass = 'mult-3';
+    else if (scoreMultiplier === 5.0) boltMultClass = 'mult-5';
 
-    laser.className = `laser ${laserMultClass}`;
-    laser.style.width = `${distance}px`;
-    laser.style.left = `${x1}px`;
-    laser.style.top = `${y1}px`;
-    laser.style.transform = `rotate(${angle}deg)`;
+    // Muzzle flash at plane nose
+    const muzzle = document.createElement('div');
+    muzzle.className = 'muzzle-flash';
+    muzzle.style.left = `${x1}px`;
+    muzzle.style.top = `${y1}px`;
+    lasersContainer.appendChild(muzzle);
+    setTimeout(() => muzzle.remove(), 110);
 
-    lasersContainer.appendChild(laser);
-    setTimeout(() => laser.remove(), 120);
+    // Traveling plasma bolt from plane nose to target
+    const bolt = document.createElement('div');
+    bolt.className = `plasma-bolt ${boltMultClass}`;
+    bolt.style.left = `${x1}px`;
+    bolt.style.top = `${y1}px`;
+    bolt.style.setProperty('--tx', `${dx}px`);
+    bolt.style.setProperty('--ty', `${dy}px`);
+    bolt.style.setProperty('--angle', `${angle}deg`);
+    lasersContainer.appendChild(bolt);
+    setTimeout(() => bolt.remove(), 115);
+
+    // Impact spark when bolt lands
+    setTimeout(() => {
+        const spark = document.createElement('div');
+        spark.className = 'impact-spark';
+        spark.style.left = `${x2}px`;
+        spark.style.top = `${y2}px`;
+        lasersContainer.appendChild(spark);
+        setTimeout(() => spark.remove(), 160);
+    }, 85);
 }
 
+let planeBankTimeout = null;
 function updatePlanePosition() {
-    if (targetedWord) {
-        playerPlane.style.left = `${targetedWord.x}%`;
-    } else {
-        playerPlane.style.left = '50%';
+    const currentLeft = parseFloat(playerPlane.style.left) || 50;
+    const targetLeft = targetedWord ? targetedWord.x : 50;
+
+    playerPlane.classList.remove('bank-left', 'bank-right');
+    if (Math.abs(targetLeft - currentLeft) > 3) {
+        playerPlane.classList.add(targetLeft < currentLeft ? 'bank-left' : 'bank-right');
+        if (planeBankTimeout) clearTimeout(planeBankTimeout);
+        planeBankTimeout = setTimeout(() => {
+            playerPlane.classList.remove('bank-left', 'bank-right');
+        }, 220);
     }
+
+    playerPlane.style.left = `${targetLeft}%`;
+}
+
+function spawnFloatingText(x, y, text, isPowerup = false) {
+    const el = document.createElement('div');
+    el.className = isPowerup ? 'floating-text powerup' : 'floating-text';
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+    el.innerText = text;
+    explosionsContainer.appendChild(el);
+    setTimeout(() => el.remove(), 850);
 }
 
 function destroyTarget() {
     sounds.playExplosion();
 
-    // Get pixel coordinates of destroyed word for explosion burst
     const areaRect = gameArea.getBoundingClientRect();
     const wordRect = targetedWord.element.getBoundingClientRect();
     const x = (wordRect.left + wordRect.width / 2) - areaRect.left;
@@ -748,53 +1330,117 @@ function destroyTarget() {
 
     createExplosion(x, y);
 
-    // Goal 2: If we completed a Shield Word, activate the player's shield!
-    if (targetedWord.isShield) {
+    if (targetedWord.powerUp === 'shield') {
         activateShield();
+        spawnFloatingText(x, y - 22, '🛡️ SHIELD UP!', true);
+    } else if (targetedWord.powerUp === 'emp') {
+        activateEmp();
+        spawnFloatingText(x, y - 22, '❄️ SLOW-MO!', true);
+    } else if (targetedWord.powerUp === 'heal') {
+        activateHeal();
+        spawnFloatingText(x, y - 22, '❤️ +1 LIFE!', true);
     }
 
     const wasBossBomb = targetedWord.isBossBomb;
+    const wasShieldBreaker = targetedWord.isShieldBreaker;
+    const pointsGained = Math.round(targetedWord.word.length * 10 * scoreMultiplier);
+    spawnFloatingText(x, y, `+${pointsGained}`);
 
-    // Remove targeted word
     targetedWord.element.remove();
     words = words.filter(w => w.id !== targetedWord.id);
-    
-    // Goal 4: Award score multiplied by current multiplier
-    const pointsGained = Math.round(targetedWord.word.length * 10 * scoreMultiplier);
+
     score += pointsGained;
     scoreVal.innerText = score;
 
     targetedWord = null;
     updatePlanePosition();
 
-    // --- Extra Goals: Boss Battle Logic ---
-    if (wasBossBomb && bossActive) {
-        // Fire secondary quantum blast from the bomb explosion center up to the boss core!
+    if (wasShieldBreaker && bossActive && bossShielded) {
         fireBossCoreLaser(x, y);
-        
-        bossHp--;
-        bossHealthBar.style.width = `${(bossHp / bossMaxHp) * 100}%`;
+        bossShielded = false;
+        bossCharge = 0;
+        bossChargeBar.style.width = '0%';
+        enemyBoss.classList.remove('boss-shielded');
+        sounds.playShieldDown();
+        const bossPos = getBossCenter();
+        spawnFloatingText(bossPos.x, bossPos.y + 45, '🔓 SHIELD BROKEN!', true);
+        bossBombTimeout = setTimeout(spawnBossSalvo, 1100);
+    } else if (wasBossBomb && bossActive) {
+        fireBossCoreLaser(x, y);
+        bossCharge = 0;
+        bossChargeBar.style.width = '0%';
+
+        if (!bossShielded) {
+            bossHp--;
+            bossHealthBar.style.width = `${Math.max(0, (bossHp / bossMaxHp) * 100)}%`;
+        }
+
+        // Hit flash & recoil
+        enemyBoss.classList.remove('boss-hit');
+        void enemyBoss.offsetWidth;
+        enemyBoss.classList.add('boss-hit');
+        setTimeout(() => enemyBoss.classList.remove('boss-hit'), 220);
+
+        // Stage 3 Void Dreadnought: blink to a new lane on hit
+        if (activeBossConfig.hasBlink && bossHp > 0) {
+            let nextX = 24 + Math.random() * 52;
+            if (Math.abs(nextX - bossX) < 18) {
+                nextX = bossX > 50 ? 25 + Math.random() * 15 : 60 + Math.random() * 15;
+            }
+            bossX = nextX;
+            enemyBoss.style.left = `${bossX}%`;
+            enemyBoss.classList.remove('boss-blink');
+            void enemyBoss.offsetWidth;
+            enemyBoss.classList.add('boss-blink');
+            setTimeout(() => enemyBoss.classList.remove('boss-blink'), 300);
+        }
+
+        // Enraged + optional Boss Shield Phase once when HP drops to 50% or below
+        if (!bossEnraged && bossHp > 0 && bossHp <= Math.ceil(bossMaxHp / 2)) {
+            bossEnraged = true;
+            enemyBoss.classList.add('boss-enraged');
+            const bossPos = getBossCenter();
+            spawnFloatingText(bossPos.x, bossPos.y + 45, '⚠️ BOSS ENRAGED!', true);
+
+            if (activeBossConfig.hasShieldPhase && !bossShieldUsed) {
+                bossShieldUsed = true;
+                bossShielded = true;
+                enemyBoss.classList.add('boss-shielded');
+                sounds.playShieldUp();
+                spawnFloatingText(bossPos.x, bossPos.y + 72, '🛡️ BOSS SHIELD UP!', true);
+                if (bossBombTimeout) clearTimeout(bossBombTimeout);
+                bossBombTimeout = setTimeout(spawnBossShieldBreaker, 1300);
+                return;
+            }
+        }
 
         if (bossHp <= 0) {
             defeatBoss();
-        } else {
-            // Spawn next bomb after a short delay
-            setTimeout(spawnBossBomb, 1500);
+        } else if (!bossShielded && words.filter(w => w.isBossBomb).length === 0) {
+            bossBombTimeout = setTimeout(spawnBossSalvo, bossEnraged ? 1100 : 1400);
         }
     } else if (!bossActive) {
-        // Trigger Boss Battle every 1000 points
-        const scoreMilestone = Math.floor(score / 1000);
-        if (scoreMilestone > lastBossMilestone) {
-            lastBossMilestone = scoreMilestone;
+        checkDifficultyProgression();
+
+        if (score >= nextBossScore) {
             triggerBossBattle();
         }
     }
 }
 
+function getBossCenter() {
+    const areaRect = gameArea.getBoundingClientRect();
+    const bossRect = enemyBoss.getBoundingClientRect();
+    return {
+        x: (bossRect.left + bossRect.width / 2) - areaRect.left,
+        y: (bossRect.top + bossRect.height / 2) - areaRect.top
+    };
+}
+
 function fireBossCoreLaser(startX, startY) {
-    // Boss core is at top center of game area
-    const endX = gameArea.clientWidth / 2;
-    const endY = 80; // approximate center Y of active boss
+    const bossCenter = getBossCenter();
+    const endX = bossCenter.x;
+    const endY = bossCenter.y;
 
     const dx = endX - startX;
     const dy = endY - startY;
@@ -802,7 +1448,7 @@ function fireBossCoreLaser(startX, startY) {
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
     const laser = document.createElement('div');
-    laser.className = 'laser mult-5'; // Massive heavy blast to the boss!
+    laser.className = 'boss-beam';
     laser.style.width = `${distance}px`;
     laser.style.left = `${startX}px`;
     laser.style.top = `${startY}px`;
@@ -811,57 +1457,69 @@ function fireBossCoreLaser(startX, startY) {
     lasersContainer.appendChild(laser);
     setTimeout(() => {
         laser.remove();
-        triggerScreenShake(); // shake screen when boss gets hit!
+        triggerScreenShake();
     }, 150);
 }
 
-function triggerBossBattle() {
-    bossActive = true;
-    bossHp = 5;
-    bossMaxHp = 5;
+function fireBossMegaBeam() {
+    bossCharge = 0;
+    bossChargeBar.style.width = '0%';
 
-    // Halt normal spawner
-    clearInterval(spawnInterval);
+    const bossCenter = getBossCenter();
+    const beam = document.createElement('div');
+    beam.className = 'boss-mega-beam';
+    beam.style.left = `${bossCenter.x}px`;
+    lasersContainer.appendChild(beam);
+    setTimeout(() => beam.remove(), 580);
 
-    // Slide boss mothership in!
-    enemyBoss.classList.add('active');
-    bossHealthBar.style.width = '100%';
-
-    // Shake screen dramatically on boss entrance
-    sounds.playHit();
+    sounds.playExplosion();
     triggerScreenShake();
-    setTimeout(triggerScreenShake, 300);
+    spawnFloatingText(bossCenter.x, bossCenter.y + 55, '⚡ MEGA BEAM!', true);
 
-    // Wait for existing normal words to clear before starting the assault
-    const checkClear = setInterval(() => {
-        if (words.length === 0) {
-            clearInterval(checkClear);
-            setTimeout(spawnBossBomb, 1800);
-        }
-    }, 200);
+    if (shieldActive) {
+        shatterShield();
+    } else {
+        playerTakeHit();
+    }
 }
 
-function spawnBossBomb() {
-    if (!bossActive || bossHp <= 0 || !gameActive || gamePaused) return;
+function spawnBossEscort() {
+    if (!bossActive || !bossBattleStarted || !activeBossConfig.hasEscorts || bossHp <= 0 || !gameActive || gamePaused) return;
+    if (activeBossConfig.escortsOnlyEnraged && !bossEnraged) return;
+    const currentEscorts = words.filter(w => w.isEscort).length;
+    if (currentEscorts >= activeBossConfig.maxEscorts) return;
+    if (Math.random() > 0.72) return;
 
-    // Pick a challenging medium/long word from the active pool
-    const bossDict = activeDictionary.filter(w => w.length >= 6);
-    const randomIndex = Math.floor(Math.random() * bossDict.length);
-    const wordText = bossDict.length > 0 ? bossDict[randomIndex] : activeDictionary[Math.floor(Math.random() * activeDictionary.length)];
+    const activeFirstLetters = words.map(w => w.word[0].toLowerCase());
+    const shortPool = activeDictionary.filter(w => w.length <= 6 && !activeFirstLetters.includes(w[0].toLowerCase()));
+    const fallbackPool = activeDictionary.filter(w => !activeFirstLetters.includes(w[0].toLowerCase()));
+    const pool = shortPool.length > 0 ? shortPool : (fallbackPool.length > 0 ? fallbackPool : activeDictionary);
+    const wordText = pool[Math.floor(Math.random() * pool.length)];
 
     const id = wordIdCounter++;
-    const xPercent = 50; // Descends directly from boss core center!
-    const yPx = 110; // Top coordinates under the boss cockpit
+    const wingOffset = Math.random() < 0.5 ? -16 : 16;
+    const xPercent = Math.max(12, Math.min(88, bossX + wingOffset));
+    const yPx = 115;
 
     const element = document.createElement('div');
-    element.className = 'enemy-word plasma-bomb'; // Custom plasma styling
+    element.className = 'enemy-word ship-scout';
     element.style.left = `${xPercent}%`;
     element.style.top = `${yPx}px`;
 
-    // Set up nested inner HTML (no standard ship, styled as a glowing projectile)
-    let innerHTML = '<div class="enemy-ship scout" style="background-color: var(--neon-red); box-shadow: 0 0 15px var(--neon-red);"><div class="thruster-glow-down"></div></div>';
-    
-    // Wrap word text inside HUD banner
+    const powerUp = choosePowerUp();
+    const stageCfg = getCurrentStageConfig();
+    let innerHTML = stageCfg.enemies.scout;
+    if (powerUp === 'shield') {
+        element.classList.add('shield-word');
+        innerHTML += '<span class="shield-icon">🛡️ </span>';
+    } else if (powerUp === 'emp') {
+        element.classList.add('emp-word');
+        innerHTML += '<span class="powerup-icon">❄️ </span>';
+    } else if (powerUp === 'heal') {
+        element.classList.add('heal-word');
+        innerHTML += '<span class="powerup-icon">❤️ </span>';
+    }
+
     innerHTML += '<div class="word-text-wrapper">';
     wordText.split('').forEach(char => {
         innerHTML += `<span class="untyped">${char}</span>`;
@@ -871,8 +1529,48 @@ function spawnBossBomb() {
     element.innerHTML = innerHTML;
     wordsContainer.appendChild(element);
 
-    // Plasma bombs travel fast!
-    const speed = 1.6 * baseSpeed;
+    words.push({
+        id: id,
+        word: wordText,
+        element: element,
+        x: xPercent,
+        y: yPx,
+        typedCount: 0,
+        speed: baseSpeed * 0.9,
+        powerUp: powerUp,
+        isBossBomb: false,
+        isEscort: true,
+        isShieldBreaker: false
+    });
+}
+
+function spawnBossShieldBreaker() {
+    if (!bossActive || !bossShielded || bossHp <= 0 || !gameActive || gamePaused) return;
+
+    const activeFirstLetters = words.map(w => w.word[0].toLowerCase());
+    const breakerPool = activeDictionary.filter(w => w.length >= 6 && !activeFirstLetters.includes(w[0].toLowerCase()));
+    const pool = breakerPool.length > 0 ? breakerPool : activeDictionary;
+    const wordText = pool[Math.floor(Math.random() * pool.length)];
+
+    const id = wordIdCounter++;
+    const xPercent = bossX;
+    const yPx = 125;
+
+    const element = document.createElement('div');
+    element.className = 'enemy-word shield-breaker';
+    element.style.left = `${xPercent}%`;
+    element.style.top = `${yPx}px`;
+
+    let innerHTML = '<img src="assets/plasma-bomb.png" class="enemy-ship bomb-sprite" alt="">';
+    innerHTML += '<span class="powerup-icon">🔓 </span>';
+    innerHTML += '<div class="word-text-wrapper">';
+    wordText.split('').forEach(char => {
+        innerHTML += `<span class="untyped">${char}</span>`;
+    });
+    innerHTML += '</div>';
+
+    element.innerHTML = innerHTML;
+    wordsContainer.appendChild(element);
 
     words.push({
         id: id,
@@ -881,22 +1579,151 @@ function spawnBossBomb() {
         x: xPercent,
         y: yPx,
         typedCount: 0,
-        speed: speed,
-        isShield: false,
-        isBossBomb: true
+        speed: 1.25 * baseSpeed,
+        powerUp: 'none',
+        isBossBomb: false,
+        isEscort: false,
+        isShieldBreaker: true
     });
+}
+
+function triggerBossBattle() {
+    bossActive = true;
+    bossBattleStarted = false;
+    bossLevel++;
+    activeBossConfig = BOSS_CONFIGS[(stage - 1) % BOSS_CONFIGS.length];
+    bossMaxHp = 4 + bossLevel;
+    bossHp = bossMaxHp;
+    bossX = 50;
+    bossDir = Math.random() < 0.5 ? 1 : -1;
+    bossEnraged = false;
+    bossShielded = false;
+    bossShieldUsed = false;
+    bossCharge = 0;
+
+    clearInterval(spawnInterval);
+    clearBossTimers();
+
+    enemyBoss.style.left = '50%';
+    enemyBoss.classList.remove('boss-hit', 'boss-enraged', 'boss-shielded', 'bank-left', 'bank-right', 'boss-stage-1', 'boss-stage-2', 'boss-stage-3', 'boss-blink');
+    enemyBoss.classList.add('active', activeBossConfig.cssClass);
+    bossNameLabel.innerText = activeBossConfig.name;
+    bossChargeContainer.classList.toggle('hidden', !activeBossConfig.hasMegaBeam);
+    bossHealthBar.style.width = '100%';
+    bossChargeBar.style.width = '0%';
+
+    stageBanner.innerText = `⚠️ BOSS: ${activeBossConfig.name}`;
+    stageBanner.classList.add('active');
+    setTimeout(() => stageBanner.classList.remove('active'), 2000);
+
+    if (sounds.bgmEnabled) {
+        sounds.bgmController.setTrack('boss');
+    }
+
+    sounds.playHit();
+    triggerScreenShake();
+    setTimeout(triggerScreenShake, 300);
+
+    bossClearInterval = setInterval(() => {
+        if (!gameActive) {
+            clearBossTimers();
+            return;
+        }
+        if (!gamePaused && words.length === 0) {
+            clearInterval(bossClearInterval);
+            bossClearInterval = null;
+            bossBattleStarted = true;
+            bossBombTimeout = setTimeout(spawnBossSalvo, 1500);
+            if (activeBossConfig.hasEscorts) {
+                bossEscortInterval = setInterval(spawnBossEscort, 5000);
+            }
+        }
+    }, 200);
+}
+
+function spawnBossSalvo() {
+    if (!bossActive || bossShielded || bossHp <= 0 || !gameActive || gamePaused) return;
+
+    // Stage 3 Void Dreadnought (or Loop Bosses 3+) can launch 2 bombs at once when HP >= 2
+    const salvoCount = ((activeBossConfig.dualSalvo || bossLevel >= 3) && bossHp >= 2) ? 2 : 1;
+    const usedFirstLetters = new Set();
+
+    for (let i = 0; i < salvoCount; i++) {
+        const minLen = salvoCount > 1 ? 4 : 6;
+        const maxLen = salvoCount > 1 ? 7 : 20;
+        const bossDict = activeDictionary.filter(
+            w => w.length >= minLen && w.length <= maxLen && !usedFirstLetters.has(w[0].toLowerCase())
+        );
+        const pool = bossDict.length > 0 ? bossDict : activeDictionary;
+        const wordText = pool[Math.floor(Math.random() * pool.length)];
+        usedFirstLetters.add(wordText[0].toLowerCase());
+
+        const id = wordIdCounter++;
+        let xPercent = bossX;
+        if (salvoCount === 2) {
+            const offset = i === 0 ? -12 : 12;
+            xPercent = Math.max(14, Math.min(86, bossX + offset));
+        }
+        const yPx = 125;
+
+        const element = document.createElement('div');
+        element.className = 'enemy-word plasma-bomb';
+        element.style.left = `${xPercent}%`;
+        element.style.top = `${yPx}px`;
+
+        let innerHTML = '<img src="assets/plasma-bomb.png" class="enemy-ship bomb-sprite" alt="">';
+        innerHTML += '<div class="word-text-wrapper">';
+        wordText.split('').forEach(char => {
+            innerHTML += `<span class="untyped">${char}</span>`;
+        });
+        innerHTML += '</div>';
+
+        element.innerHTML = innerHTML;
+        wordsContainer.appendChild(element);
+
+        const speed = (1.45 + Math.min(bossLevel * 0.1, 0.5)) * baseSpeed;
+
+        words.push({
+            id: id,
+            word: wordText,
+            element: element,
+            x: xPercent,
+            y: yPx,
+            typedCount: 0,
+            speed: speed,
+            powerUp: 'none',
+            isBossBomb: true
+        });
+    }
 }
 
 function defeatBoss() {
     bossActive = false;
-    
-    // Giant multiple explosions around the boss
-    const centerX = gameArea.clientWidth / 2;
-    const centerY = 80;
+    bossBattleStarted = false;
+    bossEnraged = false;
+    bossShielded = false;
+    bossCharge = 0;
+    bossChargeBar.style.width = '0%';
+    clearBossTimers();
+
+    // Clear any remaining escorts or boss projectiles triumphantly
+    words.forEach(w => {
+        const rect = w.element.getBoundingClientRect();
+        const areaRect = gameArea.getBoundingClientRect();
+        createExplosion((rect.left + rect.width / 2) - areaRect.left, (rect.top + rect.height / 2) - areaRect.top);
+        w.element.remove();
+    });
+    words = [];
+    targetedWord = null;
+    updatePlanePosition();
+
+    const bossCenter = getBossCenter();
+    const centerX = bossCenter.x;
+    const centerY = bossCenter.y;
 
     sounds.playExplosion();
     createExplosion(centerX, centerY);
-    
+
     setTimeout(() => {
         sounds.playExplosion();
         createExplosion(centerX - 40, centerY - 15);
@@ -913,17 +1740,20 @@ function defeatBoss() {
         createExplosion(centerX, centerY - 30);
     }, 450);
 
-    // Slide boss out
-    enemyBoss.classList.remove('active');
+    enemyBoss.classList.remove('active', 'bank-left', 'bank-right', 'boss-hit', 'boss-enraged', 'boss-shielded', 'boss-stage-1', 'boss-stage-2', 'boss-stage-3', 'boss-blink');
 
-    // Massive score bonus!
-    score += 500;
+    stage++;
+    applyStageTheme(true);
+
+    const bossBonus = 500 + bossLevel * 100;
+    score += bossBonus;
     scoreVal.innerText = score;
+    spawnFloatingText(centerX, centerY + 30, `BOSS DEFEATED +${bossBonus}`, true);
 
-    // Increase base speed slightly to ramp up next wave
-    baseSpeed += 0.2;
+    nextBossScore = score + 1000 + bossLevel * 250;
+    baseSpeed += activeDifficulty.speedStep * 2;
+    checkDifficultyProgression();
 
-    // Resume standard spawning
     clearInterval(spawnInterval);
     spawnInterval = setInterval(spawnWord, currentSpawnDelay);
 }
@@ -946,29 +1776,24 @@ function createExplosion(x, y) {
         p.style.setProperty('--dy', `${Math.sin(angle) * speed}px`);
 
         explosionsContainer.appendChild(p);
-        
-        // Cleanup particle
         setTimeout(() => p.remove(), 600);
     }
 }
 
-// --- Goal 4: Combo & Multiplier Engine ---
+// --- Combo & Multiplier Engine ---
 
 function incrementCombo() {
     comboStreak++;
-    
-    // Calculate new multiplier
+
     let nextMult = 1.0;
     if (comboStreak >= 50) nextMult = 5.0;
     else if (comboStreak >= 30) nextMult = 3.0;
     else if (comboStreak >= 20) nextMult = 2.0;
     else if (comboStreak >= 10) nextMult = 1.5;
 
-    // Check for multiplier level up
     if (nextMult > scoreMultiplier) {
         sounds.playComboUp();
-        
-        // Trigger CSS HUD bounce
+
         comboHud.classList.add('level-up');
         setTimeout(() => {
             comboHud.classList.remove('level-up');
@@ -1000,6 +1825,7 @@ function updateComboUI() {
 // --- Wire Event Listeners ---
 
 window.addEventListener('keydown', handleKeyPress);
+vocabSelect.addEventListener('change', updateSectorBestBanner);
 
 startBtn.addEventListener('click', () => {
     sounds.init();
@@ -1016,28 +1842,83 @@ resumeBtn.addEventListener('click', () => {
     togglePause();
 });
 
+document.getElementById('voice-toggle').addEventListener('click', () => sounds.toggleVoice());
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
 
+// Initialize start screen banner
+updateSectorBestBanner();
+
+function getAccuracy() {
+    if (totalTyped === 0) return 100;
+    return Math.max(0, Math.round(((totalTyped - errors) / totalTyped) * 100));
+}
+
 function updateStats() {
     if (!startTime) return;
-    const elapsedMinutes = (new Date() - startTime) / 60000;
+    const elapsedMs = Date.now() - startTime - totalPausedMs;
+    const elapsedMinutes = elapsedMs / 60000;
     if (elapsedMinutes > 0) {
         const wordsTyped = (totalTyped - errors) / 5;
         const wpm = Math.max(0, Math.round(wordsTyped / elapsedMinutes));
         wpmVal.innerText = wpm;
     }
+    accVal.innerText = `${getAccuracy()}%`;
+}
+
+function renderPracticeWords() {
+    practiceWordsContainer.innerHTML = '';
+    const title = document.createElement('div');
+    title.className = 'practice-title';
+
+    const pills = document.createElement('div');
+    pills.className = 'practice-pills';
+
+    if (wordMistakes.size === 0) {
+        title.innerText = 'VOCABULARY REPORT:';
+        const pill = document.createElement('span');
+        pill.className = 'practice-pill flawless';
+        pill.innerText = '✨ FLAWLESS TYPING! NO MISSED WORDS';
+        pills.appendChild(pill);
+    } else {
+        title.innerText = 'WORDS TO PRACTICE (CLICK TO HEAR):';
+        const topWords = Array.from(wordMistakes.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 8);
+        topWords.forEach(([word, count]) => {
+            const pill = document.createElement('button');
+            pill.type = 'button';
+            pill.className = 'practice-pill';
+            pill.title = `Hear "${word}"`;
+            pill.innerText = count > 1 ? `🔊 ${word} (${count}×)` : `🔊 ${word}`;
+            pill.addEventListener('click', () => sounds.speakWord(word, true));
+            pills.appendChild(pill);
+        });
+    }
+
+    practiceWordsContainer.appendChild(title);
+    practiceWordsContainer.appendChild(pills);
 }
 
 function endGame() {
     gameActive = false;
     clearInterval(spawnInterval);
     cancelAnimationFrame(animationFrameId);
+    clearBossTimers();
+    clearEmpTimer();
+    sounds.stopSpeech();
 
-    // Fill Game Over modal details
+    const runWpm = parseInt(wpmVal.innerText, 10) || 0;
+    const runAcc = getAccuracy();
+    const isNewRecord = saveSectorStats(activeSector, score, runWpm, runAcc);
+    updateSectorBestBanner();
+
     finalScoreVal.innerText = score;
-    finalWpmVal.innerText = wpmVal.innerText;
+    finalWpmVal.innerText = runWpm;
+    finalAccVal.innerText = `${runAcc}%`;
+    finalWaveVal.innerText = wave;
+    newRecordBadge.style.display = isNewRecord ? 'block' : 'none';
 
-    // Show game over modal
+    renderPracticeWords();
     gameOverScreen.classList.add('active');
 }
