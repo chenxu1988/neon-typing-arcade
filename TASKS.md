@@ -59,7 +59,7 @@
 | ID | Priority | Status | Task | Commit |
 | :--- | :--- | :--- | :--- | :--- |
 | `T4.1` | `P0` | `DONE` | Build **Science Explorer** (`science-explorer.html`, `.css`, `.js`) for Grade 3–5 STEM (Solar System, Food Chains, Water Cycle, Matter, Circuits) | `done` |
-| `T4.2` | `P0` | `TODO` | Register **Science Explorer** in `index.html` + add `science_whiz` badge in `shared/profile.js` | — |
+| `T4.2` | `P0` | `DONE` | Register **Science Explorer** in `index.html` + add `science_whiz` badge in `shared/profile.js` | `done` |
 | `T4.3` | `P0` | `TODO` | Build **Time, Money & Area Dash** (`life-math.html`, `.css`, `.js`) with SVG analog clock, coin counter, and area/perimeter grid | — |
 | `T4.4` | `P0` | `TODO` | Register **Time, Money & Area Dash** in `index.html`, add `time_master` badge, and update `README.md` | — |
 | `T4.5` | `P1` | `TODO` | Add Star Shop catalog (`unlocks`, `equipped`, `purchaseItem`, `equipItem`) to `shared/profile.js` + Star Shop modal in `index.html` | — |

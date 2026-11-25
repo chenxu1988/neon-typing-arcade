@@ -11,6 +11,7 @@
         { id: 'math_whiz', icon: '🧮', name: 'Math Whiz', desc: 'Complete an Astro Math run' },
         { id: 'word_wizard', icon: '📖', name: 'Word Wizard', desc: 'Complete a Word Quest run' },
         { id: 'fraction_chef', icon: '🍕', name: 'Fraction Chef', desc: 'Complete a Fraction Dash run' },
+        { id: 'science_whiz', icon: '🔬', name: 'Science Whiz', desc: 'Complete a Science Explorer expedition' },
         { id: 'streak_3', icon: '🔥', name: '3-Day Streak', desc: 'Play on 3 consecutive days' }
     ];
 
