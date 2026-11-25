@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinosaur Adventure Typing</title>
+    <link rel="stylesheet" href="dino-style.css">
+</head>
+<body>
+    <div id="game-container">
+        <header id="stats-bar">
+            <div class="stat">Level: <span id="level-val">1</span>/5</div>
+            <div class="stat">Step: <span id="step-val">1</span>/4</div>
+            <div class="stat">WPM: <span id="wpm-val">0</span></div>
+            <div class="stat">Acc: <span id="accuracy-val">100</span>%</div>
+            <div class="sound-controls">
+                <button id="voice-toggle" class="control-btn active" title="Toggle Read-Aloud">🗣️ Voice: On</button>
+                <button id="bgm-toggle" class="control-btn active" title="Toggle Music">🎵 Music: On</button>
+                <button id="sound-toggle" class="control-btn active" title="Toggle Sound">🔊 Sound: On</button>
+            </div>
+        </header>
+
+        <main id="game-board" class="biome-1">
+            <div id="environment">
+                <div class="cloud cloud-1"></div>
+                <div class="cloud cloud-2"></div>
+                <div class="cloud cloud-3"></div>
+
+                <div id="level-banner" class="level-banner"></div>
+                <div id="confetti-container"></div>
+
+                <!-- Cute Cartoony Dinosaur Sprite -->
+                <div id="dino-sprite" class="dino-idle">
+                    <img src="assets/dino-rex.png" class="dino-img" alt="Rex the Dinosaur">
+                </div>
+
+                <!-- Goal Item -->
+                <div id="goal-item" title="Goal">🍓</div>
+            </div>
+
+            <div id="display-container">
+                <div id="sentence-display" title="Click to hear sentence again">
+                    <span class="placeholder">Press Start to begin your Dinosaur Adventure!</span>
+                </div>
+            </div>
+        </main>
+
+        <footer id="input-area">
+            <p class="hint">Type each letter carefully! Click the sentence box anytime to hear it read aloud. &nbsp;|&nbsp; <a href="index.html" class="nav-link">🏠 Arcade Hub</a> &nbsp;|&nbsp; <a href="plane-game.html" class="nav-link">🚀 Neon Plane Typing</a></p>
+        </footer>
+
+        <!-- Start Modal -->
+        <div id="start-screen" class="modal active">
+            <h1 class="modal-title">🦕 DINOSAUR TYPING ADVENTURE</h1>
+            <p class="modal-subtitle">Help Rex journey across 5 prehistoric biomes! Type each sentence accurately to reach the goal treats.</p>
+            <div id="best-stats-banner" class="best-stats-banner">BEST: 0 WPM | 0% ACCURACY</div>
+            <button id="start-btn" class="modal-btn">START ADVENTURE</button>
+        </div>
+
+        <!-- Victory Modal -->
+        <div id="victory-screen" class="modal">
+            <h1 class="modal-title victory">🏆 PREHISTORIC MASTER!</h1>
+            <p class="modal-subtitle">Rex explored all 5 biomes and collected every treat!</p>
+            <div id="new-record-badge" class="new-record-badge" style="display: none;">🌟 NEW BEST WPM!</div>
+            <div class="victory-stats">
+                WPM: <span id="final-wpm-val">0</span> &nbsp;|&nbsp; ACCURACY: <span id="final-acc-val">100</span>%
+            </div>
+            <button id="play-again-btn" class="modal-btn">PLAY AGAIN</button>
+        </div>
+    </div>
+    <script src="dino-game.js"></script>
+</body>
+</html>

@@ -78,6 +78,7 @@
                         <option value="scifi">🛸 Quantum Cosmos (Sci-Fi)</option>
                         <option value="grade3">🎒 LAUSD Grade 3 ELA</option>
                         <option value="grade4">🚀 LAUSD Grade 4 ELA</option>
+                        <option value="custom">✏️ Custom Spelling List</option>
                     </select>
                 </div>
 
@@ -91,9 +92,15 @@
                 </div>
             </div>
 
+            <div id="custom-words-panel" class="custom-words-panel" style="display: none;">
+                <label for="custom-words-input" class="selection-label">PASTE SPELLING WORDS (COMMA OR SPACE SEPARATED):</label>
+                <textarea id="custom-words-input" class="custom-words-input" rows="2" placeholder="planet, galaxy, comet, orbit, rocket"></textarea>
+            </div>
+
             <div id="sector-best-banner" class="sector-best-banner">BEST: 0 PTS | 0 WPM | 0% ACC</div>
 
             <button id="start-btn" class="action-btn">LAUNCH MISSION</button>
+            <a href="index.html" class="arcade-link">🏠 Back to Arcade Hub</a>
         </div>
 
         <!-- Game Over Screen -->
@@ -103,9 +110,13 @@
             <div id="new-record-badge" class="new-record-badge" style="display: none;">🏆 NEW SECTOR HIGH SCORE!</div>
             <div class="final-score">SCORE: <span id="final-score-val">0</span></div>
             <div class="final-stats">WPM: <span id="final-wpm-val">0</span> &nbsp;|&nbsp; ACCURACY: <span
-                    id="final-acc-val">100%</span> &nbsp;|&nbsp; WAVE: <span id="final-wave-val">1</span></div>
+                    id="final-acc-val">100%</span> &nbsp;|&nbsp; STAGE: <span id="final-stage-val">1</span> &nbsp;|&nbsp; WAVE: <span id="final-wave-val">1</span></div>
             <div id="practice-words-container" class="practice-words-container"></div>
-            <button id="restart-btn" class="action-btn">REDEPLOY</button>
+            <div class="gameover-actions">
+                <button id="practice-missed-btn" class="action-btn secondary-btn" style="display: none;">PRACTICE MISSED WORDS</button>
+                <button id="restart-btn" class="action-btn">REDEPLOY</button>
+                <button id="gameover-menu-btn" class="action-btn secondary-btn">MAIN MENU</button>
+            </div>
         </div>
 
         <!-- Pause Screen -->
@@ -113,7 +124,10 @@
             <h1 class="neon-title">MISSION PAUSED</h1>
             <p class="subtitle">System diagnostics nominal. Press <span style="color: var(--neon-pink)">ESC</span> or
                 click below to resume flight.</p>
-            <button id="resume-btn" class="action-btn">RESUME SYSTEM</button>
+            <div class="gameover-actions">
+                <button id="resume-btn" class="action-btn">RESUME SYSTEM</button>
+                <button id="pause-menu-btn" class="action-btn secondary-btn">MAIN MENU</button>
+            </div>
         </div>
     </div>
     <script src="plane-game.js"></script>

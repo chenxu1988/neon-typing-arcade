@@ -3,55 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dinosaur Adventure Typing</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Neon Typing Arcade</title>
+    <style>
+        :root {
+            --bg: #070314;
+            --card: #0f0a2a;
+            --blue: #00f0ff;
+            --pink: #ff007f;
+            --green: #4caf50;
+            --yellow: #ffeb3b;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at top, #171042 0%, var(--bg) 70%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 18px;
+        }
+        h1 {
+            margin: 0 0 8px;
+            font-size: clamp(2rem, 5vw, 3.1rem);
+            letter-spacing: 3px;
+            text-align: center;
+            color: var(--blue);
+            text-shadow: 0 0 14px rgba(0, 240, 255, 0.55);
+        }
+        .tagline {
+            margin: 0 0 34px;
+            color: #b4b0d6;
+            font-size: 1.05rem;
+            text-align: center;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            width: min(840px, 100%);
+        }
+        .card {
+            background: var(--card);
+            border: 3px solid var(--blue);
+            border-radius: 18px;
+            padding: 26px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 0 28px rgba(0, 240, 255, 0.18);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--pink);
+            box-shadow: 0 0 34px rgba(255, 0, 127, 0.32);
+        }
+        .card.dino {
+            border-color: var(--green);
+            box-shadow: 0 0 28px rgba(76, 175, 80, 0.2);
+        }
+        .card.dino:hover {
+            border-color: var(--yellow);
+            box-shadow: 0 0 34px rgba(255, 235, 59, 0.3);
+        }
+        .card-preview {
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.4rem;
+            background: rgba(0, 0, 0, 0.28);
+            border-radius: 12px;
+        }
+        .card-preview img {
+            max-height: 86px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.7));
+        }
+        .card h2 {
+            margin: 4px 0 0;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+        }
+        .card p {
+            margin: 0;
+            color: #b9b5d8;
+            line-height: 1.5;
+            font-size: 0.96rem;
+            flex: 1;
+        }
+        .stats-pill {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--yellow);
+            background: rgba(255, 235, 59, 0.08);
+            border: 1px solid rgba(255, 235, 59, 0.35);
+            border-radius: 14px;
+            padding: 5px 12px;
+            align-self: flex-start;
+        }
+        .play-cta {
+            margin-top: 6px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            color: var(--blue);
+        }
+        .card.dino .play-cta {
+            color: #81c784;
+        }
+    </style>
 </head>
 <body>
-    <div id="game-container">
-        <header id="stats-bar">
-            <div class="stat">Level: <span id="level-val">1</span></div>
-            <div class="stat">WPM: <span id="wpm-val">0</span></div>
-            <div class="stat">Accuracy: <span id="accuracy-val">100</span>%</div>
-            <div class="sound-controls">
-                <button id="bgm-toggle" class="control-btn" title="Toggle Music">🎵 Music: Off</button>
-                <button id="sound-toggle" class="control-btn active" title="Toggle Sound">🔊 Sound: On</button>
-            </div>
-        </header>
+    <h1>NEON TYPING ARCADE</h1>
+    <p class="tagline">Choose your typing adventure — kid-friendly practice with procedural chiptune music &amp; voice read-aloud.</p>
 
-        <main id="game-board">
-            <div id="environment">
-                <div id="dino-sprite" class="dino-idle">
-                    <div class="dino-tail">
-                        <div class="dino-spike spike-tail"></div>
-                    </div>
-                    <div class="dino-body">
-                        <div class="dino-spike spike-1"></div>
-                        <div class="dino-spike spike-2"></div>
-                        <div class="dino-spike spike-3"></div>
-                        <div class="dino-arm"></div>
-                    </div>
-                    <div class="dino-neck"></div>
-                    <div class="dino-head">
-                        <div class="dino-eye"></div>
-                        <div class="dino-snout"></div>
-                    </div>
-                    <div class="dino-leg leg-left"></div>
-                    <div class="dino-leg leg-right"></div>
-                </div>
+    <div class="grid">
+        <a href="plane-game.html" class="card">
+            <div class="card-preview">
+                <img src="assets/player-plane.png" alt="Neon Plane">
             </div>
-            
-            <div id="display-container">
-                <div id="sentence-display">
-                    <!-- Sentences will be injected here with spans for highlighting -->
-                    <span class="placeholder">Type to start the adventure!</span>
-                </div>
-            </div>
-        </main>
+            <h2>🌌 Neon Plane Typing</h2>
+            <p>Lock onto incoming alien fleets across 3 stages, defeat unique Bosses, trigger Slow-Mo &amp; Shields, and drill LAUSD Grade 3–4 or custom spelling lists.</p>
+            <div id="plane-best" class="stats-pill">BEST: 0 PTS</div>
+            <div class="play-cta">LAUNCH MISSION →</div>
+        </a>
 
-        <footer id="input-area">
-            <p class="hint">Press any key to start typing!</p>
-        </footer>
+        <a href="dino-game.html" class="card dino">
+            <div class="card-preview">
+                <img src="assets/dino-rex.png" alt="Rex the Dinosaur">
+            </div>
+            <h2>🦕 Dinosaur Adventure Typing</h2>
+            <p>Guide Rex through 5 prehistoric biomes by typing sentences accurately, with animated scenery, sentence read-aloud, and confetti celebrations.</p>
+            <div id="dino-best" class="stats-pill">BEST: 0 WPM</div>
+            <div class="play-cta">START ADVENTURE →</div>
+        </a>
     </div>
-    <script src="game.js"></script>
+
+    <script>
+        try {
+            const planeStats = JSON.parse(localStorage.getItem('neonPlaneTypingStats') || '{}');
+            const topScore = Math.max(0, ...Object.values(planeStats).map(s => s.highScore || 0));
+            document.getElementById('plane-best').innerText = `TOP SCORE: ${topScore} PTS`;
+        } catch {}
+        try {
+            const dinoStats = JSON.parse(localStorage.getItem('dinoTypingStats') || '{}');
+            document.getElementById('dino-best').innerText = `BEST: ${dinoStats.bestWpm || 0} WPM | ${dinoStats.bestAcc || 0}% ACC`;
+        } catch {}
+    </script>
 </body>
 </html>

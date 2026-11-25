@@ -4,21 +4,71 @@ const scifiDictionary = [
     "photon", "comet", "beacon", "energy", "fusion", "quantum", "gravity", "nebula", "galaxy", "rocket",
     "stellar", "neutron", "asteroid", "engine", "signal", "module", "system", "thruster", "sensor", "core",
     "nanite", "hologram", "cyberspace", "android", "titanium", "velocity", "generator", "overdrive", "catalyst", "hyperdrive",
-    "horizon", "vortex", "starlight", "pulsar", "singularity", "dimension", "telemetry", "spectrum", "satellite", "atmosphere"
+    "horizon", "vortex", "starlight", "pulsar", "singularity", "dimension", "telemetry", "spectrum", "satellite", "atmosphere",
+    "alien", "aurora", "binary", "blaster", "capsule", "circuit", "cluster", "cockpit", "collider", "cryo",
+    "cyber", "data", "deflector", "docking", "drone", "eclipse", "electron", "exosuit", "flux", "forcefield",
+    "gamma", "grid", "hull", "hyperion", "ignition", "impulse", "ion", "jetpack", "kepler", "kinetic",
+    "launch", "lightyear", "lunar", "magnet", "mars", "mech", "moonbeam", "nova", "observatory", "omega",
+    "orbital", "oxygen", "parsec", "payload", "planet", "pod", "portal", "probe", "quasar", "radar",
+    "radiation", "reactor", "robot", "rover", "scanner", "shuttle", "solar", "spacecraft", "starship", "supernova",
+    "tachyon", "teleport", "terra", "titan", "trajectory", "turret", "universe", "uranium", "void", "wormhole",
+    "xenon", "zenith", "zero"
 ];
 
 const lausdGrade3 = [
     "friend", "school", "because", "before", "people", "would", "about", "could", "write", "glowing",
     "character", "sentence", "paragraph", "author", "chapter", "compare", "contrast", "describe", "explain", "detail",
     "fraction", "multiply", "divide", "explore", "energy", "matter", "source", "nature", "history", "culture",
-    "opinion", "purpose", "influence", "reason", "support", "creature", "habitat", "protect", "observe", "discover"
+    "opinion", "purpose", "influence", "reason", "support", "creature", "habitat", "protect", "observe", "discover",
+    "answer", "around", "always", "animal", "basket", "beauty", "believe", "between", "blanket", "bright",
+    "brother", "building", "butter", "camera", "candle", "careful", "carpet", "carry", "center", "change",
+    "circle", "clever", "climate", "cloud", "collect", "colony", "common", "complete", "connect", "country",
+    "courage", "create", "curious", "danger", "decide", "desert", "different", "dinner", "doctor", "dollar",
+    "dragon", "dream", "earth", "effort", "either", "enough", "equal", "evening", "example", "except",
+    "family", "famous", "favorite", "feather", "festival", "figure", "forest", "forever", "garden", "gentle",
+    "giant", "golden", "govern", "grateful", "ground", "happen", "harbor", "harvest", "healthy", "helpful",
+    "hidden", "holiday", "honest", "hundred", "hungry", "island", "journey", "jungle", "kitchen", "kitten",
+    "listen", "little", "locate", "magnet", "market", "measure", "member", "memory", "message", "middle",
+    "minute", "mirror", "moment", "monkey", "morning", "mountain", "museum", "music", "mystery", "nation",
+    "nearby", "neither", "notice", "number", "ocean", "orange", "order", "outside", "parent", "pattern",
+    "pencil", "perfect", "person", "picture", "planet", "please", "pocket", "polite", "practice", "present",
+    "pretty", "problem", "project", "promise", "puzzle", "question", "quiet", "rabbit", "rainbow", "rather",
+    "recall", "record", "reduce", "region", "remain", "remember", "repair", "repeat", "report", "rescue",
+    "result", "return", "rhythm", "ribbon", "river", "safety", "science", "season", "second", "secret",
+    "shadow", "shelter", "signal", "silver", "simple", "sister", "sketch", "smooth", "social", "solve",
+    "special", "speech", "spiral", "spring", "square", "steady", "story", "strange", "stream", "street",
+    "strong", "student", "study", "subject", "success", "sudden", "summer", "supply", "surface", "surprise",
+    "symbol", "system", "tablet", "talent", "teacher", "thought", "through", "thunder", "ticket", "together",
+    "toward", "travel", "treasure", "triangle", "trouble", "tunnel", "turtle", "umbrella", "uncle", "under",
+    "useful", "valley", "value", "village", "visit", "voice", "volume", "voyage", "wander", "warmth",
+    "weather", "welcome", "whisper", "window", "winter", "wisdom", "wonder", "yellow", "young", "zebra"
 ];
 
 const lausdGrade4 = [
     "accident", "balance", "calmness", "daughter", "excitement", "frighten", "gather", "honest", "imagine", "journal",
     "boundary", "capture", "horizon", "constant", "telescope", "analyze", "conclude", "evidence", "inference", "summarize",
     "metaphor", "simile", "narrative", "dialogue", "adjective", "adverb", "pronoun", "preposition", "conjunction", "punctuation",
-    "ecosystem", "producer", "consumer", "organism", "environment", "adaptation", "government", "constitution", "citizen", "heritage"
+    "ecosystem", "producer", "consumer", "organism", "environment", "adaptation", "government", "constitution", "citizen", "heritage",
+    "abundant", "accurate", "achieve", "adequate", "adventure", "affection", "altitude", "ancient", "announce", "anxiety",
+    "apparent", "approach", "approval", "argument", "arrange", "article", "assemble", "atlantic", "attitude", "audience",
+    "average", "awkward", "barrier", "behavior", "benefit", "biography", "blossom", "brilliant", "calendar", "campaign",
+    "capacity", "category", "cautious", "celebrate", "century", "challenge", "champion", "chapter", "chemical", "civilian",
+    "clarify", "classic", "climate", "collapse", "combine", "comfort", "command", "comment", "commerce", "community",
+    "compass", "compete", "complex", "compose", "concept", "concern", "condense", "conflict", "confuse", "congress",
+    "conquer", "consent", "consider", "construct", "contain", "context", "continue", "contract", "control", "convince",
+    "cooperate", "coordinate", "correct", "courageous", "courtesy", "creative", "creature", "critical", "culture", "current",
+    "custom", "cylinder", "decade", "declare", "decline", "decorate", "decrease", "defend", "definite", "delicate",
+    "deliver", "demand", "democracy", "demonstrate", "depend", "deposit", "describe", "deserve", "design", "despair",
+    "destroy", "determine", "develop", "diagram", "diameter", "dictate", "difficult", "digest", "dignity", "diligent",
+    "dimension", "direct", "disaster", "discard", "discover", "discuss", "disease", "display", "distance", "distinct",
+    "district", "diverse", "divide", "document", "domestic", "dominate", "dramatic", "drought", "durable", "eager",
+    "economy", "edition", "educate", "effect", "efficient", "elaborate", "elastic", "election", "element", "elevate",
+    "eliminate", "emerge", "emotion", "emphasis", "employ", "enable", "enclose", "encourage", "endure", "energy",
+    "enforce", "engage", "engineer", "enormous", "ensure", "enter", "entire", "envelope", "equal", "equation",
+    "equator", "equip", "erosion", "escape", "essential", "establish", "estimate", "evaluate", "eventual", "examine",
+    "example", "exceed", "excellent", "exchange", "exclaim", "exclude", "excuse", "execute", "exercise", "exhaust",
+    "exhibit", "exist", "expand", "expect", "expedition", "expense", "experience", "experiment", "expert", "explain",
+    "explode", "explore", "export", "expose", "express", "extend", "external", "extinct", "extract", "extreme"
 ];
 
 const DIFFICULTY_PRESETS = {
@@ -103,6 +153,7 @@ const BOSS_CONFIGS = [
 ];
 
 const STORAGE_KEY = 'neonPlaneTypingStats';
+const CUSTOM_WORDS_KEY = 'neonPlaneCustomWords';
 
 // Current active word pool
 let activeDictionary = [];
@@ -126,13 +177,16 @@ let spawnInterval = null;
 let animationFrameId = null;
 let lastFrameTime = 0;
 
-// Educational: per-word mistake tracking
+// Educational: per-word mistake tracking & practice drill mode
 let wordMistakes = new Map();
+let lastMissedWords = [];
+let practiceDrillMode = false;
+let wordDeck = [];
 
 // Power-up states
 let shieldActive = false;
 let empActive = false;
-let empTimeout = null;
+let empRemainingMs = 0;
 
 // Combo and Multipliers
 let comboStreak = 0;
@@ -200,13 +254,19 @@ const gameOverScreen = document.getElementById('game-over-screen');
 const pauseScreen = document.getElementById('pause-screen');
 const vocabSelect = document.getElementById('vocab-select');
 const difficultySelect = document.getElementById('difficulty-select');
+const customWordsPanel = document.getElementById('custom-words-panel');
+const customWordsInput = document.getElementById('custom-words-input');
 const sectorBestBanner = document.getElementById('sector-best-banner');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
+const practiceMissedBtn = document.getElementById('practice-missed-btn');
+const gameoverMenuBtn = document.getElementById('gameover-menu-btn');
+const pauseMenuBtn = document.getElementById('pause-menu-btn');
 const resumeBtn = document.getElementById('resume-btn');
 const finalScoreVal = document.getElementById('final-score-val');
 const finalWpmVal = document.getElementById('final-wpm-val');
 const finalAccVal = document.getElementById('final-acc-val');
+const finalStageVal = document.getElementById('final-stage-val');
 const finalWaveVal = document.getElementById('final-wave-val');
 const newRecordBadge = document.getElementById('new-record-badge');
 const practiceWordsContainer = document.getElementById('practice-words-container');
@@ -737,13 +797,41 @@ function clearBossTimers() {
 }
 
 function clearEmpTimer() {
-    if (empTimeout) {
-        clearTimeout(empTimeout);
-        empTimeout = null;
-    }
     empActive = false;
+    empRemainingMs = 0;
     empHud.style.display = 'none';
     gameArea.classList.remove('emp-active');
+}
+
+function getCustomWordList() {
+    const raw = (customWordsInput.value || '').trim();
+    const parsed = raw
+        .split(/[\s,;]+/)
+        .map(w => w.toLowerCase().replace(/[^a-z]/g, ''))
+        .filter(w => w.length >= 2);
+    const unique = Array.from(new Set(parsed));
+    if (unique.length > 0) {
+        try {
+            localStorage.setItem(CUSTOM_WORDS_KEY, unique.join(', '));
+        } catch {
+            // Ignore storage errors
+        }
+        return unique;
+    }
+    return ['planet', 'galaxy', 'comet', 'orbit', 'rocket'];
+}
+
+function loadCustomWordsUI() {
+    try {
+        const saved = localStorage.getItem(CUSTOM_WORDS_KEY);
+        if (saved) customWordsInput.value = saved;
+    } catch {
+        // Ignore storage errors
+    }
+}
+
+function updateCustomPanelVisibility() {
+    customWordsPanel.style.display = vocabSelect.value === 'custom' ? 'flex' : 'none';
 }
 
 function getCurrentStageConfig() {
@@ -765,7 +853,15 @@ function applyStageTheme(showBanner = false) {
     }
 }
 
-function startGame() {
+function refillWordDeck() {
+    wordDeck = [...activeDictionary];
+    for (let i = wordDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [wordDeck[i], wordDeck[j]] = [wordDeck[j], wordDeck[i]];
+    }
+}
+
+function startGame(drillWords = null) {
     clearBossTimers();
     clearEmpTimer();
     sounds.stopSpeech();
@@ -787,15 +883,21 @@ function startGame() {
     currentSpawnDelay = activeDifficulty.spawnDelay;
     gameActive = true;
 
-    // Choose active vocabulary pool based on start-screen selector
+    // Choose active vocabulary pool (or Practice Drill pool)
+    practiceDrillMode = Array.isArray(drillWords) && drillWords.length > 0;
     activeSector = vocabSelect.value;
-    if (activeSector === 'grade3') {
+    if (practiceDrillMode) {
+        activeDictionary = drillWords;
+    } else if (activeSector === 'grade3') {
         activeDictionary = lausdGrade3;
     } else if (activeSector === 'grade4') {
         activeDictionary = lausdGrade4;
+    } else if (activeSector === 'custom') {
+        activeDictionary = getCustomWordList();
     } else {
         activeDictionary = scifiDictionary;
     }
+    refillWordDeck();
 
     // Reset Shield state
     shieldActive = false;
@@ -879,6 +981,16 @@ function pickNextWord() {
         if (struggled.length > 0) {
             return struggled[Math.floor(Math.random() * struggled.length)];
         }
+    }
+
+    if (wordDeck.length === 0) {
+        refillWordDeck();
+    }
+
+    // Draw from shuffled deck avoiding active first-letter collisions
+    const idx = wordDeck.findIndex(w => !activeFirstLetters.includes(w[0].toLowerCase()) && !activeWordsSet.has(w));
+    if (idx !== -1) {
+        return wordDeck.splice(idx, 1)[0];
     }
 
     const available = activeDictionary.filter(w => !activeFirstLetters.includes(w[0].toLowerCase()));
@@ -978,6 +1090,13 @@ function gameLoop(timestamp) {
 
     const dt = lastFrameTime ? Math.min((timestamp - lastFrameTime) / 16.667, 3) : 1;
     lastFrameTime = timestamp;
+
+    if (empActive) {
+        empRemainingMs -= dt * 16.667;
+        if (empRemainingMs <= 0) {
+            clearEmpTimer();
+        }
+    }
 
     const speedFactor = empActive ? 0.45 : 1.0;
     const areaHeight = gameArea.clientHeight;
@@ -1083,15 +1202,11 @@ function activateShield() {
 }
 
 function activateEmp() {
-    clearEmpTimer();
     empActive = true;
+    empRemainingMs = 5000;
     empHud.style.display = 'block';
     gameArea.classList.add('emp-active');
     sounds.playShieldUp();
-
-    empTimeout = setTimeout(() => {
-        clearEmpTimer();
-    }, 5000);
 }
 
 function activateHeal() {
@@ -1825,7 +1940,10 @@ function updateComboUI() {
 // --- Wire Event Listeners ---
 
 window.addEventListener('keydown', handleKeyPress);
-vocabSelect.addEventListener('change', updateSectorBestBanner);
+vocabSelect.addEventListener('change', () => {
+    updateSectorBestBanner();
+    updateCustomPanelVisibility();
+});
 
 startBtn.addEventListener('click', () => {
     sounds.init();
@@ -1837,16 +1955,54 @@ restartBtn.addEventListener('click', () => {
     startGame();
 });
 
+practiceMissedBtn.addEventListener('click', () => {
+    sounds.init();
+    startGame(lastMissedWords);
+});
+
+function returnToMenu() {
+    gameActive = false;
+    gamePaused = false;
+    bossActive = false;
+    bossBattleStarted = false;
+    clearInterval(spawnInterval);
+    cancelAnimationFrame(animationFrameId);
+    clearBossTimers();
+    clearEmpTimer();
+    sounds.stopSpeech();
+    sounds.bgmController.stop();
+
+    words = [];
+    targetedWord = null;
+    wordsContainer.innerHTML = '';
+    lasersContainer.innerHTML = '';
+    explosionsContainer.innerHTML = '';
+    playerShield.className = '';
+    enemyBoss.classList.remove('active', 'bank-left', 'bank-right', 'boss-hit', 'boss-enraged', 'boss-shielded', 'boss-stage-1', 'boss-stage-2', 'boss-stage-3', 'boss-blink');
+    stageBanner.classList.remove('active');
+
+    pauseScreen.classList.remove('active');
+    gameOverScreen.classList.remove('active');
+    updateSectorBestBanner();
+    updateCustomPanelVisibility();
+    startScreen.classList.add('active');
+}
+
 resumeBtn.addEventListener('click', () => {
     sounds.init();
     togglePause();
 });
 
+gameoverMenuBtn.addEventListener('click', returnToMenu);
+pauseMenuBtn.addEventListener('click', returnToMenu);
+
 document.getElementById('voice-toggle').addEventListener('click', () => sounds.toggleVoice());
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
 
-// Initialize start screen banner
+// Initialize start screen banner & custom words
+loadCustomWordsUI();
+updateCustomPanelVisibility();
 updateSectorBestBanner();
 
 function getAccuracy() {
@@ -1902,20 +2058,28 @@ function renderPracticeWords() {
 
 function endGame() {
     gameActive = false;
+    bossActive = false;
+    bossBattleStarted = false;
     clearInterval(spawnInterval);
     cancelAnimationFrame(animationFrameId);
     clearBossTimers();
     clearEmpTimer();
     sounds.stopSpeech();
+    sounds.bgmController.stop();
+    enemyBoss.classList.remove('active', 'bank-left', 'bank-right', 'boss-hit', 'boss-enraged', 'boss-shielded', 'boss-stage-1', 'boss-stage-2', 'boss-stage-3', 'boss-blink');
 
     const runWpm = parseInt(wpmVal.innerText, 10) || 0;
     const runAcc = getAccuracy();
-    const isNewRecord = saveSectorStats(activeSector, score, runWpm, runAcc);
+    const isNewRecord = practiceDrillMode ? false : saveSectorStats(activeSector, score, runWpm, runAcc);
     updateSectorBestBanner();
+
+    lastMissedWords = Array.from(wordMistakes.keys());
+    practiceMissedBtn.style.display = lastMissedWords.length > 0 ? 'inline-block' : 'none';
 
     finalScoreVal.innerText = score;
     finalWpmVal.innerText = runWpm;
     finalAccVal.innerText = `${runAcc}%`;
+    finalStageVal.innerText = stage;
     finalWaveVal.innerText = wave;
     newRecordBadge.style.display = isNewRecord ? 'block' : 'none';
 
