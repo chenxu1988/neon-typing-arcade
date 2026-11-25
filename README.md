@@ -32,6 +32,14 @@ Welcome to **Neon Typing Arcade** — a zero-build educational game suite for LA
 * **Grade 3–5 Modes**: Build Fractions, Equivalent Fractions, and Compare Fractions (`<`, `=`, `>`).
 * **Gameplay**: Interactive SVG pizza slice builder, 18s customer order timer, and streak bonuses.
 
+### 7. 🔬 Science Explorer (`science-explorer.html`)
+* **Grade 3–5 STEM**: Solar System, Food Chains, Water Cycle, States of Matter, and Simple Circuits.
+* **Gameplay**: Live SVG STEM diagrams, 10-stop Rover Expedition, Web Speech read-aloud, and spaced-repetition retry.
+
+### 8. ⏰ Time, Money & Area Dash (`life-math.html`)
+* **Grade 3–5 Practical Math**: Analog clock reading, coin/change counting, and unit-square Area & Perimeter.
+* **Gameplay**: Interactive SVG clock, clickable coin builder, and `6×6` unit-square grid.
+
 ---
 
 ## 🧱 Shared Architecture (`shared/`)
