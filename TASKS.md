@@ -22,7 +22,7 @@
 | ID | Priority | Status | Task | Commit |
 | :--- | :--- | :--- | :--- | :--- |
 | `T2.1` | `P0` | `DONE` | Migrate `plane-game.js` to use `shared/audio.js` & `shared/profile.js` (award stars & log missed words) | `done` |
-| `T2.2` | `P1` | `TODO` | Add LAUSD Grade 5 ELA sector + kid-friendly 1-line word definitions on Plane Game Over "Words to Practice" pills | — |
+| `T2.2` | `P1` | `DONE` | Add LAUSD Grade 5 ELA sector + kid-friendly 1-line word definitions on Plane Game Over "Words to Practice" pills | `done` |
 | `T2.4` | `P0` | `TODO` | Migrate `dino-game.js` to use `shared/audio.js` & `shared/profile.js` (award stars & log missed words) | — |
 | `T2.5` | `P1` | `TODO` | Add Grade 3 / 4 / 5 theme selector, `ESC` Pause modal, and Main Menu button to `dino-game.html` | — |
 | `T2.6` | `P1` | `TODO` | Add "Words to Practice" summary + 1-click drill retry on `dino-game.html` Victory screen | — |

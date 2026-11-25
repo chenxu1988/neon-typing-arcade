@@ -1042,6 +1042,14 @@ body {
     color: var(--neon-green);
 }
 
+.practice-definition-box {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--neon-yellow);
+    min-height: 1.3em;
+    letter-spacing: 0.4px;
+}
+
 /* --- Gentle Hint Pulse on Wrong Key --- */
 .enemy-word .untyped.hint-pulse {
     color: var(--neon-yellow) !important;

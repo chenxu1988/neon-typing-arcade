@@ -71,6 +71,78 @@ const lausdGrade4 = [
     "explode", "explore", "export", "expose", "express", "extend", "external", "extinct", "extract", "extreme"
 ];
 
+const lausdGrade5 = [
+    "abolish", "abstract", "accomplish", "accumulate", "acknowledge", "acquire", "adaptable", "adequate", "adjacent", "advocate",
+    "affluent", "aggravate", "allegory", "allocate", "alteration", "ambiguous", "ambition", "amendment", "amplify", "analogy",
+    "ancestor", "anecdote", "antagonist", "anticipate", "apparent", "appreciate", "approximate", "arbitrary", "architect", "arrogant",
+    "artifact", "articulate", "aspiration", "assimilate", "assumption", "astonish", "atmosphere", "attribute", "authentic", "authority",
+    "autonomous", "barren", "beneficial", "benevolent", "bias", "boycott", "brevity", "brittle", "bureaucracy", "calculate",
+    "campaign", "candidate", "capable", "capacity", "catalyst", "category", "chronicle", "chronology", "circulate", "citation",
+    "clarify", "classify", "coalition", "coherent", "coincide", "collaborate", "collapse", "colleague", "colony", "commemorate",
+    "commerce", "commission", "commodity", "compatible", "compel", "compensate", "competent", "compile", "complement", "complex",
+    "component", "compose", "comprehend", "compromise", "conceal", "concede", "concentrate", "conception", "conclude", "concrete",
+    "condense", "condition", "conduct", "confederate", "confer", "confident", "confine", "confirm", "conflict", "conform",
+    "confront", "congress", "conscience", "conscious", "consensus", "consequence", "conserve", "considerable", "consistent", "consolidate",
+    "conspicuous", "constant", "constitute", "construct", "consult", "consume", "contact", "contagious", "contain", "contaminate"
+];
+
+const WORD_DEFINITIONS = {
+    // Sci-Fi
+    laser: "A focused beam of bright light.",
+    plasma: "Super-hot glowing gas made of charged particles.",
+    meteor: "A space rock burning up as it enters Earth's sky.",
+    orbit: "The curved path a planet or moon takes around something.",
+    galaxy: "A huge group of billions of stars and planets.",
+    gravity: "The invisible force that pulls objects toward each other.",
+    nebula: "A giant colorful cloud of dust and gas in space.",
+    quantum: "Relating to the tiniest packets of energy in physics.",
+    velocity: "Speed in a specific direction.",
+    telemetry: "Measuring and sending data from far away.",
+    // Grade 3
+    character: "A person, animal, or creature in a story.",
+    compare: "To find ways two things are alike.",
+    contrast: "To find ways two things are different.",
+    describe: "To tell what something looks, sounds, or feels like.",
+    fraction: "A part of a whole, like one half or three fourths.",
+    habitat: "The natural home where a plant or animal lives.",
+    opinion: "What someone thinks or believes about a topic.",
+    observe: "To watch carefully to learn details.",
+    courage: "Being brave even when something feels scary.",
+    rhythm: "A steady beat or pattern in music or poetry.",
+    // Grade 4
+    analyze: "To study something closely by looking at its parts.",
+    conclude: "To decide what something means after looking at clues.",
+    evidence: "Facts or clues that prove something is true.",
+    inference: "A smart guess based on clues and what you know.",
+    summarize: "To retell the main points briefly in your own words.",
+    metaphor: "Comparing two things directly without using 'like' or 'as'.",
+    simile: "Comparing two things using 'like' or 'as'.",
+    ecosystem: "Living things and their environment working together.",
+    adaptation: "A trait that helps a living thing survive.",
+    heritage: "Traditions and history passed down through families.",
+    // Grade 5
+    abolish: "To officially end a law, system, or practice.",
+    acknowledge: "To admit or recognize that something is true.",
+    advocate: "To speak up in support of a person or idea.",
+    allegory: "A story with a hidden moral or deeper meaning.",
+    ambiguous: "Unclear or able to be understood in more than one way.",
+    amendment: "An official change or addition to a law or document.",
+    analogy: "A comparison showing how two pairs of things are alike.",
+    antagonist: "The character or force working against the hero.",
+    anticipate: "To expect or prepare for something before it happens.",
+    artifact: "An object made by humans in the past.",
+    authentic: "Real, genuine, and not a copy.",
+    beneficial: "Helpful or producing a good result.",
+    boycott: "Refusing to buy or use something as a protest.",
+    chronology: "Events arranged in the order they happened in time.",
+    citation: "Giving credit to the source where you found information.",
+    collaborate: "To work together with others toward a shared goal.",
+    compromise: "When both sides give up a little to reach an agreement.",
+    consequence: "The result or effect of an action or choice.",
+    consensus: "General agreement reached by a group.",
+    conserve: "To protect and save resources so they don't run out."
+};
+
 const DIFFICULTY_PRESETS = {
     easy: { baseSpeed: 0.65, spawnDelay: 2700, minSpawnDelay: 1600, speedStep: 0.04, delayStep: 80, bossChargeMs: 14000 },
     normal: { baseSpeed: 0.95, spawnDelay: 2200, minSpawnDelay: 1200, speedStep: 0.06, delayStep: 100, bossChargeMs: 12000 },
@@ -734,6 +806,8 @@ function startGame(drillWords = null) {
         activeDictionary = lausdGrade3;
     } else if (activeSector === 'grade4') {
         activeDictionary = lausdGrade4;
+    } else if (activeSector === 'grade5') {
+        activeDictionary = lausdGrade5;
     } else if (activeSector === 'custom') {
         activeDictionary = getCustomWordList();
     } else {
@@ -1881,19 +1955,32 @@ function renderPracticeWords() {
         pill.innerText = '✨ FLAWLESS TYPING! NO MISSED WORDS';
         pills.appendChild(pill);
     } else {
-        title.innerText = 'WORDS TO PRACTICE (CLICK TO HEAR):';
+        title.innerText = 'WORDS TO PRACTICE (CLICK TO HEAR & SEE MEANING):';
+        const defBox = document.createElement('div');
+        defBox.className = 'practice-definition-box';
         const topWords = Array.from(wordMistakes.entries())
             .sort((a, b) => b[1] - a[1])
             .slice(0, 8);
-        topWords.forEach(([word, count]) => {
+        topWords.forEach(([word, count], idx) => {
             const pill = document.createElement('button');
             pill.type = 'button';
             pill.className = 'practice-pill';
-            pill.title = `Hear "${word}"`;
+            const def = WORD_DEFINITIONS[word] || 'Practice spelling and pronouncing this word!';
+            pill.title = def;
             pill.innerText = count > 1 ? `🔊 ${word} (${count}×)` : `🔊 ${word}`;
-            pill.addEventListener('click', () => sounds.speakWord(word, true));
+            pill.addEventListener('click', () => {
+                sounds.speakWord(word, true);
+                defBox.innerText = `${word}: ${def}`;
+            });
+            if (idx === 0) {
+                defBox.innerText = `${word}: ${def}`;
+            }
             pills.appendChild(pill);
         });
+        practiceWordsContainer.appendChild(title);
+        practiceWordsContainer.appendChild(pills);
+        practiceWordsContainer.appendChild(defBox);
+        return;
     }
 
     practiceWordsContainer.appendChild(title);
