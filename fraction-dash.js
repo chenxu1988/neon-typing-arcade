@@ -1,4 +1,4 @@
-// Fraction Pizza Dash — SVG Pizza Builder & Scaffold (T3.7)
+// Fraction Pizza Dash — Challenge Modes: Build, Equivalent, Compare (T3.8)
 const PIZZA_TRACKS = {
     main: {
         bpm: 136,
@@ -51,22 +51,64 @@ class PizzaSoundManager extends window.ArcadeAudio.BaseSoundManager {
 
 const sounds = new PizzaSoundManager();
 
+const CUSTOMERS = ['🧑‍🚀', '🦕', '👩‍🔬', '🤖', '🦊', '🐼'];
+const TOTAL_ORDERS = 10;
+
+const BUILD_FRACTIONS = [
+    [1, 2], [1, 3], [2, 3], [1, 4], [3, 4], [2, 6], [5, 6], [3, 8], [5, 8], [7, 8]
+];
+
+const EQUIV_PROBLEMS = [
+    { num: 1, denom: 2, targetDenom: 4 },
+    { num: 1, denom: 2, targetDenom: 6 },
+    { num: 1, denom: 2, targetDenom: 8 },
+    { num: 1, denom: 3, targetDenom: 6 },
+    { num: 2, denom: 3, targetDenom: 6 },
+    { num: 1, denom: 4, targetDenom: 8 },
+    { num: 3, denom: 4, targetDenom: 8 }
+];
+
+const COMPARE_PROBLEMS = [
+    { a: [1, 2], b: [1, 3], op: '>' },
+    { a: [2, 4], b: [1, 2], op: '=' },
+    { a: [2, 3], b: [3, 4], op: '<' },
+    { a: [3, 6], b: [4, 8], op: '=' },
+    { a: [5, 8], b: [1, 2], op: '>' },
+    { a: [2, 8], b: [1, 3], op: '<' },
+    { a: [3, 4], b: [5, 6], op: '<' },
+    { a: [4, 6], b: [2, 3], op: '=' }
+];
+
 let gameActive = false;
 let gamePaused = false;
+let score = 0;
+let orderIndex = 0;
+let streak = 0;
+let totalAttempts = 0;
+let wrongAttempts = 0;
 let totalSlices = 4;
 let selectedSlices = new Set();
+let currentOrder = null;
+let orderLocked = false;
+let missedOrders = new Set();
 
 const pizzaSvg = document.getElementById('pizza-svg');
 const pizzaReadout = document.getElementById('pizza-readout');
+const modeSelect = document.getElementById('mode-select');
 const startScreen = document.getElementById('start-screen');
 const pauseScreen = document.getElementById('pause-screen');
 const endScreen = document.getElementById('end-screen');
+const builderControls = document.getElementById('builder-controls');
+const compareControls = document.getElementById('compare-controls');
+const feedbackBar = document.getElementById('feedback-bar');
+const orderTag = document.getElementById('order-mode-tag');
+const orderPrompt = document.getElementById('order-prompt');
+const customerAvatar = document.getElementById('customer-avatar');
 
 function renderPizzaSVG(denom, selectedSet, interactive = true) {
     pizzaSvg.innerHTML = '';
     const ns = 'http://www.w3.org/2000/svg';
 
-    // Outer crust ring
     const crust = document.createElementNS(ns, 'circle');
     crust.setAttribute('cx', '0');
     crust.setAttribute('cy', '0');
@@ -95,6 +137,7 @@ function renderPizzaSVG(denom, selectedSet, interactive = true) {
         if (interactive) {
             path.setAttribute('class', 'pizza-slice');
             path.addEventListener('click', () => {
+                if (!gameActive || gamePaused || orderLocked) return;
                 if (selectedSet.has(i)) selectedSet.delete(i);
                 else selectedSet.add(i);
                 sounds.playClick();
@@ -118,6 +161,132 @@ function renderPizzaSVG(denom, selectedSet, interactive = true) {
     pizzaReadout.innerText = `${selectedSet.size} / ${denom}`;
 }
 
+function setActiveDenominator(d) {
+    totalSlices = d;
+    selectedSlices = new Set();
+    document.querySelectorAll('.denom-btn').forEach(b => {
+        b.classList.toggle('active', Number(b.dataset.d) === d);
+    });
+    renderPizzaSVG(totalSlices, selectedSlices, true);
+}
+
+function updateHUD() {
+    document.getElementById('score-val').innerText = score;
+    document.getElementById('order-val').innerText = Math.min(orderIndex + 1, TOTAL_ORDERS);
+    const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
+    document.getElementById('acc-val').innerText = `${acc}%`;
+    document.getElementById('streak-val').innerText = streak;
+}
+
+function generateOrder() {
+    const selectedMode = modeSelect.value;
+    const modes = ['build', 'equiv', 'compare'];
+    const type = selectedMode === 'mixed' ? modes[Math.floor(Math.random() * modes.length)] : selectedMode;
+
+    if (type === 'build') {
+        const [num, denom] = BUILD_FRACTIONS[Math.floor(Math.random() * BUILD_FRACTIONS.length)];
+        return {
+            type: 'build',
+            tag: 'BUILD FRACTION',
+            label: `${num}/${denom}`,
+            prompt: `Serve me ${num}/${denom} of a pizza!`,
+            num,
+            denom
+        };
+    }
+    if (type === 'equiv') {
+        const eq = EQUIV_PROBLEMS[Math.floor(Math.random() * EQUIV_PROBLEMS.length)];
+        return {
+            type: 'equiv',
+            tag: 'EQUIVALENT FRACTION',
+            label: `${eq.num}/${eq.denom} = ?/${eq.targetDenom}`,
+            prompt: `Build a pizza with ${eq.targetDenom} slices equal to ${eq.num}/${eq.denom}!`,
+            num: eq.num,
+            denom: eq.denom,
+            targetDenom: eq.targetDenom
+        };
+    }
+    const cmp = COMPARE_PROBLEMS[Math.floor(Math.random() * COMPARE_PROBLEMS.length)];
+    return {
+        type: 'compare',
+        tag: 'COMPARE FRACTIONS',
+        label: `${cmp.a[0]}/${cmp.a[1]} ? ${cmp.b[0]}/${cmp.b[1]}`,
+        prompt: `Compare: ${cmp.a[0]}/${cmp.a[1]}  [ ? ]  ${cmp.b[0]}/${cmp.b[1]}`,
+        a: cmp.a,
+        b: cmp.b,
+        op: cmp.op
+    };
+}
+
+function loadNextOrder() {
+    if (!gameActive) return;
+    if (orderIndex >= TOTAL_ORDERS) {
+        finishShift();
+        return;
+    }
+
+    currentOrder = generateOrder();
+    orderLocked = false;
+    customerAvatar.innerText = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
+    orderTag.innerText = currentOrder.tag;
+    orderPrompt.innerText = currentOrder.prompt;
+    feedbackBar.innerText = '';
+    updateHUD();
+
+    if (currentOrder.type === 'compare') {
+        builderControls.style.display = 'none';
+        compareControls.style.display = 'flex';
+        const previewSet = new Set();
+        for (let i = 0; i < currentOrder.a[0]; i++) previewSet.add(i);
+        renderPizzaSVG(currentOrder.a[1], previewSet, false);
+        pizzaReadout.innerText = `${currentOrder.a[0]}/${currentOrder.a[1]}  vs  ${currentOrder.b[0]}/${currentOrder.b[1]}`;
+    } else {
+        compareControls.style.display = 'none';
+        builderControls.style.display = 'flex';
+        setActiveDenominator(currentOrder.type === 'equiv' ? currentOrder.targetDenom : currentOrder.denom);
+    }
+}
+
+function handleOrderResult(isCorrect, hintText) {
+    orderLocked = true;
+    totalAttempts++;
+    if (isCorrect) {
+        sounds.playSuccess();
+        streak++;
+        score += 100 + streak * 15;
+        feedbackBar.innerText = `✅ Delicious! Exact fraction!`;
+    } else {
+        sounds.playError();
+        wrongAttempts++;
+        streak = 0;
+        missedOrders.add(currentOrder.label);
+        feedbackBar.innerText = `❌ ${hintText}`;
+    }
+    updateHUD();
+    orderIndex++;
+    setTimeout(loadNextOrder, 1150);
+}
+
+function servePizzaOrder() {
+    if (!gameActive || gamePaused || orderLocked || !currentOrder || currentOrder.type === 'compare') return;
+    const builtVal = selectedSlices.size / totalSlices;
+    const targetVal = currentOrder.num / currentOrder.denom;
+    const isEqual = Math.abs(builtVal - targetVal) < 1e-6;
+
+    if (currentOrder.type === 'equiv') {
+        const ok = isEqual && totalSlices === currentOrder.targetDenom;
+        handleOrderResult(ok, `Set slices to ${currentOrder.targetDenom} and pick ${(currentOrder.num * currentOrder.targetDenom) / currentOrder.denom} slices.`);
+    } else {
+        handleOrderResult(isEqual, `Needed ${currentOrder.num}/${currentOrder.denom} (${currentOrder.num} of ${currentOrder.denom} slices).`);
+    }
+}
+
+function submitCompare(op) {
+    if (!gameActive || gamePaused || orderLocked || !currentOrder || currentOrder.type !== 'compare') return;
+    const ok = op === currentOrder.op;
+    handleOrderResult(ok, `${currentOrder.a[0]}/${currentOrder.a[1]} ${currentOrder.op} ${currentOrder.b[0]}/${currentOrder.b[1]}`);
+}
+
 function updatePizzaBanner() {
     const profile = window.ArcadeProfile ? window.ArcadeProfile.loadProfile() : { games: {} };
     const stats = profile.games.fraction_dash || { bestScore: 0, bestAcc: 0 };
@@ -126,14 +295,56 @@ function updatePizzaBanner() {
 
 function startGame() {
     sounds.init();
+    score = 0;
+    orderIndex = 0;
+    streak = 0;
+    totalAttempts = 0;
+    wrongAttempts = 0;
+    missedOrders = new Set();
     gameActive = true;
     gamePaused = false;
-    selectedSlices = new Set();
-    renderPizzaSVG(totalSlices, selectedSlices, true);
+
     startScreen.classList.remove('active');
     pauseScreen.classList.remove('active');
     endScreen.classList.remove('active');
+    loadNextOrder();
     if (sounds.bgmEnabled) sounds.bgmController.start();
+}
+
+function finishShift() {
+    gameActive = false;
+    sounds.bgmController.stop();
+    sounds.playFanfare([523.25, 659.25, 783.99, 1046.5]);
+
+    const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
+    document.getElementById('final-score-val').innerText = score;
+    document.getElementById('final-acc-val').innerText = `${acc}%`;
+
+    const review = document.getElementById('missed-fractions');
+    review.innerHTML = '';
+    if (missedOrders.size === 0) {
+        review.innerHTML = '<span class="missed-pill" style="border-color:#4caf50;background:rgba(76,175,80,0.2)">✨ Master Fraction Chef!</span>';
+    } else {
+        Array.from(missedOrders).slice(0, 8).forEach(lbl => {
+            const p = document.createElement('span');
+            p.className = 'missed-pill';
+            p.innerText = lbl;
+            review.appendChild(p);
+        });
+    }
+    endScreen.classList.add('active');
+}
+
+function togglePause() {
+    if (!gameActive) return;
+    gamePaused = !gamePaused;
+    if (gamePaused) {
+        sounds.bgmController.stop();
+        pauseScreen.classList.add('active');
+    } else {
+        pauseScreen.classList.remove('active');
+        if (sounds.bgmEnabled) sounds.bgmController.start();
+    }
 }
 
 function returnToMenu() {
@@ -146,19 +357,28 @@ function returnToMenu() {
     startScreen.classList.add('active');
 }
 
+window.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && gameActive) {
+        e.preventDefault();
+        togglePause();
+    }
+});
+
 document.querySelectorAll('.denom-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.denom-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        totalSlices = Number(btn.dataset.d);
-        selectedSlices = new Set();
-        renderPizzaSVG(totalSlices, selectedSlices, true);
+        if (!gameActive || gamePaused || orderLocked) return;
+        setActiveDenominator(Number(btn.dataset.d));
     });
+});
+document.querySelectorAll('#compare-controls .compare-btn').forEach(btn => {
+    btn.addEventListener('click', () => submitCompare(btn.dataset.op));
 });
 document.getElementById('clear-pizza-btn').addEventListener('click', () => {
     selectedSlices = new Set();
     renderPizzaSVG(totalSlices, selectedSlices, true);
 });
+document.getElementById('serve-btn').addEventListener('click', servePizzaOrder);
+document.getElementById('resume-btn').addEventListener('click', togglePause);
 document.getElementById('start-btn').addEventListener('click', startGame);
 document.getElementById('restart-btn').addEventListener('click', startGame);
 document.getElementById('pause-menu-btn').addEventListener('click', returnToMenu);
