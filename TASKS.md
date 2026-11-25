@@ -54,18 +54,18 @@
 
 ---
 
-## Phase 4: Star Shop, Polish & New STEM / Practical Math Games
+## Phase 4: New STEM / Practical Math Games, Star Shop & Polish
 
 | ID | Priority | Status | Task | Commit |
 | :--- | :--- | :--- | :--- | :--- |
-| `T4.1` | `P0` | `TODO` | Add Star Shop catalog (`unlocks`, `equipped`, `purchaseItem`, `equipItem`) to `shared/profile.js` + Star Shop modal in `index.html` | — |
-| `T4.2` | `P1` | `TODO` | Wire equipped Star Shop cosmetics into Plane (aura/trail), Dino (hats), Word Quest (avatars), and Fraction Dash (toppings) | — |
-| `T4.3` | `P1` | `TODO` | Expand `word-quest.js` bank to 60+ LAUSD Grade 3–5 questions + add visual dot-array grid in `astro-math.js` | — |
-| `T4.4` | `P1` | `TODO` | Add side-by-side Equivalence Visualizer in `fraction-dash.js` on missed Equivalent/Compare orders | — |
-| `T4.5` | `P1` | `TODO` | Build **Science Explorer** (`science-explorer.html`, `.css`, `.js`) for Grade 3–5 STEM (Solar System, Food Chains, Water Cycle, Matter, Circuits) | — |
-| `T4.6` | `P1` | `TODO` | Register **Science Explorer** in `index.html` + add `science_whiz` badge in `shared/profile.js` | — |
-| `T4.7` | `P1` | `TODO` | Build **Time, Money & Area Dash** (`life-math.html`, `.css`, `.js`) with SVG analog clock, coin counter, and area/perimeter grid | — |
-| `T4.8` | `P1` | `TODO` | Register **Time, Money & Area Dash** in `index.html`, add `time_master` badge, and update `README.md` | — |
+| `T4.1` | `P0` | `TODO` | Build **Science Explorer** (`science-explorer.html`, `.css`, `.js`) for Grade 3–5 STEM (Solar System, Food Chains, Water Cycle, Matter, Circuits) | — |
+| `T4.2` | `P0` | `TODO` | Register **Science Explorer** in `index.html` + add `science_whiz` badge in `shared/profile.js` | — |
+| `T4.3` | `P0` | `TODO` | Build **Time, Money & Area Dash** (`life-math.html`, `.css`, `.js`) with SVG analog clock, coin counter, and area/perimeter grid | — |
+| `T4.4` | `P0` | `TODO` | Register **Time, Money & Area Dash** in `index.html`, add `time_master` badge, and update `README.md` | — |
+| `T4.5` | `P1` | `TODO` | Add Star Shop catalog (`unlocks`, `equipped`, `purchaseItem`, `equipItem`) to `shared/profile.js` + Star Shop modal in `index.html` | — |
+| `T4.6` | `P1` | `TODO` | Wire equipped Star Shop cosmetics into Plane (aura/trail), Dino (hats), Word Quest (avatars), and Fraction Dash (toppings) | — |
+| `T4.7` | `P1` | `TODO` | Expand `word-quest.js` bank to 60+ LAUSD Grade 3–5 questions + add visual dot-array grid in `astro-math.js` | — |
+| `T4.8` | `P1` | `TODO` | Add side-by-side Equivalence Visualizer in `fraction-dash.js` on missed Equivalent/Compare orders | — |
 
 ---
 
