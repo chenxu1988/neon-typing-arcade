@@ -90,7 +90,7 @@
 - [ ] `TRIAGE-15` (`P2`): Art Upgrade (**Fraction Pizza Dash** `fraction-dash.html`) — Keep interactive `<svg>` pizza cutter, add AI-generated pizzeria background, customer portraits, and Hub card preview (`assets/`).
 - [ ] `TRIAGE-16` (`P2`): Art Upgrade (**Science Explorer** `science-explorer.html`) — Keep dynamic `<svg>` STEM diagrams, add AI-generated Science Rover sprite, alien/lab expedition backdrop, and Hub card preview (`assets/`).
 - [ ] `TRIAGE-17` (`P2`): Art Upgrade (**Time, Money & Area Dash** `life-math.html`) — Keep interactive `<svg>` analog clock, add AI-generated shop/workshop backdrop, mascot/coin art, and Hub card preview (`assets/`).
-- [ ] `TRIAGE-18` (`P2`): Art Upgrade (**Castle Siege** `castle-siege.html`) — Replace emoji castles (`🏰`/`🏯`) and troops (`⚔️`/`🐉`/`👺`) with AI-generated medieval battlefield background, castle sprites, Knight, Goblin/Dragon sprites, and Hub card preview (`assets/`).
+- [ ] `TRIAGE-18` (`P2`): Art Upgrade (**Castle Siege** `castle-siege.html`) — Added AI battlefield BG (`castle-bg.jpg`), castles (`castle-player.jpg`, `castle-enemy.jpg`), Knight (`castle-knight.jpg`), and Hub preview; Raider sprite (`castle-raider.jpg`) pending image-gen quota reset.
 
 ---
 

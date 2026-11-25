@@ -180,10 +180,11 @@
     }
 
     function appendKnight() {
-        const span = document.createElement('span');
-        span.className = 'unit-icon';
-        span.innerText = '⚔️';
-        els.knightSquad.appendChild(span);
+        const img = document.createElement('img');
+        img.src = 'assets/castle-knight.jpg';
+        img.alt = 'Knight';
+        img.className = 'unit-img';
+        els.knightSquad.appendChild(img);
     }
 
     function handleAnswer(choice, btnEl) {
