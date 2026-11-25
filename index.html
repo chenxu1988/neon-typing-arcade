@@ -224,6 +224,19 @@
             <div id="dino-best" class="stats-pill">BEST: 0 WPM</div>
             <div class="play-cta">START ADVENTURE →</div>
         </a>
+
+        <a href="astro-math.html" class="card" data-grades="3,4,5">
+            <div class="card-preview" style="font-size: 3.2rem;">🧮</div>
+            <div class="card-tags">
+                <span class="grade-tag">Grade 3–5</span>
+                <span class="grade-tag">Math Facts</span>
+                <span class="grade-tag">Order of Ops</span>
+            </div>
+            <h2>🧮 Astro Math Defense</h2>
+            <p>Blast falling math meteors with Multiplication, Division, Add/Sub, and Order of Operations, plus visual grouping hints and the Calculator Mothership Boss.</p>
+            <div id="math-best" class="stats-pill">TOP SCORE: 0 PTS</div>
+            <div class="play-cta">LAUNCH DEFENSE →</div>
+        </a>
     </div>
 
     <!-- Parent / Teacher Progress Report Modal -->
@@ -301,6 +314,9 @@
                 const profAcc = profile.games.dino ? profile.games.dino.bestAcc : 0;
                 document.getElementById('dino-best').innerText = `BEST: ${Math.max(legacyWpm, profWpm)} WPM | ${Math.max(legacyAcc, profAcc)}% ACC`;
             } catch {}
+
+            const mathStats = profile.games.astro_math || { bestScore: 0, bestAcc: 0 };
+            document.getElementById('math-best').innerText = `TOP SCORE: ${mathStats.bestScore} PTS | ${mathStats.bestAcc}% ACC`;
         }
 
         function renderReportModal() {

@@ -134,10 +134,19 @@ let activeDifficulty = DIFFICULTY_PRESETS.normal;
 let baseSpeed = 0.65;
 let spawnDelay = 2900;
 let nextWaveScore = 200;
+let bossActive = false;
+let bossHp = 4;
+let bossMaxHp = 4;
+let nextBossScore = 500;
+let bossDefeatedThisRun = false;
 let spawnTimer = null;
+let bossTimer = null;
 let animFrameId = null;
 let lastFrameTime = 0;
 let hintTimeout = null;
+
+const mathBoss = document.getElementById('math-boss');
+const bossHealthBar = document.getElementById('boss-health-bar');
 
 const gameArea = document.getElementById('game-area');
 const meteorsContainer = document.getElementById('meteors-container');
@@ -222,8 +231,34 @@ function fireLaserAt(meteorEl) {
     return { x: x2, y: y2 };
 }
 
+function generateBossProblem(topic) {
+    if (topic === 'multiply' || topic === 'divide') {
+        const a = 2 + Math.floor(Math.random() * 8);
+        const ans = 2 + Math.floor(Math.random() * 9);
+        const prod = a * ans;
+        if (Math.random() < 0.5) {
+            return {
+                text: `${a} × ? = ${prod}`,
+                answer: ans,
+                hint: `Boss Hint: Divide ${prod} ÷ ${a}`
+            };
+        }
+        return {
+            text: `${a} packs × ${ans} each = ?`,
+            answer: prod,
+            hint: `Boss Hint: Multiply ${a} × ${ans}`
+        };
+    }
+    const base = generateMathProblem(topic);
+    return {
+        text: `BOSS: ${base.text}`,
+        answer: base.answer,
+        hint: base.hint
+    };
+}
+
 function spawnMeteor() {
-    if (!gameActive || gamePaused) return;
+    if (!gameActive || gamePaused || bossActive) return;
     const prob = generateMathProblem(topicSelect.value);
     const id = meteorIdCounter++;
     const xPercent = 14 + Math.random() * 72;
@@ -248,6 +283,58 @@ function spawnMeteor() {
     });
 }
 
+function spawnBossProblem() {
+    if (!gameActive || gamePaused || !bossActive || bossHp <= 0) return;
+    const prob = generateBossProblem(topicSelect.value);
+    const id = meteorIdCounter++;
+    const xPercent = 25 + Math.random() * 50;
+    const yPx = 95;
+
+    const el = document.createElement('div');
+    el.className = 'meteor-card boss-problem';
+    el.style.left = `${xPercent}%`;
+    el.style.top = `${yPx}px`;
+    el.innerHTML = `<span class="meteor-icon">⚡</span><span class="meteor-eq">${prob.text}</span>`;
+    meteorsContainer.appendChild(el);
+
+    meteors.push({
+        id,
+        text: prob.text,
+        answer: prob.answer,
+        hint: prob.hint,
+        element: el,
+        x: xPercent,
+        y: yPx,
+        speed: baseSpeed * 0.9,
+        isBossProblem: true
+    });
+}
+
+function triggerBoss() {
+    bossActive = true;
+    bossMaxHp = 4;
+    bossHp = bossMaxHp;
+    clearInterval(spawnTimer);
+    mathBoss.classList.add('active');
+    bossHealthBar.style.width = '100%';
+    showHint('⚠️ CALCULATOR MOTHERSHIP INCOMING!');
+    if (bossTimer) clearTimeout(bossTimer);
+    bossTimer = setTimeout(spawnBossProblem, 1200);
+}
+
+function defeatBoss() {
+    bossActive = false;
+    bossDefeatedThisRun = true;
+    if (bossTimer) clearTimeout(bossTimer);
+    mathBoss.classList.remove('active');
+    score += 200;
+    nextBossScore = score + 600;
+    sounds.playSuccess();
+    spawnFloatingText(gameArea.clientWidth / 2, 70, 'BOSS DEFEATED +200');
+    updateStatsUI();
+    spawnTimer = setInterval(spawnMeteor, spawnDelay);
+}
+
 function gameLoop(timestamp) {
     if (!gameActive || gamePaused) return;
 
@@ -262,6 +349,7 @@ function gameLoop(timestamp) {
         m.element.style.top = `${m.y}px`;
 
         if (m.y >= hitThreshold) {
+            const wasBoss = m.isBossProblem;
             missedFacts.set(m.text, (missedFacts.get(m.text) || 0) + 1);
             showHint(`${m.text.replace('?', m.answer)} — ${m.hint}`);
             m.element.remove();
@@ -277,6 +365,9 @@ function gameLoop(timestamp) {
             if (lives <= 0) {
                 endGame();
                 return;
+            }
+            if (wasBoss && bossActive && bossHp > 0) {
+                bossTimer = setTimeout(spawnBossProblem, 1200);
             }
         }
     }
@@ -321,10 +412,21 @@ function submitAnswer() {
         score += pts;
         spawnFloatingText(pos.x, pos.y, `+${pts}`);
 
+        const wasBoss = target.isBossProblem;
         target.element.remove();
         meteors = meteors.filter(m => m.id !== target.id);
 
-        if (score >= nextWaveScore) {
+        if (wasBoss && bossActive) {
+            bossHp--;
+            bossHealthBar.style.width = `${Math.max(0, (bossHp / bossMaxHp) * 100)}%`;
+            if (bossHp <= 0) {
+                defeatBoss();
+            } else {
+                bossTimer = setTimeout(spawnBossProblem, 1100);
+            }
+        } else if (score >= nextBossScore && !bossActive) {
+            triggerBoss();
+        } else if (score >= nextWaveScore) {
             wave++;
             nextWaveScore += 200 + wave * 50;
             baseSpeed += activeDifficulty.speedStep;
@@ -355,6 +457,11 @@ function startGame() {
     score = 0;
     wave = 1;
     nextWaveScore = 200;
+    bossActive = false;
+    bossDefeatedThisRun = false;
+    nextBossScore = 500;
+    if (bossTimer) clearTimeout(bossTimer);
+    mathBoss.classList.remove('active');
     lives = 3;
     combo = 0;
     multiplier = 1.0;
@@ -406,8 +513,11 @@ function togglePause() {
 
 function endGame() {
     gameActive = false;
+    bossActive = false;
     clearInterval(spawnTimer);
+    if (bossTimer) clearTimeout(bossTimer);
     cancelAnimationFrame(animFrameId);
+    mathBoss.classList.remove('active');
     sounds.bgmController.stop();
 
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
@@ -423,6 +533,7 @@ function endGame() {
             score,
             wpm: 0,
             missedItems: missedList,
+            bossDefeated: bossDefeatedThisRun,
             badgeId: 'math_whiz'
         });
     }
