@@ -172,6 +172,7 @@ function handleChoice(btn, choice) {
 
     if (choice === currentQuestion.answer) {
         btn.classList.add('correct');
+        if (sounds.playAction) sounds.playAction('plank');
         sounds.playSuccess();
         builtPlanks++;
         streak++;

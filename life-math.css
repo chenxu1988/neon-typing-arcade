@@ -368,3 +368,12 @@ body {
     font-weight: 800;
     margin-bottom: 8px;
 }
+
+/* T6.14 Clock Breathing & Coin Reaction */
+#visual-workspace svg {
+    animation: arcade-breathe 4s ease-in-out infinite;
+}
+
+.coin-chip {
+    animation: arcade-react 0.22s ease-out;
+}

@@ -173,6 +173,7 @@ function spawnDustPuff() {
 function triggerWalking() {
     dinoSprite.classList.add('dino-walking');
     dinoSprite.classList.remove('dino-idle');
+    if (Math.random() < 0.35 && sounds.playAction) sounds.playAction('dino_step');
     if (Math.random() < 0.45) spawnDustPuff();
     if (walkingTimeout) clearTimeout(walkingTimeout);
     walkingTimeout = setTimeout(() => {
@@ -474,6 +475,7 @@ function updateDinoPosition() {
 }
 
 function finishSentence() {
+    if (sounds.playAction) sounds.playAction('dino_jump');
     sounds.playFanfare([523.25, 659.25, 783.99]);
     spawnConfetti();
     dinoSprite.classList.remove('dino-jump');
