@@ -139,7 +139,7 @@ const QUEST_BANK = [
     { grade: 5, mode: 'affixes', category: 'PREFIXES & SUFFIXES', key: 'chronology', prompt: 'What does the root "chron-" mean in "chronology"?', choices: ['Time', 'Color', 'Sound', 'Stone'], answer: 'Time', explain: '"Chron-" means time; chronology orders events by time.' }
 ];
 
-const TOTAL_PLANKS = 10;
+let totalPlanks = 10;
 
 let gameActive = false;
 let gamePaused = false;
@@ -177,35 +177,28 @@ function shuffleArray(arr) {
 
 function buildQuestQueue(mode, grade) {
     const g = Number(grade);
-    const primary = QUEST_BANK.filter(q => (mode === 'mixed' || q.mode === mode) && q.grade === g);
-    const sameMode = QUEST_BANK.filter(q => (mode === 'mixed' || q.mode === mode) && q.grade !== g);
-    const pool = [...shuffleArray(primary), ...shuffleArray(sameMode), ...shuffleArray(QUEST_BANK)];
-    const picked = [];
-    const seen = new Set();
-    for (const q of pool) {
-        if (picked.length >= TOTAL_PLANKS) break;
-        if (!seen.has(q.prompt)) {
-            seen.add(q.prompt);
-            picked.push({ ...q, retried: false });
-        }
-    }
-    return picked;
+    const strict = QUEST_BANK.filter(q => (mode === 'mixed' || q.mode === mode) && q.grade === g);
+    const pool = shuffleArray(strict);
+    const limit = Math.min(10, pool.length);
+    totalPlanks = limit;
+    return pool.slice(0, limit).map(q => ({ ...q, retried: false }));
 }
 
 function renderBridge() {
     bridgeTrack.innerHTML = '';
-    for (let i = 0; i < TOTAL_PLANKS; i++) {
+    bridgeTrack.style.gridTemplateColumns = `repeat(${totalPlanks}, 1fr)`;
+    for (let i = 0; i < totalPlanks; i++) {
         const plank = document.createElement('div');
         plank.className = `bridge-plank${i < builtPlanks ? ' built' : ''}`;
         bridgeTrack.appendChild(plank);
     }
-    const pct = (builtPlanks / TOTAL_PLANKS) * 82;
+    const pct = totalPlanks > 0 ? (builtPlanks / totalPlanks) * 82 : 0;
     explorer.style.left = `calc(${pct}% + 20px)`;
 }
 
 function updateQuestHUD() {
     document.getElementById('score-val').innerText = score;
-    document.getElementById('step-val').innerText = builtPlanks;
+    document.getElementById('step-val').innerText = `${builtPlanks}/${totalPlanks}`;
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
     document.getElementById('acc-val').innerText = `${acc}%`;
     document.getElementById('relic-val').innerText = relics;
@@ -219,7 +212,7 @@ function updateQuestBanner() {
 
 function loadNextQuestion() {
     if (!gameActive) return;
-    if (builtPlanks >= TOTAL_PLANKS || questQueue.length === 0) {
+    if (builtPlanks >= totalPlanks || questQueue.length === 0) {
         finishQuest();
         return;
     }

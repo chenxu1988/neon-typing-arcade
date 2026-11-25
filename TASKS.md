@@ -79,3 +79,4 @@
 - [ ] `TRIAGE-4` (`P2`): Wire `shared/touch-keyboard.js` toggle into `plane-game.html` for tablet play (formerly `T2.3`).
 - [x] `TRIAGE-5` (`P0`): Fix `Reset Progress` in Parent/Teacher modal to also clear `neonPlaneTypingStats` and `dinoTypingStats`.
 - [x] `TRIAGE-6` (`P0`): Start Fraction Pizza Dash orders with an uncut pizza (`totalSlices = 1`) so students must choose the denominator before selecting slices.
+- [x] `TRIAGE-7` (`P0`): Enforce strict grade isolation in `plane-game.js` (deduplicate G3/G4/G5 word lists), `word-quest.js`, and `science-explorer.js` (never fall back to other grades).

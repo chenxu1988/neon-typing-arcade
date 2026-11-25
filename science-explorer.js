@@ -87,8 +87,16 @@ const SCIENCE_BANK = [
 
     // Circuits
     { grade: 3, topic: 'circuits', label: 'CIRCUITS', key: 'Closed circuit', prompt: 'For a lightbulb to turn ON, the electric circuit must be:', choices: ['Closed (complete loop)', 'Open (broken gap)', 'Made of wood', 'Disconnected'], answer: 'Closed (complete loop)', explain: 'Electricity flows only through a complete, closed loop.' },
+    { grade: 3, topic: 'circuits', label: 'CIRCUITS', key: 'Battery', prompt: 'Which part of a simple flashlight circuit provides the electrical power?', choices: ['Battery', 'Glass lens', 'Plastic switch', 'Rubber grip'], answer: 'Battery', explain: 'A battery stores energy and pushes electricity through the circuit.' },
+    { grade: 3, topic: 'watercycle', label: 'WATER CYCLE', key: 'Collection', prompt: 'When rainwater flows into rivers, lakes, and oceans, that stage is called:', choices: ['Collection', 'Evaporation', 'Condensation', 'Boiling'], answer: 'Collection', explain: 'Water gathers back into rivers, lakes, and oceans during collection.' },
+    { grade: 3, topic: 'matter', label: 'STATES OF MATTER', key: 'Melting', prompt: 'When warm sunshine turns a solid ice cube into liquid water, that is:', choices: ['Melting', 'Freezing', 'Evaporating', 'Condensing'], answer: 'Melting', explain: 'Adding heat melts a solid into a liquid.' },
     { grade: 4, topic: 'circuits', label: 'CIRCUITS', key: 'Conductor', prompt: 'Which material is a good CONDUCTOR that lets electricity flow easily?', choices: ['Copper wire', 'Rubber eraser', 'Plastic spoon', 'Wooden stick'], answer: 'Copper wire', explain: 'Metals like copper conduct electricity; rubber, plastic, and wood are insulators.' },
     { grade: 4, topic: 'circuits', label: 'CIRCUITS', key: 'Insulator', prompt: 'Why are electrical wires wrapped in plastic or rubber?', choices: ['They are insulators that keep us safe', 'To make wires heavier', 'To block sunlight', 'To create gravity'], answer: 'They are insulators that keep us safe', explain: 'Insulators stop electricity from flowing into our hands.' },
+    { grade: 4, topic: 'solar', label: 'SOLAR SYSTEM', key: 'Mars', prompt: 'Which planet is known as the Red Planet because of iron-rich dust?', choices: ['Mars', 'Saturn', 'Uranus', 'Mercury'], answer: 'Mars', explain: 'Iron oxide (rust) on Mars gives it a reddish color.' },
+    { grade: 5, topic: 'solar', label: 'SOLAR SYSTEM', key: 'Earth orbit', prompt: 'How long does it take Earth to complete one full orbit around the Sun?', choices: ['1 year (365 days)', '24 hours', '1 month', '10 years'], answer: '1 year (365 days)', explain: 'Earth takes one year to revolve around the Sun.' },
+    { grade: 5, topic: 'foodchain', label: 'FOOD CHAINS', key: 'Apex predator', prompt: 'An eagle at the top of a food chain with no natural predators is called an:', choices: ['Apex predator', 'Primary producer', 'Decomposer', 'Herbivore'], answer: 'Apex predator', explain: 'Apex predators sit at the top of their food web.' },
+    { grade: 5, topic: 'watercycle', label: 'WATER CYCLE', key: 'Transpiration', prompt: 'When plant leaves release water vapor into the air, scientists call it:', choices: ['Transpiration', 'Precipitation', 'Freezing', 'Erosion'], answer: 'Transpiration', explain: 'Plants release water vapor through tiny pores in their leaves.' },
+    { grade: 5, topic: 'matter', label: 'STATES OF MATTER', key: 'Mixture', prompt: 'Trail mix with peanuts, raisins, and pretzels is an example of a:', choices: ['Mixture', 'Chemical change', 'Gas', 'Element'], answer: 'Mixture', explain: 'Parts of a mixture keep their own properties and can be separated.' },
     { grade: 5, topic: 'circuits', label: 'CIRCUITS', key: 'Energy transfer', prompt: 'In a flashlight, chemical energy in the battery transforms into:', choices: ['Light and heat energy', 'Sound and gravity', 'Water vapor', 'Nuclear fission'], answer: 'Light and heat energy', explain: 'Batteries power the bulb, converting stored chemical energy into light and warmth.' }
 ];
 
@@ -155,7 +163,7 @@ function renderScienceDiagram(q) {
     </svg>`;
 }
 
-const TOTAL_STOPS = 10;
+let totalStops = 10;
 let gameActive = false;
 let gamePaused = false;
 let score = 0;
@@ -193,35 +201,28 @@ function shuffle(arr) {
 
 function buildQueue(topic, grade) {
     const g = Number(grade);
-    const primary = SCIENCE_BANK.filter(q => (topic === 'mixed' || q.topic === topic) && q.grade === g);
-    const sameTopic = SCIENCE_BANK.filter(q => (topic === 'mixed' || q.topic === topic) && q.grade !== g);
-    const pool = [...shuffle(primary), ...shuffle(sameTopic), ...shuffle(SCIENCE_BANK)];
-    const out = [];
-    const seen = new Set();
-    for (const q of pool) {
-        if (out.length >= TOTAL_STOPS) break;
-        if (!seen.has(q.prompt)) {
-            seen.add(q.prompt);
-            out.push({ ...q, retried: false });
-        }
-    }
-    return out;
+    const strict = SCIENCE_BANK.filter(q => (topic === 'mixed' || q.topic === topic) && q.grade === g);
+    const pool = shuffle(strict);
+    const limit = Math.min(10, pool.length);
+    totalStops = limit;
+    return pool.slice(0, limit).map(q => ({ ...q, retried: false }));
 }
 
 function renderTrail() {
     trailNodes.innerHTML = '';
-    for (let i = 0; i < TOTAL_STOPS; i++) {
+    trailNodes.style.gridTemplateColumns = `repeat(${totalStops}, 1fr)`;
+    for (let i = 0; i < totalStops; i++) {
         const n = document.createElement('div');
         n.className = `trail-node${i < stopsDone ? ' done' : ''}`;
         trailNodes.appendChild(n);
     }
-    const pct = (stopsDone / TOTAL_STOPS) * 82;
+    const pct = totalStops > 0 ? (stopsDone / totalStops) * 82 : 0;
     rover.style.left = `calc(${pct}% + 18px)`;
 }
 
 function updateHUD() {
     document.getElementById('score-val').innerText = score;
-    document.getElementById('step-val').innerText = stopsDone;
+    document.getElementById('step-val').innerText = `${stopsDone}/${totalStops}`;
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
     document.getElementById('acc-val').innerText = `${acc}%`;
     document.getElementById('disc-val').innerText = discoveries;
@@ -235,7 +236,7 @@ function updateSciBanner() {
 
 function loadNextQuestion() {
     if (!gameActive) return;
-    if (stopsDone >= TOTAL_STOPS || queue.length === 0) {
+    if (stopsDone >= totalStops || queue.length === 0) {
         finishExpedition();
         return;
     }
