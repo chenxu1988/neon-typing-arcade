@@ -14,8 +14,8 @@
 
     const TRACKS = {
         march: {
-            tempo: 132,
-            melody: ['G4', 'B4', 'D5', 'G5', 'F#5', 'D5', 'B4', 'D5', 'E5', 'C5', 'A4', 'C5', 'D5', 'B4', 'G4', '-'],
+            bpm: 132,
+            lead: ['G4', 'B4', 'D5', 'G5', 'Fs5', 'D5', 'B4', 'D5', 'E5', 'C5', 'A4', 'C5', 'D5', 'B4', 'G4', '-'],
             bass: ['G2', 'G2', 'D3', 'D3', 'C3', 'C3', 'G2', 'D3']
         }
     };
@@ -339,7 +339,7 @@
         state.running = false;
         clearInterval(state.timerId);
         state.timerId = null;
-        if (sound.stopBgm) sound.stopBgm();
+        if (sound.bgmController) sound.bgmController.stop();
         if (sound.stopSpeech) sound.stopSpeech();
 
         const acc = state.attempts === 0 ? 100 : Math.round((state.correct / state.attempts) * 100);
@@ -404,7 +404,7 @@
     function startGame() {
         sound.init();
         if (sound.playGameStart) sound.playGameStart('horn');
-        if (sound.startBgm) sound.startBgm('march');
+        if (sound.bgmEnabled && sound.bgmController) sound.bgmController.start();
 
         state.running = true;
         state.paused = false;
@@ -430,12 +430,29 @@
         if (!state.running) return;
         state.paused = !state.paused;
         els.pauseScreen.classList.toggle('active', state.paused);
+        if (state.paused && sound.stopSpeech) sound.stopSpeech();
+        if (state.paused && sound.bgmController) sound.bgmController.stop();
+        else if (!state.paused && sound.bgmEnabled && sound.bgmController) sound.bgmController.start();
+    }
+
+    function returnToMenu() {
+        state.running = false;
+        state.paused = false;
+        clearInterval(state.timerId);
+        state.timerId = null;
+        if (sound.bgmController) sound.bgmController.stop();
+        if (sound.stopSpeech) sound.stopSpeech();
+        els.pauseScreen.classList.remove('active');
+        els.endScreen.classList.remove('active');
+        els.startScreen.classList.add('active');
+        updateBestBanner();
     }
 
     // Controls
     document.getElementById('start-btn').addEventListener('click', startGame);
     document.getElementById('restart-btn').addEventListener('click', startGame);
     document.getElementById('resume-btn').addEventListener('click', togglePause);
+    document.getElementById('pause-menu-btn').addEventListener('click', returnToMenu);
     document.getElementById('hud-pause-btn').addEventListener('click', togglePause);
     els.qPrompt.addEventListener('click', () => {
         if (state.currentQ && sound.speak) sound.speak(state.currentQ.prompt, true);
@@ -454,8 +471,8 @@
         sound.bgmEnabled = !sound.bgmEnabled;
         bgmBtn.classList.toggle('active', sound.bgmEnabled);
         bgmBtn.innerText = sound.bgmEnabled ? '🎵 Music: On' : '🎵 Music: Off';
-        if (sound.bgmEnabled && state.running && sound.startBgm) sound.startBgm('march');
-        else if (!sound.bgmEnabled && sound.stopBgm) sound.stopBgm();
+        if (sound.bgmEnabled && state.running && !state.paused && sound.bgmController) sound.bgmController.start();
+        else if (!sound.bgmEnabled && sound.bgmController) sound.bgmController.stop();
     });
 
     const soundBtn = document.getElementById('sound-toggle');
