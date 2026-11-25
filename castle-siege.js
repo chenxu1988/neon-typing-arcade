@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    const WAVE_SECONDS = 20;
+    const WAVE_SECONDS = 30;
     const MAX_HP = 100;
     const DAMAGE_PER_UNIT = 10;
     const WRONG_COOLDOWN_MS = 1000;
@@ -72,12 +72,16 @@
         playerHp: MAX_HP,
         enemyHp: MAX_HP,
         knights: 0,
-        raiders: 3,
+        raiders: 0,
+        raiderInterval: 7,
+        raiderCountdown: 7,
         score: 0,
         correct: 0,
         attempts: 0,
+        allFiltered: [],
         pool: [],
-        poolIndex: 0,
+        retryQueue: [],
+        masteredPrompts: new Set(),
         currentQ: null,
         missed: [],
         timerId: null
@@ -107,17 +111,34 @@
         if (filtered.length === 0) {
             filtered = bank.filter(q => q.grade === grade);
         }
+        state.allFiltered = filtered;
         state.pool = shuffle(filtered);
-        state.poolIndex = 0;
+        state.retryQueue = [];
+        state.masteredPrompts = new Set();
     }
 
     function nextQuestion() {
-        if (state.pool.length === 0) return;
-        if (state.poolIndex >= state.pool.length) {
-            state.pool = shuffle(state.pool);
-            state.poolIndex = 0;
+        state.retryQueue.forEach(item => { item.wait--; });
+        const dueIdx = state.retryQueue.findIndex(item => item.wait <= 0);
+        let q = null;
+
+        if (dueIdx !== -1) {
+            q = state.retryQueue.splice(dueIdx, 1)[0].q;
+        } else {
+            if (state.pool.length === 0) {
+                const unmastered = state.allFiltered.filter(item => !state.masteredPrompts.has(item.prompt));
+                if (unmastered.length > 0) {
+                    state.pool = shuffle(unmastered);
+                } else {
+                    // All questions in this match pool mastered; reset cycle cleanly
+                    state.masteredPrompts.clear();
+                    state.pool = shuffle(state.allFiltered);
+                }
+            }
+            q = state.pool.shift();
         }
-        const q = state.pool[state.poolIndex++];
+
+        if (!q) return;
         state.currentQ = {
             ...q,
             shuffledChoices: shuffle(q.choices)
@@ -187,6 +208,13 @@
         els.knightSquad.appendChild(img);
     }
 
+    function appendRaider() {
+        const span = document.createElement('span');
+        span.className = 'unit-icon';
+        span.innerText = state.wave % 2 === 0 ? '🐉' : '👺';
+        els.raiderSquad.appendChild(span);
+    }
+
     function handleAnswer(choice, btnEl) {
         if (!state.running || state.paused || state.resolving || state.cooldown || !state.currentQ) return;
 
@@ -197,6 +225,7 @@
             state.correct++;
             state.knights++;
             state.score += 100;
+            state.masteredPrompts.add(q.prompt);
             btnEl.classList.add('correct');
             els.qFeedback.className = 'q-feedback ok';
             els.qFeedback.innerText = `⚔️ Knight summoned! ${q.explain}`;
@@ -217,6 +246,9 @@
             if (!state.missed.some(m => m.prompt === q.prompt)) {
                 state.missed.push({ prompt: q.prompt, answer: q.answer, explain: q.explain });
             }
+            if (!state.retryQueue.some(item => item.q.prompt === q.prompt)) {
+                state.retryQueue.push({ q, wait: 2 });
+            }
             updateHUD();
 
             state.cooldown = true;
@@ -236,18 +268,20 @@
         state.resolving = false;
         state.cooldown = false;
         state.knights = 0;
-        state.raiders = Math.min(6, 2 + state.wave + Math.floor(Math.random() * 2));
+        state.raiders = 0;
+        state.raiderInterval = Math.max(4.5, 7.5 - state.wave * 0.5);
+        state.raiderCountdown = state.raiderInterval;
         state.timeLeft = WAVE_SECONDS;
 
         els.knightSquad.classList.remove('marching');
         els.raiderSquad.classList.remove('marching');
         els.clashSpark.classList.remove('active');
         els.cooldownPill.classList.add('hidden');
-        els.waveBanner.innerText = `WAVE ${state.wave} — SUMMON KNIGHTS!`;
+        els.waveBanner.innerText = `WAVE ${state.wave} — OUTRACE THE RAIDERS!`;
         els.qFeedback.innerText = '';
 
         renderSquad(els.knightSquad, 0, '⚔️');
-        renderSquad(els.raiderSquad, state.raiders, state.wave % 2 === 0 ? '🐉' : '👺');
+        renderSquad(els.raiderSquad, 0, '👺');
         updateHUD();
         nextQuestion();
     }
@@ -352,6 +386,15 @@
     function tick() {
         if (!state.running || state.paused || state.resolving) return;
         state.timeLeft--;
+        if (state.timeLeft > 0) {
+            state.raiderCountdown--;
+            if (state.raiderCountdown <= 0) {
+                state.raiders++;
+                state.raiderCountdown += state.raiderInterval;
+                appendRaider();
+                sound.playTone(130, 0.08, 'triangle', 0.12, 95);
+            }
+        }
         updateHUD();
         if (state.timeLeft <= 0) {
             resolveWave();

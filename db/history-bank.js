@@ -322,6 +322,222 @@
             choices: ['So no single branch gets too powerful', 'To count paper money faster', 'To shorten winter breaks', 'To elect mayors daily'],
             answer: 'So no single branch gets too powerful',
             explain: 'Checks and balances let each branch limit the others so power stays shared.'
+        },
+
+        // --- EXPANDED GRADE 3 (10 more -> 25 total) ---
+        {
+            grade: 3, topic: 'geo',
+            prompt: 'Which continent is both a country and an island?',
+            choices: ['Australia', 'Europe', 'South America', 'Africa'],
+            answer: 'Australia',
+            explain: 'Australia is the only continent that is also a single country.'
+        },
+        {
+            grade: 3, topic: 'civics',
+            prompt: 'What document lists a community’s or nation’s basic rules and rights?',
+            choices: ['Constitution', 'Dictionary', 'Calendar', 'Receipt'],
+            answer: 'Constitution',
+            explain: 'A constitution sets out the core laws and rights of a government.'
+        },
+        {
+            grade: 3, topic: 'civics',
+            prompt: 'How do cities pay for public parks, libraries, and roads?',
+            choices: ['Taxes', 'Raffles', 'Library fines only', 'Treasure hunts'],
+            answer: 'Taxes',
+            explain: 'Citizens pay taxes so local governments can fund schools, parks, and roads.'
+        },
+        {
+            grade: 3, topic: 'civics',
+            prompt: 'What is a volunteer?',
+            choices: ['Someone who helps without pay', 'A paid mayor', 'A movie actor', 'A bus driver'],
+            answer: 'Someone who helps without pay',
+            explain: 'Volunteers freely give their time to improve their school or neighborhood.'
+        },
+        {
+            grade: 3, topic: 'civics',
+            prompt: 'Which local place lets everyone borrow books and use computers for free?',
+            choices: ['Public library', 'Grocery store', 'Post office', 'Train station'],
+            answer: 'Public library',
+            explain: 'Public libraries are community hubs funded by taxes for everyone to learn.'
+        },
+        {
+            grade: 3, topic: 'history',
+            prompt: 'What holiday in July celebrates the birthday of the United States?',
+            choices: ['Independence Day (July 4)', 'Thanksgiving', 'Memorial Day', 'Veterans Day'],
+            answer: 'Independence Day (July 4)',
+            explain: 'July 4, 1776 is when the Declaration of Independence was adopted.'
+        },
+        {
+            grade: 3, topic: 'history',
+            prompt: 'Which famous statue in New York Harbor welcomes newcomers as a symbol of freedom?',
+            choices: ['Statue of Liberty', 'Liberty Bell', 'Lincoln Memorial', 'Mount Rushmore'],
+            answer: 'Statue of Liberty',
+            explain: 'France gifted the Statue of Liberty to the United States in 1886.'
+        },
+        {
+            grade: 3, topic: 'history',
+            prompt: 'What monument in Washington, D.C. is a tall white obelisk honoring our first President?',
+            choices: ['Washington Monument', 'Space Needle', 'Alamo', 'Gateway Arch'],
+            answer: 'Washington Monument',
+            explain: 'The Washington Monument honors George Washington, the first U.S. President.'
+        },
+        {
+            grade: 3, topic: 'history',
+            prompt: 'Why did early Native American groups build different kinds of homes like pueblos or plank houses?',
+            choices: ['They used materials from their local environment', 'They copied modern skyscrapers', 'They only lived on boats', 'They ordered bricks online'],
+            answer: 'They used materials from their local environment',
+            explain: 'Desert tribes used adobe clay, while forest tribes used cedar wood and bark.'
+        },
+        {
+            grade: 3, topic: 'history',
+            prompt: 'Which California landmark in Los Angeles is famous for giant tar-pit fossils of mammoths and saber-toothed cats?',
+            choices: ['La Brea Tar Pits', 'Yosemite Valley', 'Alcatraz Island', 'Hearst Castle'],
+            answer: 'La Brea Tar Pits',
+            explain: 'The La Brea Tar Pits preserved Ice Age animal fossils right in Los Angeles.'
+        },
+
+        // --- EXPANDED GRADE 4 (10 more -> 25 total) ---
+        {
+            grade: 4, topic: 'geo',
+            prompt: 'Which California national park is famous for giant granite cliffs like El Capitan and Half Dome?',
+            choices: ['Yosemite National Park', 'Joshua Tree', 'Redwood Park', 'Channel Islands'],
+            answer: 'Yosemite National Park',
+            explain: 'Yosemite Valley in the Sierra Nevada was carved by ancient glaciers.'
+        },
+        {
+            grade: 4, topic: 'geo',
+            prompt: 'Which tall trees along Northern California’s misty coast are the tallest living trees on Earth?',
+            choices: ['Coast redwoods', 'Joshua trees', 'Palm trees', 'Saguaro cactuses'],
+            answer: 'Coast redwoods',
+            explain: 'Coast redwoods in Northern California can grow over 350 feet tall.'
+        },
+        {
+            grade: 4, topic: 'geo',
+            prompt: 'Which river forms much of California’s southeastern border with Arizona?',
+            choices: ['Colorado River', 'Sacramento River', 'Mississippi River', 'Rio Grande'],
+            answer: 'Colorado River',
+            explain: 'The Colorado River supplies water to Southern California farms and cities.'
+        },
+        {
+            grade: 4, topic: 'geo',
+            prompt: 'What natural hazard happens when rock plates shift along California’s San Andreas Fault?',
+            choices: ['Earthquakes', 'Hurricanes', 'Blizzards', 'Tornadoes'],
+            answer: 'Earthquakes',
+            explain: 'California sits along tectonic plate boundaries where faults cause earthquakes.'
+        },
+        {
+            grade: 4, topic: 'history',
+            prompt: 'What were the large cattle ranches in Mexican-era California called?',
+            choices: ['Ranchos', 'Plantations', 'Factories', 'Subways'],
+            answer: 'Ranchos',
+            explain: 'Californio families raised cattle for hides and tallow on huge ranchos.'
+        },
+        {
+            grade: 4, topic: 'history',
+            prompt: 'Who became famous during the Gold Rush for selling durable canvas pants to miners?',
+            choices: ['Levi Strauss', 'John Sutter', 'James Marshall', 'Juan Cabrillo'],
+            answer: 'Levi Strauss',
+            explain: 'Levi Strauss partnered with Jacob Davis to invent riveted blue jeans in California.'
+        },
+        {
+            grade: 4, topic: 'history',
+            prompt: 'What 1913 engineering project brought mountain water over 200 miles to help Los Angeles grow?',
+            choices: ['Los Angeles Aqueduct', 'Golden Gate Bridge', 'Hoover Dam', 'BART Tunnel'],
+            answer: 'Los Angeles Aqueduct',
+            explain: 'The Los Angeles Aqueduct carried water from the Owens Valley into Los Angeles.'
+        },
+        {
+            grade: 4, topic: 'civics',
+            prompt: 'How many houses make up the California State Legislature?',
+            choices: ['Two (Assembly and Senate)', 'One (Council)', 'Three (Courts)', 'Four (Districts)'],
+            answer: 'Two (Assembly and Senate)',
+            explain: 'California’s Legislature has an 80-member Assembly and a 40-member Senate.'
+        },
+        {
+            grade: 4, topic: 'civics',
+            prompt: 'What is the highest court in California’s state judicial branch?',
+            choices: ['California Supreme Court', 'County Traffic Court', 'City Council', 'School Board'],
+            answer: 'California Supreme Court',
+            explain: 'The California Supreme Court makes final decisions on California state laws.'
+        },
+        {
+            grade: 4, topic: 'civics',
+            prompt: 'What official motto of California means "I have found it!" in Greek?',
+            choices: ['Eureka', 'Excelsior', 'Liberty', 'Aloha'],
+            answer: 'Eureka',
+            explain: 'California adopted "Eureka" after the 1848 Gold Rush discovery.'
+        },
+
+        // --- EXPANDED GRADE 5 (10 more -> 25 total) ---
+        {
+            grade: 5, topic: 'geo',
+            prompt: 'Which five huge freshwater lakes lie along the northern border of the United States?',
+            choices: ['Great Lakes', 'Finger Lakes', 'Salt Lakes', 'Ozark Lakes'],
+            answer: 'Great Lakes',
+            explain: 'HOMES: Huron, Ontario, Michigan, Erie, and Superior form the Great Lakes.'
+        },
+        {
+            grade: 5, topic: 'geo',
+            prompt: 'Which U.S. state is a chain of volcanic islands in the Pacific Ocean?',
+            choices: ['Hawaii', 'Alaska', 'Florida', 'Maine'],
+            answer: 'Hawaii',
+            explain: 'Hawaii became the 50th state in 1959 and lies in the central Pacific Ocean.'
+        },
+        {
+            grade: 5, topic: 'geo',
+            prompt: 'Which U.S. state is the largest by land area, located northwest of Canada?',
+            choices: ['Alaska', 'Texas', 'California', 'Montana'],
+            answer: 'Alaska',
+            explain: 'Alaska is more than twice the size of Texas.'
+        },
+        {
+            grade: 5, topic: 'geo',
+            prompt: 'Which line of longitude at 0 degrees passes through Greenwich, England?',
+            choices: ['Prime Meridian', 'Equator', 'Tropic of Cancer', 'Arctic Circle'],
+            answer: 'Prime Meridian',
+            explain: 'The Prime Meridian divides Earth into Eastern and Western Hemispheres.'
+        },
+        {
+            grade: 5, topic: 'history',
+            prompt: 'Which 1775 battles in Massachusetts marked the first shots of the American Revolution?',
+            choices: ['Lexington and Concord', 'Gettysburg and Vicksburg', 'Yorktown and Saratoga', 'Bunker Hill and Trenton'],
+            answer: 'Lexington and Concord',
+            explain: 'Fighting at Lexington and Concord began the Revolutionary War in April 1775.'
+        },
+        {
+            grade: 5, topic: 'history',
+            prompt: 'Which 1620 agreement signed aboard a ship set up self-government for the Pilgrims?',
+            choices: ['Mayflower Compact', 'Magna Carta', 'Treaty of Paris', 'Olive Branch Petition'],
+            answer: 'Mayflower Compact',
+            explain: 'Pilgrims signed the Mayflower Compact to agree on fair laws for Plymouth Colony.'
+        },
+        {
+            grade: 5, topic: 'history',
+            prompt: 'Which 1781 battle ended major fighting in the American Revolutionary War?',
+            choices: ['Battle of Yorktown', 'Battle of Bunker Hill', 'Battle of Valley Forge', 'Battle of Fort Sumter'],
+            answer: 'Battle of Yorktown',
+            explain: 'With French help, Washington surrounded British forces at Yorktown in 1781.'
+        },
+        {
+            grade: 5, topic: 'civics',
+            prompt: 'Who leads the Executive Branch of the United States government?',
+            choices: ['The President', 'The Chief Justice', 'The Speaker of the House', 'A State Governor'],
+            answer: 'The President',
+            explain: 'The President enforces federal laws and serves as Commander in Chief.'
+        },
+        {
+            grade: 5, topic: 'civics',
+            prompt: 'How many U.S. Senators represent each state regardless of population?',
+            choices: ['2', '4', '10', '50'],
+            answer: '2',
+            explain: 'Every state elects 2 Senators, making 100 total Senators in the U.S. Senate.'
+        },
+        {
+            grade: 5, topic: 'civics',
+            prompt: 'What power lets the President reject a bill passed by Congress?',
+            choices: ['Veto', 'Pardon', 'Audit', 'Census'],
+            answer: 'Veto',
+            explain: 'A presidential veto sends a bill back to Congress, which can override it with a 2/3 vote.'
         }
     ];
 })(window);
