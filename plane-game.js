@@ -198,6 +198,7 @@ let wave = 1;
 let nextSpeedMilestone = 150;
 let bossActive = false;
 let bossBattleStarted = false;
+let bossDefeatedThisRun = false;
 let activeBossConfig = BOSS_CONFIGS[0];
 let bossLevel = 0;
 let bossHp = 5;
@@ -309,15 +310,7 @@ function updateSectorBestBanner() {
     sectorBestBanner.innerText = `BEST: ${stats.highScore} PTS | ${stats.bestWpm} WPM | ${stats.bestAcc}% ACC`;
 }
 
-// --- Procedural Chiptune Music Sequencer (Zero external dependencies) ---
-const NOTE_FREQ = {
-    C2: 65.41, D2: 73.42, E2: 82.41, F2: 87.31, G2: 98.00, A2: 110.00, B2: 123.47,
-    C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
-    C4: 261.63, D4: 293.66, Eb4: 311.13, E4: 329.63, F4: 349.23, Fs4: 369.99, G4: 392.00, Gs4: 415.30, A4: 440.00, Bb4: 466.16, B4: 493.88,
-    C5: 523.25, D5: 587.33, Eb5: 622.25, E5: 659.25, F5: 698.46, Fs5: 739.99, G5: 783.99, A5: 880.00, B5: 987.77,
-    C6: 1046.50
-};
-
+// --- Procedural Chiptune Music Tracks (via shared/audio.js) ---
 const CHIPTUNE_TRACKS = {
     stage1: {
         bpm: 134,
@@ -385,143 +378,9 @@ const CHIPTUNE_TRACKS = {
     }
 };
 
-class BGMController {
+class SoundManager extends window.ArcadeAudio.BaseSoundManager {
     constructor() {
-        this.currentTrack = 'stage1';
-        this.isPlaying = false;
-        this.step = 0;
-        this.timerId = null;
-        this.ctx = null;
-    }
-
-    setContext(ctx) {
-        this.ctx = ctx;
-    }
-
-    setTrack(trackName) {
-        if (!CHIPTUNE_TRACKS[trackName]) trackName = 'stage1';
-        if (this.currentTrack === trackName) return;
-        this.currentTrack = trackName;
-        this.step = 0;
-        if (this.isPlaying) {
-            this.restartLoop();
-        }
-    }
-
-    start() {
-        if (this.isPlaying || !this.ctx) return;
-        this.isPlaying = true;
-        this.step = 0;
-        this.restartLoop();
-    }
-
-    stop() {
-        this.isPlaying = false;
-        if (this.timerId) {
-            clearInterval(this.timerId);
-            this.timerId = null;
-        }
-    }
-
-    restartLoop() {
-        if (this.timerId) {
-            clearInterval(this.timerId);
-            this.timerId = null;
-        }
-        const track = CHIPTUNE_TRACKS[this.currentTrack];
-        const stepMs = (60 / track.bpm / 2) * 1000; // 8th-note grid
-        this.playStep();
-        this.timerId = setInterval(() => this.playStep(), stepMs);
-    }
-
-    playTone(freq, duration, type, volume) {
-        if (!this.ctx || !freq) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, now);
-        gain.gain.setValueAtTime(volume, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + duration);
-    }
-
-    playDrum(isKick) {
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        if (isKick) {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(135, now);
-            osc.frequency.exponentialRampToValueAtTime(38, now + 0.09);
-            gain.gain.setValueAtTime(0.08, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.09);
-        } else {
-            // Crisp short hi-hat tick
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(980, now);
-            gain.gain.setValueAtTime(0.012, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.025);
-        }
-    }
-
-    playStep() {
-        if (!this.isPlaying || !this.ctx || this.ctx.state !== 'running') return;
-        const track = CHIPTUNE_TRACKS[this.currentTrack];
-        const idx = this.step % track.lead.length;
-        const stepSec = 60 / track.bpm / 2;
-
-        const leadNote = track.lead[idx];
-        const bassNote = track.bass[idx];
-
-        if (leadNote && NOTE_FREQ[leadNote]) {
-            this.playTone(NOTE_FREQ[leadNote], stepSec * 0.85, track.leadWave, 0.032);
-        }
-        if (bassNote && NOTE_FREQ[bassNote]) {
-            this.playTone(NOTE_FREQ[bassNote], stepSec * 0.9, 'triangle', 0.055);
-        }
-
-        if (idx % 4 === 0) {
-            this.playDrum(true);
-        } else if (idx % 2 === 1) {
-            this.playDrum(false);
-        }
-
-        this.step++;
-    }
-}
-
-class SoundManager {
-    constructor() {
-        this.ctx = null;
-        this.soundEnabled = true;
-        this.bgmEnabled = true;
-        this.voiceEnabled = true;
-        this.bgmController = new BGMController();
-    }
-
-    init() {
-        if (!this.ctx) {
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-            this.bgmController.setContext(this.ctx);
-        }
-        if (this.ctx.state === 'suspended') {
-            this.ctx.resume();
-        }
+        super(CHIPTUNE_TRACKS, 'stage1');
     }
 
     toggleSound() {
@@ -569,24 +428,7 @@ class SoundManager {
     }
 
     speakWord(word, force = false) {
-        if ((!this.voiceEnabled && !force) || !('speechSynthesis' in window) || !word) return;
-        try {
-            window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(word);
-            utter.lang = 'en-US';
-            utter.rate = 0.95;
-            utter.pitch = 1.05;
-            utter.volume = 1.0;
-            window.speechSynthesis.speak(utter);
-        } catch {
-            // Ignore speech synthesis errors on restricted environments
-        }
-    }
-
-    stopSpeech() {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-        }
+        this.speak(word, force);
     }
 
     playLaser() {
@@ -916,6 +758,7 @@ function startGame(drillWords = null) {
     nextSpeedMilestone = 150;
     bossActive = false;
     bossBattleStarted = false;
+    bossDefeatedThisRun = false;
     bossLevel = 0;
     bossX = 50;
     bossDir = 1;
@@ -1815,6 +1658,7 @@ function spawnBossSalvo() {
 function defeatBoss() {
     bossActive = false;
     bossBattleStarted = false;
+    bossDefeatedThisRun = true;
     bossEnraged = false;
     bossShielded = false;
     bossCharge = 0;
@@ -2075,6 +1919,18 @@ function endGame() {
 
     lastMissedWords = Array.from(wordMistakes.keys());
     practiceMissedBtn.style.display = lastMissedWords.length > 0 ? 'inline-block' : 'none';
+
+    if (window.ArcadeProfile && !practiceDrillMode) {
+        window.ArcadeProfile.recordSession({
+            gameId: 'plane',
+            accuracy: runAcc,
+            score,
+            wpm: runWpm,
+            missedItems: lastMissedWords,
+            bossDefeated: bossDefeatedThisRun,
+            badgeId: 'first_flight'
+        });
+    }
 
     finalScoreVal.innerText = score;
     finalWpmVal.innerText = runWpm;
