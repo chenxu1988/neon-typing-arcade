@@ -62,3 +62,4 @@
 - [ ] `TRIAGE-2` (`P2`): Update `README.md` with new games and shared architecture once Phase 3 completes.
 - [ ] `TRIAGE-3` (`P2`): Create `shared/touch-keyboard.js` (collapsible on-screen QWERTY + 0–9 keypad for tablets/Chromebooks, formerly `T1.4`).
 - [ ] `TRIAGE-4` (`P2`): Wire `shared/touch-keyboard.js` toggle into `plane-game.html` for tablet play (formerly `T2.3`).
+- [x] `TRIAGE-5` (`P0`): Fix `Reset Progress` in Parent/Teacher modal to also clear `neonPlaneTypingStats` and `dinoTypingStats`.

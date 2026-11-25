@@ -395,6 +395,10 @@
         document.getElementById('reset-profile-btn').addEventListener('click', () => {
             if (confirm('Reset all Arcade stars, badges, and progress?')) {
                 window.ArcadeProfile.resetProfile();
+                try {
+                    localStorage.removeItem('neonPlaneTypingStats');
+                    localStorage.removeItem('dinoTypingStats');
+                } catch {}
                 renderHub();
                 renderReportModal();
             }
