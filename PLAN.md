@@ -75,7 +75,22 @@ Create a lightweight `shared/` folder using standard browser ES modules (`<scrip
 
 ---
 
-## 4. Next Immediate Step
+## 4. Phase 4: Engagement Loop, Game Polish & New LAUSD Subjects
 
-Start with **Phase 1** or pick **one game** to build/upgrade first:
-- Recommended first code milestone: **Upgrade `dino-game.html` (Grade 3–5 selector + Pause/Menu + Practice summary)** or **Build `astro-math.html` (Game 3)** to bring Math into the Arcade right away.
+### 4A. Star Shop & Cosmetics (`shared/profile.js` + `index.html`)
+- Make earned **Stars** spendable in a **Star Shop** modal on `index.html` (unlock & equip Plane Neon Skins, Dino Hats, Explorer Avatars, and Pizza Toppings).
+
+### 4B. Existing Game Depth & Visual Learning
+- Expand `word-quest.js` question bank from 25 to 60+ LAUSD Grade 3–5 questions.
+- Add visual `row × col` dot array diagrams in `astro-math.js` on wrong answers.
+- Add side-by-side pizza Equivalence Visualizer in `fraction-dash.js` on wrong Equivalent/Compare answers.
+
+### 4C. New LAUSD Grade 3–5 Games
+- **Game 6: `science-explorer.html` — Science Explorer (STEM):** Solar System, Food Chains, Water Cycle, States of Matter, and Simple Circuits with interactive mission cards and Web Speech read-aloud.
+- **Game 7: `life-math.html` — Time, Money & Area Dash (Practical Math):** Interactive SVG analog clock reading, coin/change counting, and visual unit-square Area & Perimeter challenges.
+
+---
+
+## 5. Next Immediate Step
+
+Review Phase 4 tasks in `TASKS.md`, then start `T4.1` (Star Shop).
