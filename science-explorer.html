@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Explorer — LAUSD Grade 3+ STEM</title>
+    <link rel="stylesheet" href="shared/ui.css">
+    <link rel="stylesheet" href="science-explorer.css">
+</head>
+<body>
+    <div id="game-container">
+        <header id="hud">
+            <div class="hud-item">SCORE: <span id="score-val">0</span></div>
+            <div class="hud-item">STOP: <span id="step-val">0</span>/10</div>
+            <div class="hud-item">ACC: <span id="acc-val">100%</span></div>
+            <div class="hud-item">🔬 DISCOVERIES: <span id="disc-val">0</span></div>
+            <div class="hud-controls">
+                <button id="voice-toggle" class="control-btn active" type="button">🗣️ Voice: On</button>
+                <button id="bgm-toggle" class="control-btn active" type="button">🎵 Music: On</button>
+                <button id="sound-toggle" class="control-btn active" type="button">🔊 Sound: On</button>
+            </div>
+        </header>
+
+        <main id="lab-stage">
+            <!-- Rover Expedition Track -->
+            <div class="rover-track-box">
+                <div class="lab-goal" title="Base Lab">🛰️</div>
+                <div id="rover" class="rover">🛻</div>
+                <div id="trail-nodes" class="trail-nodes"></div>
+            </div>
+
+            <!-- Visual STEM Diagram + Mission Card -->
+            <div class="mission-panel">
+                <div id="diagram-box" class="diagram-box"></div>
+                <div class="question-side">
+                    <div id="q-topic" class="q-topic">SOLAR SYSTEM</div>
+                    <div id="q-prompt" class="q-prompt" title="Click to hear question">Press Start to launch the Science Rover!</div>
+                    <div id="q-choices" class="q-choices"></div>
+                    <div id="q-feedback" class="q-feedback"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Start Modal -->
+        <div id="start-screen" class="modal active">
+            <h1 class="sci-title">🔬 SCIENCE EXPLORER</h1>
+            <p class="subtitle">Drive the Science Rover across 10 checkpoints by solving visual STEM missions! Press <strong>1–4</strong> or click an answer.</p>
+
+            <div class="selection-row">
+                <div class="selection-container">
+                    <label for="topic-select" class="selection-label">STEM TOPIC:</label>
+                    <select id="topic-select" class="sci-select">
+                        <option value="mixed">✨ Mixed STEM Expedition</option>
+                        <option value="solar">🪐 Solar System &amp; Space</option>
+                        <option value="foodchain">🌿 Food Chains &amp; Ecosystems</option>
+                        <option value="watercycle">💧 Water Cycle &amp; Weather</option>
+                        <option value="matter">⚛️ States of Matter</option>
+                        <option value="circuits">⚡ Electricity &amp; Circuits</option>
+                    </select>
+                </div>
+                <div class="selection-container">
+                    <label for="grade-select" class="selection-label">GRADE:</label>
+                    <select id="grade-select" class="sci-select">
+                        <option value="3">🎒 Grade 3</option>
+                        <option value="4">🚀 Grade 4</option>
+                        <option value="5">🎓 Grade 5</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="sci-best-banner" class="best-banner">BEST: 0 PTS | 0% ACC</div>
+            <button id="start-btn" class="sci-btn" type="button">LAUNCH ROVER</button>
+            <a href="index.html" class="arcade-link">🏠 Back to Arcade Hub</a>
+        </div>
+
+        <!-- Pause Modal -->
+        <div id="pause-screen" class="modal">
+            <h1 class="sci-title">⏸️ EXPEDITION PAUSED</h1>
+            <p class="subtitle">Press <strong>ESC</strong> or click Resume to continue.</p>
+            <div class="modal-actions">
+                <button id="resume-btn" class="sci-btn" type="button">RESUME</button>
+                <button id="pause-menu-btn" class="sci-btn secondary" type="button">MAIN MENU</button>
+            </div>
+        </div>
+
+        <!-- End Modal -->
+        <div id="end-screen" class="modal">
+            <h1 class="sci-title">🏆 MISSION COMPLETE!</h1>
+            <p class="subtitle">Your Science Rover reached the Base Lab with new discoveries!</p>
+            <div id="new-record-badge" class="new-record-badge" style="display: none;">🌟 NEW HIGH SCORE!</div>
+            <div class="final-score">SCORE: <span id="final-score-val">0</span></div>
+            <div class="final-stats">ACCURACY: <span id="final-acc-val">100%</span> &nbsp;|&nbsp; DISCOVERIES: <span id="final-disc-val">0</span></div>
+            <div id="missed-review" class="missed-review"></div>
+            <div class="modal-actions">
+                <button id="restart-btn" class="sci-btn" type="button">PLAY AGAIN</button>
+                <button id="end-menu-btn" class="sci-btn secondary" type="button">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared/audio.js"></script>
+    <script src="shared/profile.js"></script>
+    <script src="science-explorer.js"></script>
+</body>
+</html>

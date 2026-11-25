@@ -78,8 +78,13 @@ Create a lightweight `shared/` folder using standard browser ES modules (`<scrip
 ## 4. Phase 4: New STEM / Practical Math Games, Star Shop & Polish
 
 ### 4A (Priority 1): New LAUSD Grade 3–5 Games
-- **Game 6: `science-explorer.html` — Science Explorer (STEM):** Solar System, Food Chains, Water Cycle, States of Matter, and Simple Circuits with interactive mission cards and Web Speech read-aloud.
-- **Game 7: `life-math.html` — Time, Money & Area Dash (Practical Math):** Interactive SVG analog clock reading, coin/change counting, and visual unit-square Area & Perimeter challenges.
+- **Game 6: `science-explorer.html` — Science Explorer (STEM):**
+  - **Topics:** Solar System, Food Chains, Water Cycle, States of Matter, and Simple Circuits (Grades 3–5).
+  - **Mechanics:** Dynamic SVG STEM diagrams per question (planet orbits, food-chain arrows, water-cycle flow, particle boxes, circuit bulb), 10-stop Rover Expedition bar, `1–4` / click answers, Web Speech read-aloud, and spaced-repetition retry.
+- **Game 7: `life-math.html` — Time, Money & Area Dash (Practical Math):**
+  - **Time Mode:** SVG analog clock face with hour/minute hands -> pick matching digital time (`1–4` / click).
+  - **Money Mode:** Tactile clickable SVG coins (`$1`, `25¢`, `10¢`, `5¢`, `1¢`) -> build target amount or make change.
+  - **Area & Perimeter Mode:** Interactive `6×6` unit-square tile grid -> build target Area or compute Perimeter of highlighted shapes.
 
 ### 4B (Priority 2): Star Shop & Cosmetics (`shared/profile.js` + `index.html`)
 - Make earned **Stars** spendable in a **Star Shop** modal on `index.html` (unlock & equip Plane Neon Skins, Dino Hats, Explorer Avatars, Pizza Toppings, and Rover/Clock themes).
