@@ -82,4 +82,4 @@
 - [x] `TRIAGE-7` (`P0`): Enforce strict grade isolation in `plane-game.js` (deduplicate G3/G4/G5 word lists), `word-quest.js`, and `science-explorer.js` (never fall back to other grades).
 - [x] `TRIAGE-8` (`P0`): Extract all game content banks into `db/*.js` (`window.ArcadeDB`, `file://` compatible) and add `scripts/validate-db.js`.
 - [x] `TRIAGE-9` (`P0`): Add `🏠 Hub` and `⏸️ Pause` buttons to the top HUD of all 7 games.
-- [ ] `TRIAGE-10` (`P0`): Add multi-student profile login (name only, no password) + JSON Export/Import in `shared/profile.js` and `index.html`.
+- [x] `TRIAGE-10` (`P0`): Add multi-student profile login (name only, no password) + JSON Export/Import in `shared/profile.js` and `index.html`.
