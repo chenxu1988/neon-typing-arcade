@@ -35,7 +35,7 @@
 | ID | Priority | Status | Task | Commit |
 | :--- | :--- | :--- | :--- | :--- |
 | `T3.1` | `P1` | `DONE` | Scaffold `astro-math.html`, `astro-math.css`, `astro-math.js` with Grade 3–5 topic selector (Multiply, Divide, Add/Sub, Order of Ops) | `done` |
-| `T3.2` | `P1` | `TODO` | Implement falling meteor math equations, keyboard + on-screen numpad input, visual array/grouping hint on wrong answer | — |
+| `T3.2` | `P1` | `DONE` | Implement falling meteor math equations, keyboard + on-screen numpad input, visual array/grouping hint on wrong answer | `done` |
 | `T3.3` | `P2` | `TODO` | Add Calculator Mothership Boss (missing-factor & word problems) + register card in `index.html` | — |
 
 ### Game 4: Word Quest (`word-quest.html`)
