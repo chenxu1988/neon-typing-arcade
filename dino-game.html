@@ -52,9 +52,27 @@
         <!-- Start Modal -->
         <div id="start-screen" class="modal active">
             <h1 class="modal-title">🦕 DINOSAUR TYPING ADVENTURE</h1>
-            <p class="modal-subtitle">Help Rex journey across 5 prehistoric biomes! Type each sentence accurately to reach the goal treats.</p>
+            <p class="modal-subtitle">Help Rex journey across 5 prehistoric biomes! Type each sentence accurately to reach the goal treats. Press <strong>ESC</strong> anytime to pause.</p>
+            <div class="grade-picker">
+                <label for="grade-select" class="grade-label">CHOOSE GRADE &amp; THEME:</label>
+                <select id="grade-select" class="dino-select">
+                    <option value="grade3">🎒 Grade 3 Basics</option>
+                    <option value="grade4">🔬 Grade 4 Science &amp; Nature</option>
+                    <option value="grade5">🏛️ Grade 5 History &amp; Space</option>
+                </select>
+            </div>
             <div id="best-stats-banner" class="best-stats-banner">BEST: 0 WPM | 0% ACCURACY</div>
             <button id="start-btn" class="modal-btn">START ADVENTURE</button>
+        </div>
+
+        <!-- Pause Modal -->
+        <div id="pause-screen" class="modal">
+            <h1 class="modal-title">⏸️ ADVENTURE PAUSED</h1>
+            <p class="modal-subtitle">Rex is resting by a fern. Press <strong>ESC</strong> or click below to continue!</p>
+            <div class="modal-btn-row">
+                <button id="resume-btn" class="modal-btn">RESUME</button>
+                <button id="pause-menu-btn" class="modal-btn secondary">MAIN MENU</button>
+            </div>
         </div>
 
         <!-- Victory Modal -->
@@ -65,7 +83,10 @@
             <div class="victory-stats">
                 WPM: <span id="final-wpm-val">0</span> &nbsp;|&nbsp; ACCURACY: <span id="final-acc-val">100</span>%
             </div>
-            <button id="play-again-btn" class="modal-btn">PLAY AGAIN</button>
+            <div class="modal-btn-row">
+                <button id="play-again-btn" class="modal-btn">PLAY AGAIN</button>
+                <button id="victory-menu-btn" class="modal-btn secondary">MAIN MENU</button>
+            </div>
         </div>
     </div>
     <script src="shared/audio.js"></script>

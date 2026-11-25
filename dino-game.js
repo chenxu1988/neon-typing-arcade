@@ -69,16 +69,108 @@ const SENTENCES_POOL = {
     ]
 };
 
+const GRADE_SENTENCES = {
+    grade3: SENTENCES_POOL,
+    grade4: {
+        1: [
+            "Plants use sunlight to make their own food.",
+            "Every magnet has a north pole and a south pole.",
+            "Water freezes into ice when it gets very cold.",
+            "A habitat gives animals food, water, and shelter.",
+            "Frogs begin their lives as tiny tadpoles.",
+            "Roots pull water from the soil into the stem."
+        ],
+        2: [
+            "Producers, consumers, and decomposers form an ecosystem.",
+            "Erosion slowly shapes valleys, canyons, and coastlines.",
+            "Camouflage helps creatures blend into their surroundings.",
+            "A simple circuit needs a battery, wires, and a bulb.",
+            "Sound travels in waves through air, water, and solids.",
+            "Clouds form when warm water vapor cools in the sky."
+        ],
+        3: [
+            "Metamorphic rocks change deep underground from heat and pressure.",
+            "Pollinators like bees carry pollen from flower to flower.",
+            "Solar panels convert bright sunlight into clean electricity.",
+            "Herbivores eat plants, while carnivores eat other animals.",
+            "Earthquakes happen when tectonic plates suddenly shift.",
+            "Friction slows down moving objects when surfaces rub together."
+        ],
+        4: [
+            "Adaptations allow desert cactuses to store water for dry months.",
+            "Fossil fuels formed over millions of years from ancient organisms.",
+            "Gravity keeps the moon orbiting smoothly around planet Earth.",
+            "Evaporation, condensation, and precipitation drive the water cycle.",
+            "Wetlands filter pollution and protect towns from heavy floods.",
+            "Optic nerves send light signals from our eyes to the brain."
+        ],
+        5: [
+            "Biologists classify living things by their shared traits and behaviors.",
+            "Renewable wind turbines generate power without burning fossil fuels.",
+            "Weathering breaks large boulders into smaller pebbles and sand.",
+            "Migration helps birds travel thousands of miles to warmer climates.",
+            "Earth's tilted axis creates spring, summer, autumn, and winter.",
+            "Every species plays an important role in keeping nature balanced."
+        ]
+    },
+    grade5: {
+        1: [
+            "Primary sources include diaries, letters, and artifacts.",
+            "Astronomers use powerful telescopes to study distant galaxies.",
+            "A compass needle points north using Earth's magnetic field.",
+            "The thirteen colonies grew along the Atlantic coast.",
+            "Mars has iron-rich dust that makes it look red.",
+            "Maps use scale bars and legends to show real distances."
+        ],
+        2: [
+            "The Constitution divides government into three equal branches.",
+            "Mercury, Venus, Earth, and Mars are rocky inner planets.",
+            "Explorers used astrolabes and stars to navigate open oceans.",
+            "Congress writes laws, while courts interpret what they mean.",
+            "Jupiter is the largest planet in our entire solar system.",
+            "Trade routes connected distant cities across continents."
+        ],
+        3: [
+            "The Bill of Rights protects freedom of speech and assembly.",
+            "Photosynthesis turns carbon dioxide and water into sugar and oxygen.",
+            "Pioneer families traveled westward in covered wagons along trails.",
+            "Saturn's dazzling rings are made of ice crystals and rock.",
+            "Inventions like the printing press spread ideas much faster.",
+            "Citizens participate in democracy by voting and sharing ideas."
+        ],
+        4: [
+            "The Declaration of Independence stated that all people have equal rights.",
+            "Comets are icy travelers that grow bright tails near the sun.",
+            "Archaeologists carefully excavate ancient ruins to learn about history.",
+            "Chemical reactions combine atoms to create brand-new substances.",
+            "The Industrial Revolution replaced hand tools with steam-powered machines.",
+            "Satellite imagery helps meteorologists track hurricanes across oceans."
+        ],
+        5: [
+            "Checking multiple credible sources helps historians verify important facts.",
+            "Space probes have sent back close-up photos of icy moons and rings.",
+            "The Preamble begins with the famous words: We the People.",
+            "Gravity bends the paths of asteroids, moons, and spacecraft alike.",
+            "Understanding chronology helps us see how past choices shape today.",
+            "Curiosity and teamwork drive every great discovery in science and history."
+        ]
+    }
+};
+
 const SENTENCES_PER_LEVEL = 4;
 const DINO_STORAGE_KEY = 'dinoTypingStats';
 
 let currentLevel = 1;
 let currentSentenceIndex = 0;
+let activeGrade = 'grade3';
 let activeLevelSentences = [];
 let charIndex = 0;
 let errors = 0;
 let totalTyped = 0;
 let startTime = null;
+let pausedAt = null;
+let totalPausedMs = 0;
+let gamePaused = false;
 let gameActive = false;
 let missedWords = new Set();
 
@@ -94,7 +186,9 @@ const levelBanner = document.getElementById('level-banner');
 const confettiContainer = document.getElementById('confetti-container');
 
 const startScreen = document.getElementById('start-screen');
+const pauseScreen = document.getElementById('pause-screen');
 const victoryScreen = document.getElementById('victory-screen');
+const gradeSelect = document.getElementById('grade-select');
 const bestStatsBanner = document.getElementById('best-stats-banner');
 const finalWpmVal = document.getElementById('final-wpm-val');
 const finalAccVal = document.getElementById('final-acc-val');
@@ -266,7 +360,8 @@ function applyBiome(showBanner = true) {
 }
 
 function pickLevelSentences(level) {
-    const pool = [...(SENTENCES_POOL[level] || SENTENCES_POOL[1])];
+    const gradePool = GRADE_SENTENCES[activeGrade] || SENTENCES_POOL;
+    const pool = [...(gradePool[level] || gradePool[1])];
     for (let i = pool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -276,17 +371,22 @@ function pickLevelSentences(level) {
 
 function startGame() {
     sounds.init();
+    activeGrade = gradeSelect ? gradeSelect.value : 'grade3';
     currentLevel = 1;
     currentSentenceIndex = 0;
     errors = 0;
     totalTyped = 0;
     startTime = null;
+    pausedAt = null;
+    totalPausedMs = 0;
+    gamePaused = false;
     gameActive = true;
     missedWords = new Set();
 
     wpmVal.innerText = '0';
     accuracyVal.innerText = '100';
     startScreen.classList.remove('active');
+    pauseScreen.classList.remove('active');
     victoryScreen.classList.remove('active');
 
     activeLevelSentences = pickLevelSentences(currentLevel);
@@ -314,8 +414,46 @@ function loadSentence() {
     sounds.speakSentence(sentence);
 }
 
+function togglePause() {
+    if (!gameActive) return;
+    gamePaused = !gamePaused;
+
+    if (gamePaused) {
+        pausedAt = Date.now();
+        sounds.stopSpeech();
+        sounds.bgmController.stop();
+        pauseScreen.classList.add('active');
+    } else {
+        if (pausedAt) {
+            totalPausedMs += Date.now() - pausedAt;
+            pausedAt = null;
+        }
+        pauseScreen.classList.remove('active');
+        if (sounds.bgmEnabled) {
+            sounds.bgmController.start();
+        }
+    }
+}
+
+function returnToMenu() {
+    gameActive = false;
+    gamePaused = false;
+    sounds.stopSpeech();
+    sounds.bgmController.stop();
+    pauseScreen.classList.remove('active');
+    victoryScreen.classList.remove('active');
+    updateBestBanner();
+    startScreen.classList.add('active');
+}
+
 function handleKeyPress(e) {
     if (!gameActive) return;
+    if (e.key === 'Escape') {
+        e.preventDefault();
+        togglePause();
+        return;
+    }
+    if (gamePaused) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key.length !== 1) return;
 
@@ -364,7 +502,7 @@ function getAccuracy() {
 
 function getWpm() {
     if (!startTime) return 0;
-    const elapsedMin = Math.max((Date.now() - startTime) / 60000, 1 / 60);
+    const elapsedMin = Math.max((Date.now() - startTime - totalPausedMs) / 60000, 1 / 60);
     const netWords = Math.max(0, (totalTyped - errors) / 5);
     return Math.round(netWords / elapsedMin);
 }
@@ -451,6 +589,9 @@ function showVictory() {
 window.addEventListener('keydown', handleKeyPress);
 document.getElementById('start-btn').addEventListener('click', startGame);
 document.getElementById('play-again-btn').addEventListener('click', startGame);
+document.getElementById('resume-btn').addEventListener('click', togglePause);
+document.getElementById('pause-menu-btn').addEventListener('click', returnToMenu);
+document.getElementById('victory-menu-btn').addEventListener('click', returnToMenu);
 document.getElementById('voice-toggle').addEventListener('click', () => sounds.toggleVoice());
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
