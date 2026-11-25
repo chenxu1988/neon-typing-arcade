@@ -47,6 +47,17 @@ class LifeSoundManager extends window.ArcadeAudio.BaseSoundManager {
         }
         btn.blur();
     }
+
+    toggleVoice() {
+        this.voiceEnabled = !this.voiceEnabled;
+        const btn = document.getElementById('voice-toggle');
+        if (btn) {
+            btn.innerText = this.voiceEnabled ? '🗣️ Voice: On' : '🔇 Voice: Off';
+            btn.classList.toggle('active', this.voiceEnabled);
+            btn.blur();
+        }
+        if (!this.voiceEnabled) this.stopSpeech();
+    }
 }
 
 const sounds = new LifeSoundManager();
@@ -69,6 +80,7 @@ let selectedCoins = [];
 let selectedCells = new Set();
 
 const modeSelect = document.getElementById('mode-select');
+const gradeSelect = document.getElementById('grade-select');
 const startScreen = document.getElementById('start-screen');
 const pauseScreen = document.getElementById('pause-screen');
 const endScreen = document.getElementById('end-screen');
@@ -126,7 +138,8 @@ function generateChallenge() {
 
     if (type === 'time') {
         const h = 1 + Math.floor(Math.random() * 12);
-        const mins = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+        const grade = gradeSelect ? Number(gradeSelect.value) : 4;
+        const mins = grade === 3 ? [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55] : Array.from({ length: 60 }, (_, i) => i);
         const m = mins[Math.floor(Math.random() * mins.length)];
         const fmt = (hr, mn) => `${hr}:${String(mn).padStart(2, '0')}`;
         const answer = fmt(h, m);
@@ -151,8 +164,11 @@ function generateChallenge() {
     }
 
     if (type === 'money') {
-        const target = (3 + Math.floor(Math.random() * 24)) * 5; // 15¢ to 130¢
-        const isChange = Math.random() < 0.4 && target < 95;
+        const grade = gradeSelect ? Number(gradeSelect.value) : 4;
+        const target = grade === 5
+            ? (20 + Math.floor(Math.random() * 30)) * 5 // $1.00 to $2.45
+            : (3 + Math.floor(Math.random() * 18)) * 5; // 15¢ to 100¢
+        const isChange = grade >= 4 && Math.random() < 0.4 && target < 95;
         if (isChange) {
             const price = 100 - target;
             return {
@@ -173,19 +189,20 @@ function generateChallenge() {
     }
 
     // Area & Perimeter
+    const grade = gradeSelect ? Number(gradeSelect.value) : 4;
     if (Math.random() < 0.55) {
-        const areas = [4, 6, 8, 9, 10, 12, 15, 16];
+        const areas = grade === 3 ? [4, 6, 8, 9, 10] : [6, 8, 9, 12, 15, 16, 18, 20];
         const targetArea = areas[Math.floor(Math.random() * areas.length)];
         return {
             type: 'area_build',
             tag: 'BUILD AREA',
             label: `Area = ${targetArea}`,
-            prompt: `Click tiles on the 6×6 grid to cover an Area of ${targetArea} square units!`,
+            prompt: `Click connected tiles on the 6×6 grid to cover an Area of ${targetArea} square units!`,
             targetArea
         };
     }
-    const w = 2 + Math.floor(Math.random() * 4);
-    const h = 2 + Math.floor(Math.random() * 3);
+    const w = (grade === 3 ? 2 : 3) + Math.floor(Math.random() * 3);
+    const h = (grade === 3 ? 2 : 2) + Math.floor(Math.random() * 3);
     const perim = 2 * (w + h);
     const distractors = new Set([perim]);
     while (distractors.size < 4) {
@@ -218,10 +235,50 @@ function updateLifeBanner() {
 }
 
 function renderMoneyWorkspace() {
-    visualWorkspace.innerHTML = `
-        <div class="money-readout">${formatCents(builtCents)}</div>
-        <div class="coin-tray">${selectedCoins.map(c => `<span class="coin-chip">${c >= 100 ? '$1' : c + '¢'}</span>`).join('')}</div>
-    `;
+    visualWorkspace.innerHTML = `<div class="money-readout">${formatCents(builtCents)}</div>`;
+    const tray = document.createElement('div');
+    tray.className = 'coin-tray';
+    selectedCoins.forEach((c, idx) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'coin-chip';
+        chip.style.cursor = 'pointer';
+        chip.title = 'Click to remove this coin';
+        chip.innerText = c >= 100 ? '$1 ✕' : `${c}¢ ✕`;
+        chip.addEventListener('click', () => {
+            if (roundLocked) return;
+            selectedCoins.splice(idx, 1);
+            builtCents = Math.max(0, builtCents - c);
+            sounds.playClick();
+            renderMoneyWorkspace();
+        });
+        tray.appendChild(chip);
+    });
+    visualWorkspace.appendChild(tray);
+}
+
+function isContiguous(cellSet) {
+    if (cellSet.size <= 1) return cellSet.size === 1;
+    const arr = Array.from(cellSet);
+    const visited = new Set([arr[0]]);
+    const queue = [arr[0]];
+    while (queue.length > 0) {
+        const cur = queue.shift();
+        const r = Math.floor(cur / 6);
+        const c = cur % 6;
+        const neighbors = [];
+        if (r > 0) neighbors.push((r - 1) * 6 + c);
+        if (r < 5) neighbors.push((r + 1) * 6 + c);
+        if (c > 0) neighbors.push(r * 6 + (c - 1));
+        if (c < 5) neighbors.push(r * 6 + (c + 1));
+        for (const n of neighbors) {
+            if (cellSet.has(n) && !visited.has(n)) {
+                visited.add(n);
+                queue.push(n);
+            }
+        }
+    }
+    return visited.size === cellSet.size;
 }
 
 function renderAreaGrid(interactive, highlightW = 0, highlightH = 0) {
@@ -273,12 +330,27 @@ function loadNextChallenge() {
     visualWorkspace.innerHTML = '';
     inputWorkspace.innerHTML = '';
     updateHUD();
+    sounds.speak(currentChallenge.prompt);
 
     if (currentChallenge.type === 'time' || currentChallenge.type === 'perim_calc') {
         if (currentChallenge.type === 'time') {
             visualWorkspace.innerHTML = renderClockSVG(currentChallenge.hour, currentChallenge.minute);
         } else {
-            visualWorkspace.appendChild(renderAreaGrid(false, currentChallenge.w, currentChallenge.h));
+            const perimWrap = document.createElement('div');
+            perimWrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;';
+            const topLbl = document.createElement('div');
+            topLbl.style.cssText = 'font-weight:800;color:#ffe082;font-size:0.9rem;';
+            topLbl.innerText = `↔ Width: ${currentChallenge.w} units`;
+            const midRow = document.createElement('div');
+            midRow.style.cssText = 'display:flex;align-items:center;gap:10px;';
+            const sideLbl = document.createElement('div');
+            sideLbl.style.cssText = 'font-weight:800;color:#ffe082;font-size:0.9rem;';
+            sideLbl.innerText = `↕ Height:\n${currentChallenge.h} units`;
+            midRow.appendChild(sideLbl);
+            midRow.appendChild(renderAreaGrid(false, currentChallenge.w, currentChallenge.h));
+            perimWrap.appendChild(topLbl);
+            perimWrap.appendChild(midRow);
+            visualWorkspace.appendChild(perimWrap);
         }
 
         const row = document.createElement('div');
@@ -312,6 +384,7 @@ function loadNextChallenge() {
         const coinsRow = document.createElement('div');
         coinsRow.className = 'coins-row';
         [
+            { val: 100, label: '💵 $1' },
             { val: 25, label: '🪙 25¢' },
             { val: 10, label: '🪙 10¢' },
             { val: 5, label: '🪙 5¢' },
@@ -374,6 +447,11 @@ function loadNextChallenge() {
         subBtn.innerText = 'CHECK AREA';
         subBtn.addEventListener('click', () => {
             if (roundLocked) return;
+            if (selectedCells.size === currentChallenge.targetArea && !isContiguous(selectedCells)) {
+                sounds.playError();
+                feedbackBar.innerText = '⚠️ Connect all tiles edge-to-edge into one shape!';
+                return;
+            }
             roundLocked = true;
             finishRound(selectedCells.size === currentChallenge.targetArea, `Needed ${currentChallenge.targetArea} square units.`);
         });
@@ -419,14 +497,51 @@ function startGame() {
     endScreen.classList.remove('active');
     loadNextChallenge();
     if (sounds.bgmEnabled) sounds.bgmController.start();
+    startTimedRun();
 }
 
-function finishDash() {
+let timedMode = false;
+let timeLeft = 120;
+let timedTimerId = null;
+
+function stopTimedRun() {
+    if (timedTimerId) {
+        clearInterval(timedTimerId);
+        timedTimerId = null;
+    }
+}
+
+function startTimedRun() {
+    stopTimedRun();
+    const toggle = document.getElementById('timed-mode-toggle');
+    const hud = document.getElementById('timed-hud');
+    const val = document.getElementById('timed-val');
+    timedMode = Boolean(toggle && toggle.checked);
+    if (hud) hud.style.display = timedMode ? 'block' : 'none';
+    if (!timedMode) return;
+    timeLeft = 120;
+    if (val) val.innerText = timeLeft;
+    timedTimerId = setInterval(() => {
+        if (!gameActive || gamePaused) return;
+        timeLeft--;
+        if (val) val.innerText = timeLeft;
+        if (timeLeft <= 0) {
+            stopTimedRun();
+            finishDash(false);
+        }
+    }, 1000);
+}
+
+function finishDash(completed = true) {
     gameActive = false;
+    stopTimedRun();
+    sounds.stopSpeech();
     sounds.bgmController.stop();
     sounds.playFanfare([523.25, 659.25, 783.99, 1046.5]);
 
+    if (completed && timedMode && timeLeft > 0) score += timeLeft * 2;
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
+    const stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(acc, completed) : 3;
     let isNewBest = false;
     if (window.ArcadeProfile) {
         const prev = window.ArcadeProfile.loadProfile().games.life_math;
@@ -437,10 +552,12 @@ function finishDash() {
             score,
             wpm: 0,
             missedItems: Array.from(missedItems),
-            badgeId: 'time_master'
+            badgeId: completed ? 'time_master' : null
         });
     }
 
+    const starsEl = document.getElementById('final-stars-val');
+    if (starsEl) starsEl.innerText = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
     document.getElementById('new-record-badge').style.display = isNewBest ? 'block' : 'none';
     document.getElementById('final-score-val').innerText = score;
     document.getElementById('final-acc-val').innerText = `${acc}%`;
@@ -475,10 +592,18 @@ function togglePause() {
 function returnToMenu() {
     gameActive = false;
     gamePaused = false;
+    stopTimedRun();
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     endScreen.classList.remove('active');
-    updateLifeBanner();
+    challengePrompt.addEventListener('click', () => {
+    if (gameActive && currentChallenge) sounds.speak(currentChallenge.prompt, true);
+});
+const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+if (urlGrade && gradeSelect) {
+    gradeSelect.value = urlGrade;
+}
+updateLifeBanner();
     startScreen.classList.add('active');
 }
 
@@ -503,7 +628,15 @@ document.getElementById('resume-btn').addEventListener('click', togglePause);
 document.getElementById('pause-menu-btn').addEventListener('click', returnToMenu);
 document.getElementById('end-menu-btn').addEventListener('click', returnToMenu);
 document.getElementById('hud-pause-btn').addEventListener('click', (e) => { togglePause(); e.currentTarget.blur(); });
+document.getElementById('voice-toggle').addEventListener('click', () => sounds.toggleVoice());
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
 
+challengePrompt.addEventListener('click', () => {
+    if (gameActive && currentChallenge) sounds.speak(currentChallenge.prompt, true);
+});
+const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+if (urlGrade && gradeSelect) {
+    gradeSelect.value = urlGrade;
+}
 updateLifeBanner();

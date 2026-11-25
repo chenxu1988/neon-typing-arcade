@@ -298,6 +298,23 @@
         return profile;
     }
 
+    function getGradeParam() {
+        try {
+            const g = new URLSearchParams(global.location.search).get('grade');
+            return (g === '3' || g === '4' || g === '5') ? g : null;
+        } catch {
+            return null;
+        }
+    }
+
+    function computeMasteryStars(accuracy, completed = true) {
+        if (!completed) return 0;
+        const acc = Number(accuracy) || 0;
+        if (acc >= 95) return 3;
+        if (acc >= 80) return 2;
+        return 1;
+    }
+
     function resetProfile() {
         const fresh = createDefaultProfile();
         saveProfile(fresh);
@@ -319,6 +336,8 @@
         unlockBadge,
         purchaseItem,
         equipItem,
+        getGradeParam,
+        computeMasteryStars,
         resetProfile
     };
 })(window);

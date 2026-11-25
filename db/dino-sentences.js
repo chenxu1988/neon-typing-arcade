@@ -76,7 +76,11 @@ const GRADE_SENTENCES = {
             "Water freezes into ice when it gets very cold.",
             "A habitat gives animals food, water, and shelter.",
             "Frogs begin their lives as tiny tadpoles.",
-            "Roots pull water from the soil into the stem."
+            "Roots pull water from the soil into the stem.",
+            "Solar energy warms our oceans and land every day.",
+            "Birds build sturdy nests high in leafy branches.",
+            "Rocks slowly break down into sand and rich soil.",
+            "Clean water helps every living creature survive."
         ],
         2: [
             "Producers, consumers, and decomposers form an ecosystem.",
@@ -84,7 +88,11 @@ const GRADE_SENTENCES = {
             "Camouflage helps creatures blend into their surroundings.",
             "A simple circuit needs a battery, wires, and a bulb.",
             "Sound travels in waves through air, water, and solids.",
-            "Clouds form when warm water vapor cools in the sky."
+            "Clouds form when warm water vapor cools in the sky.",
+            "Rainforests shelter thousands of unique plant species.",
+            "Decomposers recycle fallen leaves into healthy soil.",
+            "Rivers carry fresh water from mountains to the sea.",
+            "Electric switches open and close a circuit loop."
         ],
         3: [
             "Metamorphic rocks change deep underground from heat and pressure.",
@@ -92,7 +100,11 @@ const GRADE_SENTENCES = {
             "Solar panels convert bright sunlight into clean electricity.",
             "Herbivores eat plants, while carnivores eat other animals.",
             "Earthquakes happen when tectonic plates suddenly shift.",
-            "Friction slows down moving objects when surfaces rub together."
+            "Friction slows down moving objects when surfaces rub together.",
+            "Glaciers carve wide valleys as they slide slowly downhill.",
+            "Nocturnal owls hunt quietly under the dark night sky.",
+            "Copper wires conduct electricity safely inside plastic coats.",
+            "Volcanoes release melted rock called magma from deep below."
         ],
         4: [
             "Adaptations allow desert cactuses to store water for dry months.",
@@ -100,7 +112,11 @@ const GRADE_SENTENCES = {
             "Gravity keeps the moon orbiting smoothly around planet Earth.",
             "Evaporation, condensation, and precipitation drive the water cycle.",
             "Wetlands filter pollution and protect towns from heavy floods.",
-            "Optic nerves send light signals from our eyes to the brain."
+            "Optic nerves send light signals from our eyes to the brain.",
+            "Ocean currents move warm water around our entire planet.",
+            "Tree rings reveal how wet or dry each past year was.",
+            "Seed pods travel by wind, water, or helpful animals.",
+            "Thermometers measure how fast tiny particles are moving."
         ],
         5: [
             "Biologists classify living things by their shared traits and behaviors.",
@@ -108,7 +124,11 @@ const GRADE_SENTENCES = {
             "Weathering breaks large boulders into smaller pebbles and sand.",
             "Migration helps birds travel thousands of miles to warmer climates.",
             "Earth's tilted axis creates spring, summer, autumn, and winter.",
-            "Every species plays an important role in keeping nature balanced."
+            "Every species plays an important role in keeping nature balanced.",
+            "Astronauts study how plants grow aboard the space station.",
+            "Coral reefs protect coastlines and shelter colorful sea life.",
+            "Conserving electricity reduces pollution and saves natural resources.",
+            "Curious scientists test hypotheses with careful experiments."
         ]
     },
     grade5: {
@@ -118,7 +138,11 @@ const GRADE_SENTENCES = {
             "A compass needle points north using Earth's magnetic field.",
             "The thirteen colonies grew along the Atlantic coast.",
             "Mars has iron-rich dust that makes it look red.",
-            "Maps use scale bars and legends to show real distances."
+            "Maps use scale bars and legends to show real distances.",
+            "Early settlers built towns near rivers for fresh water.",
+            "Earth completes one full rotation every twenty-four hours.",
+            "Latitude and longitude help us locate any spot on Earth.",
+            "Historians ask questions about how communities changed."
         ],
         2: [
             "The Constitution divides government into three equal branches.",
@@ -126,7 +150,11 @@ const GRADE_SENTENCES = {
             "Explorers used astrolabes and stars to navigate open oceans.",
             "Congress writes laws, while courts interpret what they mean.",
             "Jupiter is the largest planet in our entire solar system.",
-            "Trade routes connected distant cities across continents."
+            "Trade routes connected distant cities across continents.",
+            "The executive branch carries out and enforces national laws.",
+            "Saturn's bright rings contain billions of icy particles.",
+            "Town halls gave colonists a voice in local decisions.",
+            "Gravity pulls objects toward the center of large planets."
         ],
         3: [
             "The Bill of Rights protects freedom of speech and assembly.",
@@ -134,7 +162,11 @@ const GRADE_SENTENCES = {
             "Pioneer families traveled westward in covered wagons along trails.",
             "Saturn's dazzling rings are made of ice crystals and rock.",
             "Inventions like the printing press spread ideas much faster.",
-            "Citizens participate in democracy by voting and sharing ideas."
+            "Citizens participate in democracy by voting and sharing ideas.",
+            "Roots and stems transport water to every leaf on a tree.",
+            "Transcontinental railroads linked eastern and western states.",
+            "Balanced ecosystems depend on clean air, soil, and water.",
+            "Checks and balances keep any one branch from having too much power."
         ],
         4: [
             "The Declaration of Independence stated that all people have equal rights.",
@@ -142,7 +174,11 @@ const GRADE_SENTENCES = {
             "Archaeologists carefully excavate ancient ruins to learn about history.",
             "Chemical reactions combine atoms to create brand-new substances.",
             "The Industrial Revolution replaced hand tools with steam-powered machines.",
-            "Satellite imagery helps meteorologists track hurricanes across oceans."
+            "Satellite imagery helps meteorologists track hurricanes across oceans.",
+            "Inventors tested new telegraph wires to send messages across miles.",
+            "Matter is conserved even when ice melts or water boils away.",
+            "National parks preserve scenic canyons, forests, and wildlife.",
+            "Astronomers measure vast space distances in light-years."
         ],
         5: [
             "Checking multiple credible sources helps historians verify important facts.",
@@ -150,7 +186,11 @@ const GRADE_SENTENCES = {
             "The Preamble begins with the famous words: We the People.",
             "Gravity bends the paths of asteroids, moons, and spacecraft alike.",
             "Understanding chronology helps us see how past choices shape today.",
-            "Curiosity and teamwork drive every great discovery in science and history."
+            "Curiosity and teamwork drive every great discovery in science and history.",
+            "Electromagnets power electric motors, doorbells, and recycling cranes.",
+            "Civic volunteers strengthen neighborhoods by solving shared problems.",
+            "Telescopes in orbit capture clear images of newborn stars.",
+            "Every generation builds on the knowledge of those who came before."
         ]
     }
 };

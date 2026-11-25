@@ -14,6 +14,7 @@
             <div class="hud-item">BRIDGE: <span id="step-val">0/10</span></div>
             <div class="hud-item">ACC: <span id="acc-val">100%</span></div>
             <div class="hud-item" id="relics-hud">🏺 RELICS: <span id="relic-val">0</span></div>
+            <div class="hud-item" id="timed-hud" style="display:none;">⏱️ <span id="timed-val">120</span>s</div>
             <div class="hud-controls">
                 <button id="voice-toggle" class="control-btn active" type="button">🗣️ Voice: On</button>
                 <button id="bgm-toggle" class="control-btn active" type="button">🎵 Music: On</button>
@@ -67,6 +68,9 @@
             </div>
 
             <div id="quest-best-banner" class="best-banner">BEST: 0 PTS | 0% ACC</div>
+            <label class="timed-toggle" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;font-size:0.95rem;cursor:pointer;">
+                <input type="checkbox" id="timed-mode-toggle"> ⏱️ Timed Mode (120s Challenge)
+            </label>
             <button id="start-btn" class="quest-btn" type="button">BEGIN QUEST</button>
             <a href="index.html" class="arcade-link">🏠 Back to Arcade Hub</a>
         </div>
@@ -87,7 +91,7 @@
             <p class="subtitle">You built the sky-bridge and mastered the ELA challenges!</p>
             <div id="new-record-badge" class="new-record-badge" style="display: none;">🌟 NEW HIGH SCORE!</div>
             <div class="final-score">SCORE: <span id="final-score-val">0</span></div>
-            <div class="final-stats">ACCURACY: <span id="final-acc-val">100%</span> &nbsp;|&nbsp; RELICS: <span id="final-relic-val">0</span></div>
+            <div class="final-stats"><span id="final-stars-val">⭐⭐⭐</span> &nbsp;|&nbsp; ACCURACY: <span id="final-acc-val">100%</span> &nbsp;|&nbsp; RELICS: <span id="final-relic-val">0</span></div>
             <div id="missed-review" class="missed-review"></div>
             <div class="modal-actions">
                 <button id="restart-btn" class="quest-btn" type="button">PLAY AGAIN</button>

@@ -213,15 +213,22 @@
         <div id="hub-badges-row" class="arcade-badges-row"></div>
     </div>
 
+    <div class="filter-row arcade-tabs" role="tablist" aria-label="Subject Filter" style="margin-bottom: 10px;">
+        <button class="arcade-tab subject-tab active" data-subject="all" type="button">All Subjects</button>
+        <button class="arcade-tab subject-tab" data-subject="ela" type="button">ELA &amp; Typing</button>
+        <button class="arcade-tab subject-tab" data-subject="math" type="button">Math</button>
+        <button class="arcade-tab subject-tab" data-subject="stem" type="button">Science &amp; History</button>
+    </div>
+
     <div class="filter-row arcade-tabs" role="tablist" aria-label="Grade Filter">
-        <button class="arcade-tab active" data-grade="all" type="button">All Grades</button>
-        <button class="arcade-tab" data-grade="3" type="button">Grade 3</button>
-        <button class="arcade-tab" data-grade="4" type="button">Grade 4</button>
-        <button class="arcade-tab" data-grade="5" type="button">Grade 5</button>
+        <button class="arcade-tab grade-tab active" data-grade="all" type="button">All Grades</button>
+        <button class="arcade-tab grade-tab" data-grade="3" type="button">Grade 3</button>
+        <button class="arcade-tab grade-tab" data-grade="4" type="button">Grade 4</button>
+        <button class="arcade-tab grade-tab" data-grade="5" type="button">Grade 5</button>
     </div>
 
     <div class="grid" id="games-grid">
-        <a href="plane-game.html" class="card" data-grades="3,4,5">
+        <a href="plane-game.html" data-base-href="plane-game.html" class="card" data-grades="3,4,5" data-subject="ela">
             <div class="card-preview">
                 <img src="assets/player-plane.png" alt="Neon Plane">
             </div>
@@ -236,7 +243,7 @@
             <div class="play-cta">LAUNCH MISSION →</div>
         </a>
 
-        <a href="dino-game.html" class="card dino" data-grades="3,4,5">
+        <a href="dino-game.html" data-base-href="dino-game.html" class="card dino" data-grades="3,4,5" data-subject="ela">
             <div class="card-preview">
                 <img src="assets/dino-rex.png" alt="Rex the Dinosaur">
             </div>
@@ -251,7 +258,7 @@
             <div class="play-cta">START ADVENTURE →</div>
         </a>
 
-        <a href="astro-math.html" class="card" data-grades="3,4,5">
+        <a href="astro-math.html" data-base-href="astro-math.html" class="card" data-grades="3,4,5" data-subject="math">
             <div class="card-preview" style="font-size: 3.2rem;">🧮</div>
             <div class="card-tags">
                 <span class="grade-tag">Grade 3–5</span>
@@ -264,7 +271,7 @@
             <div class="play-cta">LAUNCH DEFENSE →</div>
         </a>
 
-        <a href="word-quest.html" class="card" data-grades="3,4,5">
+        <a href="word-quest.html" data-base-href="word-quest.html" class="card" data-grades="3,4,5" data-subject="ela">
             <div class="card-preview" style="font-size: 3.2rem;">📖</div>
             <div class="card-tags">
                 <span class="grade-tag">Grade 3–5</span>
@@ -277,7 +284,7 @@
             <div class="play-cta">BEGIN QUEST →</div>
         </a>
 
-        <a href="fraction-dash.html" class="card" data-grades="3,4,5">
+        <a href="fraction-dash.html" data-base-href="fraction-dash.html" class="card" data-grades="3,4,5" data-subject="math">
             <div class="card-preview" style="font-size: 3.2rem;">🍕</div>
             <div class="card-tags">
                 <span class="grade-tag">Grade 3–5</span>
@@ -290,7 +297,7 @@
             <div class="play-cta">OPEN KITCHEN →</div>
         </a>
 
-        <a href="science-explorer.html" class="card" data-grades="3,4,5">
+        <a href="science-explorer.html" data-base-href="science-explorer.html" class="card" data-grades="3,4,5" data-subject="stem">
             <div class="card-preview" style="font-size: 3.2rem;">🔬</div>
             <div class="card-tags">
                 <span class="grade-tag">Grade 3–5</span>
@@ -303,7 +310,7 @@
             <div class="play-cta">LAUNCH ROVER →</div>
         </a>
 
-        <a href="life-math.html" class="card" data-grades="3,4,5">
+        <a href="life-math.html" data-base-href="life-math.html" class="card" data-grades="3,4,5" data-subject="math">
             <div class="card-preview" style="font-size: 3.2rem;">⏰</div>
             <div class="card-tags">
                 <span class="grade-tag">Grade 3–5</span>
@@ -316,7 +323,7 @@
             <div class="play-cta">START DASH →</div>
         </a>
 
-        <a href="castle-siege.html" class="card" data-grades="3,4,5">
+        <a href="castle-siege.html" data-base-href="castle-siege.html" class="card" data-grades="3,4,5" data-subject="stem">
             <div class="card-preview">
                 <img src="assets/castle-player.jpg" alt="Castle Siege">
             </div>
@@ -505,16 +512,37 @@
             }
         }
 
-        // Grade filter tabs
-        document.querySelectorAll('.arcade-tab').forEach(btn => {
+        // Subject & Grade filter tabs + deep-link ?grade=
+        let activeSubject = 'all';
+        let activeGrade = 'all';
+
+        function applyHubFilters() {
+            document.querySelectorAll('#games-grid .card').forEach(card => {
+                const grades = (card.dataset.grades || '').split(',');
+                const subject = card.dataset.subject || 'all';
+                const gradeOk = activeGrade === 'all' || grades.includes(activeGrade);
+                const subjectOk = activeSubject === 'all' || subject === activeSubject;
+                card.classList.toggle('hidden', !(gradeOk && subjectOk));
+                const baseHref = card.dataset.baseHref || card.getAttribute('href').split('?')[0];
+                card.setAttribute('href', activeGrade === 'all' ? baseHref : `${baseHref}?grade=${activeGrade}`);
+            });
+        }
+
+        document.querySelectorAll('.subject-tab').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.arcade-tab').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.subject-tab').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                const grade = btn.dataset.grade;
-                document.querySelectorAll('#games-grid .card').forEach(card => {
-                    const grades = (card.dataset.grades || '').split(',');
-                    card.classList.toggle('hidden', grade !== 'all' && !grades.includes(grade));
-                });
+                activeSubject = btn.dataset.subject || 'all';
+                applyHubFilters();
+            });
+        });
+
+        document.querySelectorAll('.grade-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.grade-tab').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeGrade = btn.dataset.grade || 'all';
+                applyHubFilters();
             });
         });
 

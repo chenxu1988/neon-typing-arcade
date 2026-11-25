@@ -199,6 +199,8 @@ const restartBtn = document.getElementById('restart-btn');
 const practiceMissedBtn = document.getElementById('practice-missed-btn');
 const gameoverMenuBtn = document.getElementById('gameover-menu-btn');
 const pauseMenuBtn = document.getElementById('pause-menu-btn');
+const victoryChoiceScreen = document.getElementById('victory-choice-screen');
+let endlessAccepted = false;
 const resumeBtn = document.getElementById('resume-btn');
 const finalScoreVal = document.getElementById('final-score-val');
 const finalWpmVal = document.getElementById('final-wpm-val');
@@ -1658,6 +1660,13 @@ function defeatBoss() {
     checkDifficultyProgression();
 
     clearInterval(spawnInterval);
+    if (bossLevel === 3 && !endlessAccepted && victoryChoiceScreen) {
+        gamePaused = true;
+        pausedAt = Date.now();
+        sounds.bgmController.stop();
+        victoryChoiceScreen.classList.add('active');
+        return;
+    }
     spawnInterval = setInterval(spawnWord, currentSpawnDelay);
 }
 
@@ -1770,7 +1779,9 @@ function returnToMenu() {
     stageBanner.classList.remove('active');
 
     pauseScreen.classList.remove('active');
+    if (victoryChoiceScreen) victoryChoiceScreen.classList.remove('active');
     gameOverScreen.classList.remove('active');
+    endlessAccepted = false;
     updateSectorBestBanner();
     updateCustomPanelVisibility();
     startScreen.classList.add('active');
@@ -1781,6 +1792,31 @@ resumeBtn.addEventListener('click', () => {
     togglePause();
 });
 
+const endlessContinueBtn = document.getElementById('endless-continue-btn');
+if (endlessContinueBtn) {
+    endlessContinueBtn.addEventListener('click', () => {
+        endlessAccepted = true;
+        if (victoryChoiceScreen) victoryChoiceScreen.classList.remove('active');
+        if (pausedAt) {
+            totalPausedMs += Date.now() - pausedAt;
+            pausedAt = null;
+        }
+        gamePaused = false;
+        if (sounds.bgmEnabled) sounds.bgmController.start();
+        clearInterval(spawnInterval);
+        spawnInterval = setInterval(spawnWord, currentSpawnDelay);
+        lastFrameTime = performance.now();
+        animationFrameId = requestAnimationFrame(gameLoop);
+    });
+}
+const victoryFinishBtn = document.getElementById('victory-finish-btn');
+if (victoryFinishBtn) {
+    victoryFinishBtn.addEventListener('click', () => {
+        if (victoryChoiceScreen) victoryChoiceScreen.classList.remove('active');
+        endGame();
+    });
+}
+
 gameoverMenuBtn.addEventListener('click', returnToMenu);
 pauseMenuBtn.addEventListener('click', returnToMenu);
 
@@ -1790,6 +1826,10 @@ document.getElementById('bgm-toggle').addEventListener('click', () => sounds.tog
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
 
 // Initialize start screen banner & custom words
+const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+if (urlGrade && vocabSelect) {
+    vocabSelect.value = `grade${urlGrade}`;
+}
 loadCustomWordsUI();
 updateCustomPanelVisibility();
 updateSectorBestBanner();
