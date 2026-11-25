@@ -256,6 +256,16 @@ body {
     filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.35));
 }
 
+.dino-hat {
+    position: absolute;
+    top: -16px;
+    right: 12px;
+    font-size: 2rem;
+    pointer-events: none;
+    z-index: 6;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
 @keyframes dino-bob {
     0%, 100% { transform: translateX(-50%) translateY(0); }
     50% { transform: translateX(-50%) translateY(-4px); }

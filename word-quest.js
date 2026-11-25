@@ -247,8 +247,16 @@ function handleChoice(btn, choice) {
     }
 }
 
+function applyExplorerAvatar() {
+    if (!window.ArcadeProfile) return;
+    const map = { exp_wizard: '🧙', exp_knight: '🛡️' };
+    const eq = window.ArcadeProfile.loadProfile().equipped.explorer;
+    explorer.innerText = map[eq] || '🧭';
+}
+
 function startGame() {
     sounds.init();
+    applyExplorerAvatar();
     score = 0;
     builtPlanks = 0;
     relics = 0;

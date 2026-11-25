@@ -373,8 +373,17 @@ function pickLevelSentences(level) {
     return pool.slice(0, SENTENCES_PER_LEVEL);
 }
 
+function applyDinoHat() {
+    const hatEl = document.getElementById('dino-hat');
+    if (!hatEl || !window.ArcadeProfile) return;
+    const hatMap = { dino_cap: '🧢', dino_crown: '👑', dino_astro: '👩‍🚀' };
+    const equipped = window.ArcadeProfile.loadProfile().equipped.dino;
+    hatEl.innerText = hatMap[equipped] || '';
+}
+
 function startGame(drillWords = null) {
     sounds.init();
+    applyDinoHat();
     practiceDrillMode = Array.isArray(drillWords) && drillWords.length > 0;
     activeGrade = gradeSelect ? gradeSelect.value : 'grade3';
     currentLevel = 1;

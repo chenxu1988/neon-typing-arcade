@@ -873,7 +873,12 @@ function startGame(drillWords = null) {
     startScreen.classList.remove('active');
     gameOverScreen.classList.remove('active');
 
-    // Align plane
+    // Align plane & apply Star Shop cosmetic skin
+    playerPlane.classList.remove('skin-plane_gold', 'skin-plane_emerald', 'skin-plane_rainbow');
+    if (window.ArcadeProfile) {
+        const equippedPlane = window.ArcadeProfile.loadProfile().equipped.plane;
+        if (equippedPlane) playerPlane.classList.add(`skin-${equippedPlane}`);
+    }
     playerPlane.style.left = '50%';
 
     // Start Spawner and Loop

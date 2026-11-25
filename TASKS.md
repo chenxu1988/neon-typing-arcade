@@ -63,7 +63,7 @@
 | `T4.3` | `P0` | `DONE` | Build **Time, Money & Area Dash** (`life-math.html`, `.css`, `.js`) with SVG analog clock, coin counter, and area/perimeter grid | `done` |
 | `T4.4` | `P0` | `DONE` | Register **Time, Money & Area Dash** in `index.html`, add `time_master` badge, and update `README.md` | `done` |
 | `T4.5` | `P1` | `DONE` | Add Star Shop catalog (`unlocks`, `equipped`, `purchaseItem`, `equipItem`) to `shared/profile.js` + Star Shop modal in `index.html` | `done` |
-| `T4.6` | `P1` | `TODO` | Wire equipped Star Shop cosmetics into Plane (aura/trail), Dino (hats), Word Quest (avatars), and Fraction Dash (toppings) | — |
+| `T4.6` | `P1` | `DONE` | Wire equipped Star Shop cosmetics into Plane (aura/trail), Dino (hats), Word Quest (avatars), and Fraction Dash (toppings) | `done` |
 | `T4.7` | `P1` | `TODO` | Expand `word-quest.js` bank to 60+ LAUSD Grade 3–5 questions + add visual dot-array grid in `astro-math.js` | — |
 | `T4.8` | `P1` | `TODO` | Add side-by-side Equivalence Visualizer in `fraction-dash.js` on missed Equivalent/Compare orders | — |
 

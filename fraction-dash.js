@@ -173,13 +173,27 @@ function renderPizzaSVG(denom, selectedSet, interactive = true) {
 
         if (isSelected) {
             const midA = (a1 + a2) / 2;
-            const pep = document.createElementNS(ns, 'circle');
-            pep.setAttribute('cx', (Math.cos(midA) * 56).toFixed(1));
-            pep.setAttribute('cy', (Math.sin(midA) * 56).toFixed(1));
-            pep.setAttribute('r', denom >= 8 ? '7' : '10');
-            pep.setAttribute('fill', '#d32f2f');
-            pep.setAttribute('pointer-events', 'none');
-            pizzaSvg.appendChild(pep);
+            const tx = (Math.cos(midA) * 56).toFixed(1);
+            const ty = (Math.sin(midA) * 56).toFixed(1);
+            const topping = window.ArcadeProfile ? window.ArcadeProfile.loadProfile().equipped.pizza : null;
+            if (topping === 'pizza_mushroom' || topping === 'pizza_star') {
+                const icon = document.createElementNS(ns, 'text');
+                icon.setAttribute('x', tx);
+                icon.setAttribute('y', String(Number(ty) + 6));
+                icon.setAttribute('font-size', denom >= 8 ? '14' : '19');
+                icon.setAttribute('text-anchor', 'middle');
+                icon.setAttribute('pointer-events', 'none');
+                icon.textContent = topping === 'pizza_mushroom' ? '🍄' : '⭐';
+                pizzaSvg.appendChild(icon);
+            } else {
+                const pep = document.createElementNS(ns, 'circle');
+                pep.setAttribute('cx', tx);
+                pep.setAttribute('cy', ty);
+                pep.setAttribute('r', denom >= 8 ? '7' : '10');
+                pep.setAttribute('fill', '#d32f2f');
+                pep.setAttribute('pointer-events', 'none');
+                pizzaSvg.appendChild(pep);
+            }
         }
     }
 
