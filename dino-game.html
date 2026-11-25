@@ -13,6 +13,7 @@
             <div class="stat">Step: <span id="step-val">1</span>/4</div>
             <div class="stat">WPM: <span id="wpm-val">0</span></div>
             <div class="stat">Acc: <span id="accuracy-val">100</span>%</div>
+            <div class="stat" id="timed-hud" style="display:none;">⏱️ <span id="timed-val">120</span>s</div>
             <div class="sound-controls">
                 <button id="voice-toggle" class="control-btn active" title="Toggle Read-Aloud">🗣️ Voice: On</button>
                 <button id="bgm-toggle" class="control-btn active" title="Toggle Music">🎵 Music: On</button>
@@ -45,6 +46,7 @@
                 <div id="sentence-display" title="Click to hear sentence again">
                     <span class="placeholder">Press Start to begin your Dinosaur Adventure!</span>
                 </div>
+                <div id="key-cue" class="key-cue" style="display:none;"></div>
             </div>
         </main>
 
@@ -65,6 +67,9 @@
                 </select>
             </div>
             <div id="best-stats-banner" class="best-stats-banner">BEST: 0 WPM | 0% ACCURACY</div>
+            <label class="timed-toggle" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;font-size:0.95rem;cursor:pointer;">
+                <input type="checkbox" id="timed-mode-toggle"> ⏱️ Timed Mode (120s Challenge)
+            </label>
             <button id="start-btn" class="modal-btn">START ADVENTURE</button>
         </div>
 
@@ -84,7 +89,7 @@
             <p class="modal-subtitle">Rex explored all 5 biomes and collected every treat!</p>
             <div id="new-record-badge" class="new-record-badge" style="display: none;">🌟 NEW BEST WPM!</div>
             <div class="victory-stats">
-                WPM: <span id="final-wpm-val">0</span> &nbsp;|&nbsp; ACCURACY: <span id="final-acc-val">100</span>%
+                <span id="final-stars-val">⭐⭐⭐</span> &nbsp;|&nbsp; WPM: <span id="final-wpm-val">0</span> &nbsp;|&nbsp; ACCURACY: <span id="final-acc-val">100</span>%
             </div>
             <div id="dino-practice-container" class="dino-practice-container"></div>
             <div class="modal-btn-row">

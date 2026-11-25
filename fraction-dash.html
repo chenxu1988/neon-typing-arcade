@@ -15,6 +15,7 @@
             <div class="hud-item">ACC: <span id="acc-val">100%</span></div>
             <div class="hud-item" id="streak-hud">🔥 STREAK: <span id="streak-val">0</span></div>
             <div class="hud-controls">
+                <button id="voice-toggle" class="control-btn active" type="button">🗣️ Voice: On</button>
                 <button id="bgm-toggle" class="control-btn active" type="button">🎵 Music: On</button>
                 <button id="sound-toggle" class="control-btn active" type="button">🔊 Sound: On</button>
                 <button id="hud-pause-btn" class="control-btn" type="button" title="Pause (ESC)">⏸️</button>
@@ -78,9 +79,17 @@
                     <label for="mode-select" class="selection-label">FRACTION CHALLENGE:</label>
                     <select id="mode-select" class="pizza-select">
                         <option value="mixed">✨ Mixed Kitchen (All Modes)</option>
-                        <option value="build">🍕 Grade 3: Build the Fraction</option>
-                        <option value="equiv">⚖️ Grade 3–4: Equivalent Fractions</option>
-                        <option value="compare">🔍 Grade 4–5: Compare (&lt;, =, &gt;)</option>
+                        <option value="build">🍕 Build the Fraction</option>
+                        <option value="equiv">⚖️ Equivalent Fractions</option>
+                        <option value="compare">🔍 Compare (&lt;, =, &gt;)</option>
+                    </select>
+                </div>
+                <div class="selection-container">
+                    <label for="grade-select" class="selection-label">GRADE:</label>
+                    <select id="grade-select" class="pizza-select">
+                        <option value="3">🎒 Grade 3</option>
+                        <option value="4">🚀 Grade 4</option>
+                        <option value="5">🎓 Grade 5</option>
                     </select>
                 </div>
             </div>

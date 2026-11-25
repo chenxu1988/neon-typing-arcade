@@ -445,7 +445,11 @@
         els.pauseScreen.classList.remove('active');
         els.endScreen.classList.remove('active');
         els.startScreen.classList.add('active');
-        updateBestBanner();
+        const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+    if (urlGrade && els.gradeSelect) {
+        els.gradeSelect.value = urlGrade;
+    }
+    updateBestBanner();
     }
 
     // Controls
@@ -497,5 +501,9 @@
         }
     });
 
+    const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+    if (urlGrade && els.gradeSelect) {
+        els.gradeSelect.value = urlGrade;
+    }
     updateBestBanner();
 })();

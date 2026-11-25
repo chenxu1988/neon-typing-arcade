@@ -232,6 +232,28 @@ body {
     animation: tail-wag 1.4s infinite alternate ease-in-out;
 }
 
+.key-cue {
+    margin-top: 10px;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(255, 224, 130, 0.16);
+    border: 1px solid rgba(255, 224, 130, 0.5);
+    color: #ffe082;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+#sentence-display.shake {
+    animation: dino-shake 0.32s ease-in-out;
+}
+
+@keyframes dino-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-7px); }
+    75% { transform: translateX(7px); }
+}
+
 @keyframes tail-wag {
     0% { transform: rotate(-4deg); }
     100% { transform: rotate(6deg); }

@@ -237,6 +237,39 @@ function startGame() {
     updateQuestHUD();
     loadNextQuestion();
     if (sounds.bgmEnabled) sounds.bgmController.start();
+    startTimedRun();
+}
+
+let timedMode = false;
+let timeLeft = 120;
+let timedTimerId = null;
+
+function stopTimedRun() {
+    if (timedTimerId) {
+        clearInterval(timedTimerId);
+        timedTimerId = null;
+    }
+}
+
+function startTimedRun() {
+    stopTimedRun();
+    const toggle = document.getElementById('timed-mode-toggle');
+    const hud = document.getElementById('timed-hud');
+    const val = document.getElementById('timed-val');
+    timedMode = Boolean(toggle && toggle.checked);
+    if (hud) hud.style.display = timedMode ? 'block' : 'none';
+    if (!timedMode) return;
+    timeLeft = 120;
+    if (val) val.innerText = timeLeft;
+    timedTimerId = setInterval(() => {
+        if (!gameActive || gamePaused) return;
+        timeLeft--;
+        if (val) val.innerText = timeLeft;
+        if (timeLeft <= 0) {
+            stopTimedRun();
+            finishQuest(false);
+        }
+    }, 1000);
 }
 
 function togglePause() {
@@ -252,13 +285,16 @@ function togglePause() {
     }
 }
 
-function finishQuest() {
+function finishQuest(completed = true) {
     gameActive = false;
+    stopTimedRun();
     sounds.stopSpeech();
     sounds.bgmController.stop();
     sounds.playFanfare([523.25, 659.25, 783.99, 1046.5]);
 
+    if (completed && timedMode && timeLeft > 0) score += timeLeft * 2;
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
+    const stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(acc, completed) : 3;
     let isNewBest = false;
     if (window.ArcadeProfile) {
         const prev = window.ArcadeProfile.loadProfile().games.word_quest;
@@ -269,10 +305,12 @@ function finishQuest() {
             score,
             wpm: 0,
             missedItems: Array.from(missedKeys),
-            badgeId: 'word_wizard'
+            badgeId: completed ? 'word_wizard' : null
         });
     }
 
+    const starsEl = document.getElementById('final-stars-val');
+    if (starsEl) starsEl.innerText = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
     document.getElementById('new-record-badge').style.display = isNewBest ? 'block' : 'none';
     document.getElementById('final-score-val').innerText = score;
     document.getElementById('final-acc-val').innerText = `${acc}%`;
@@ -297,11 +335,16 @@ function finishQuest() {
 function returnToMenu() {
     gameActive = false;
     gamePaused = false;
+    stopTimedRun();
     sounds.stopSpeech();
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     endScreen.classList.remove('active');
-    updateQuestBanner();
+    const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+if (urlGrade && gradeSelect) {
+    gradeSelect.value = urlGrade;
+}
+updateQuestBanner();
     startScreen.classList.add('active');
 }
 
@@ -333,4 +376,8 @@ document.getElementById('voice-toggle').addEventListener('click', () => sounds.t
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
 
+const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+if (urlGrade && gradeSelect) {
+    gradeSelect.value = urlGrade;
+}
 updateQuestBanner();

@@ -14,7 +14,9 @@
             <div class="hud-item">ROUND: <span id="round-val">1</span>/10</div>
             <div class="hud-item">ACC: <span id="acc-val">100%</span></div>
             <div class="hud-item">🔥 STREAK: <span id="streak-val">0</span></div>
+            <div class="hud-item" id="timed-hud" style="display:none;">⏱️ <span id="timed-val">120</span>s</div>
             <div class="hud-controls">
+                <button id="voice-toggle" class="control-btn active" type="button">🗣️ Voice: On</button>
                 <button id="bgm-toggle" class="control-btn active" type="button">🎵 Music: On</button>
                 <button id="sound-toggle" class="control-btn active" type="button">🔊 Sound: On</button>
                 <button id="hud-pause-btn" class="control-btn" type="button" title="Pause (ESC)">⏸️</button>
@@ -42,17 +44,30 @@
             <h1 class="dash-title">⏰ TIME, MONEY &amp; AREA DASH</h1>
             <p class="subtitle">Read analog clocks, count coins &amp; make change, and build shapes on the unit-square grid!</p>
 
-            <div class="selection-container">
-                <label for="mode-select" class="selection-label">PRACTICAL MATH MODE:</label>
-                <select id="mode-select" class="dash-select">
-                    <option value="mixed">✨ Mixed Dash (Time, Money &amp; Area)</option>
-                    <option value="time">⏰ Time: Analog Clocks</option>
-                    <option value="money">🪙 Money: Coins &amp; Change</option>
-                    <option value="area">📐 Geometry: Area &amp; Perimeter</option>
-                </select>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">
+                <div class="selection-container">
+                    <label for="mode-select" class="selection-label">PRACTICAL MATH MODE:</label>
+                    <select id="mode-select" class="dash-select">
+                        <option value="mixed">✨ Mixed Dash (Time, Money &amp; Area)</option>
+                        <option value="time">⏰ Time: Analog Clocks</option>
+                        <option value="money">🪙 Money: Coins &amp; Change</option>
+                        <option value="area">📐 Geometry: Area &amp; Perimeter</option>
+                    </select>
+                </div>
+                <div class="selection-container">
+                    <label for="grade-select" class="selection-label">GRADE:</label>
+                    <select id="grade-select" class="dash-select">
+                        <option value="3">🎒 Grade 3</option>
+                        <option value="4">🚀 Grade 4</option>
+                        <option value="5">🎓 Grade 5</option>
+                    </select>
+                </div>
             </div>
 
             <div id="life-best-banner" class="best-banner">BEST: 0 PTS | 0% ACC</div>
+            <label class="timed-toggle" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;font-size:0.95rem;cursor:pointer;">
+                <input type="checkbox" id="timed-mode-toggle"> ⏱️ Timed Mode (120s Challenge)
+            </label>
             <button id="start-btn" class="dash-btn" type="button">START DASH</button>
             <a href="index.html" class="arcade-link">🏠 Back to Arcade Hub</a>
         </div>
@@ -73,7 +88,7 @@
             <p class="subtitle">Awesome real-world math skills!</p>
             <div id="new-record-badge" class="new-record-badge" style="display: none;">🌟 NEW HIGH SCORE!</div>
             <div class="final-score">SCORE: <span id="final-score-val">0</span></div>
-            <div class="final-stats">ACCURACY: <span id="final-acc-val">100%</span></div>
+            <div class="final-stats"><span id="final-stars-val">⭐⭐⭐</span> &nbsp;|&nbsp; ACCURACY: <span id="final-acc-val">100%</span></div>
             <div id="missed-review" class="missed-review"></div>
             <div class="modal-actions">
                 <button id="restart-btn" class="dash-btn" type="button">PLAY AGAIN</button>

@@ -64,65 +64,78 @@ const sounds = new SciSoundManager();
 const SCIENCE_BANK = window.ArcadeDB.scienceBank;
 
 function renderScienceDiagram(q) {
+    const hotspotHint = q.interactive
+        ? '<text x="110" y="155" fill="#76ff03" font-size="9.5" text-anchor="middle" font-weight="bold">👆 TIP: CLICK DIAGRAM OR PICK 1–4</text>'
+        : '';
     if (q.topic === 'solar') {
         return `<svg viewBox="0 0 220 160">
-            <circle cx="42" cy="80" r="26" fill="#ffca28"/>
+            <circle cx="42" cy="80" r="26" fill="#ffca28" class="svg-hotspot" data-choice="Sun" style="cursor:pointer"/>
             <ellipse cx="110" cy="80" rx="58" ry="26" fill="none" stroke="#4dd0e1" stroke-dasharray="4 4"/>
             <ellipse cx="122" cy="80" rx="88" ry="44" fill="none" stroke="#80deea" stroke-dasharray="4 4"/>
-            <circle cx="96" cy="57" r="8" fill="#90a4ae"/>
-            <circle cx="152" cy="100" r="11" fill="#29b6f6"/>
-            <circle cx="195" cy="60" r="15" fill="#ffb74d"/>
+            <circle cx="96" cy="57" r="8" fill="#90a4ae" class="svg-hotspot" data-choice="Mercury" style="cursor:pointer"/>
+            <circle cx="152" cy="100" r="11" fill="#29b6f6" class="svg-hotspot" data-choice="Earth" style="cursor:pointer"/>
+            <circle cx="195" cy="60" r="15" fill="#ffb74d" class="svg-hotspot" data-choice="Jupiter" style="cursor:pointer"/>
             <text x="42" y="122" fill="#ffca28" font-size="11" text-anchor="middle">SUN</text>
             <text x="152" y="130" fill="#80deea" font-size="11" text-anchor="middle">ORBITS</text>
+            ${hotspotHint}
         </svg>`;
     }
     if (q.topic === 'foodchain') {
         return `<svg viewBox="0 0 240 160">
-            <circle cx="34" cy="40" r="18" fill="#ffca28"/>
-            <text x="34" y="45" font-size="18" text-anchor="middle">☀️</text>
+            <circle cx="34" cy="40" r="18" fill="#ffca28" class="svg-hotspot" data-choice="Sun" style="cursor:pointer"/>
+            <text x="34" y="45" font-size="18" text-anchor="middle" pointer-events="none">☀️</text>
             <text x="65" y="45" fill="#76ff03" font-size="18">→</text>
-            <text x="102" y="48" font-size="24" text-anchor="middle">🌿</text>
+            <text x="102" y="48" font-size="24" text-anchor="middle" class="svg-hotspot" data-choice="Producers" style="cursor:pointer">🌿</text>
             <text x="132" y="45" fill="#76ff03" font-size="18">→</text>
-            <text x="166" y="48" font-size="24" text-anchor="middle">🐇</text>
+            <text x="166" y="48" font-size="24" text-anchor="middle" class="svg-hotspot" data-choice="Herbivore" style="cursor:pointer">🐇</text>
             <text x="195" y="45" fill="#76ff03" font-size="18">→</text>
-            <text x="220" y="48" font-size="22" text-anchor="middle">🦅</text>
+            <text x="220" y="48" font-size="22" text-anchor="middle" class="svg-hotspot" data-choice="Apex predator" style="cursor:pointer">🦅</text>
             <text x="120" y="110" fill="#80deea" font-size="13" text-anchor="middle" font-weight="bold">ENERGY FLOW IN ECOSYSTEM</text>
+            ${q.interactive ? '<text x="120" y="140" fill="#76ff03" font-size="9.5" text-anchor="middle" font-weight="bold">👆 CLICK ORGANISM OR PICK 1–4</text>' : ''}
         </svg>`;
     }
     if (q.topic === 'watercycle') {
         return `<svg viewBox="0 0 220 160">
             <circle cx="38" cy="34" r="16" fill="#ffca28"/>
-            <rect x="0" y="125" width="220" height="35" fill="#0288d1" rx="6"/>
-            <ellipse cx="145" cy="40" rx="34" ry="16" fill="#eceff1"/>
-            <path d="M55 118 Q62 82 95 55" stroke="#ffca28" stroke-width="3" fill="none" stroke-dasharray="4 3"/>
+            <rect x="0" y="125" width="220" height="35" fill="#0288d1" rx="6" class="svg-hotspot" data-choice="Collection" style="cursor:pointer"/>
+            <ellipse cx="145" cy="40" rx="34" ry="16" fill="#eceff1" class="svg-hotspot" data-choice="Condensation" style="cursor:pointer"/>
+            <path d="M55 118 Q62 82 95 55" stroke="#ffca28" stroke-width="5" fill="none" stroke-dasharray="4 3" class="svg-hotspot" data-choice="Evaporation" style="cursor:pointer"/>
             <text x="62" y="92" fill="#ffca28" font-size="10">UP</text>
-            <path d="M145 58 L145 112" stroke="#4fc3f7" stroke-width="3" stroke-dasharray="5 3"/>
+            <path d="M145 58 L145 112" stroke="#4fc3f7" stroke-width="5" stroke-dasharray="5 3" class="svg-hotspot" data-choice="Precipitation" style="cursor:pointer"/>
             <text x="165" y="92" fill="#81d4fa" font-size="10">RAIN</text>
-            <text x="110" y="147" fill="#fff" font-size="11" text-anchor="middle">WATER CYCLE</text>
+            <text x="110" y="147" fill="#fff" font-size="11" text-anchor="middle" pointer-events="none">WATER CYCLE</text>
         </svg>`;
     }
     if (q.topic === 'matter') {
         return `<svg viewBox="0 0 220 160">
-            <rect x="14" y="34" width="56" height="72" rx="6" fill="none" stroke="#00e5ff" stroke-width="2"/>
-            <circle cx="30" cy="84" r="6" fill="#76ff03"/><circle cx="44" cy="84" r="6" fill="#76ff03"/><circle cx="58" cy="84" r="6" fill="#76ff03"/>
-            <circle cx="30" cy="70" r="6" fill="#76ff03"/><circle cx="44" cy="70" r="6" fill="#76ff03"/><circle cx="58" cy="70" r="6" fill="#76ff03"/>
-            <text x="42" y="124" fill="#b2ebf2" font-size="10" text-anchor="middle">SOLID</text>
-            <rect x="82" y="34" width="56" height="72" rx="6" fill="none" stroke="#00e5ff" stroke-width="2"/>
-            <circle cx="96" cy="90" r="6" fill="#29b6f6"/><circle cx="114" cy="86" r="6" fill="#29b6f6"/><circle cx="126" cy="92" r="6" fill="#29b6f6"/>
-            <circle cx="104" cy="74" r="6" fill="#29b6f6"/><circle cx="120" cy="72" r="6" fill="#29b6f6"/>
-            <text x="110" y="124" fill="#b2ebf2" font-size="10" text-anchor="middle">LIQUID</text>
-            <rect x="150" y="34" width="56" height="72" rx="6" fill="none" stroke="#00e5ff" stroke-width="2"/>
-            <circle cx="164" cy="48" r="5" fill="#ffca28"/><circle cx="192" cy="60" r="5" fill="#ffca28"/><circle cx="174" cy="88" r="5" fill="#ffca28"/>
-            <text x="178" y="124" fill="#b2ebf2" font-size="10" text-anchor="middle">GAS</text>
+            <g class="svg-hotspot" data-choice="Solid" style="cursor:pointer">
+                <rect x="14" y="34" width="56" height="72" rx="6" fill="transparent" stroke="#00e5ff" stroke-width="2"/>
+                <circle cx="30" cy="84" r="6" fill="#76ff03"/><circle cx="44" cy="84" r="6" fill="#76ff03"/><circle cx="58" cy="84" r="6" fill="#76ff03"/>
+                <circle cx="30" cy="70" r="6" fill="#76ff03"/><circle cx="44" cy="70" r="6" fill="#76ff03"/><circle cx="58" cy="70" r="6" fill="#76ff03"/>
+                <text x="42" y="124" fill="#b2ebf2" font-size="10" text-anchor="middle">SOLID</text>
+            </g>
+            <g class="svg-hotspot" data-choice="Liquid" style="cursor:pointer">
+                <rect x="82" y="34" width="56" height="72" rx="6" fill="transparent" stroke="#00e5ff" stroke-width="2"/>
+                <circle cx="96" cy="90" r="6" fill="#29b6f6"/><circle cx="114" cy="86" r="6" fill="#29b6f6"/><circle cx="126" cy="92" r="6" fill="#29b6f6"/>
+                <circle cx="104" cy="74" r="6" fill="#29b6f6"/><circle cx="120" cy="72" r="6" fill="#29b6f6"/>
+                <text x="110" y="124" fill="#b2ebf2" font-size="10" text-anchor="middle">LIQUID</text>
+            </g>
+            <g class="svg-hotspot" data-choice="Gas" style="cursor:pointer">
+                <rect x="150" y="34" width="56" height="72" rx="6" fill="transparent" stroke="#00e5ff" stroke-width="2"/>
+                <circle cx="164" cy="48" r="5" fill="#ffca28"/><circle cx="192" cy="60" r="5" fill="#ffca28"/><circle cx="174" cy="88" r="5" fill="#ffca28"/>
+                <text x="178" y="124" fill="#b2ebf2" font-size="10" text-anchor="middle">GAS</text>
+            </g>
+            ${hotspotHint}
         </svg>`;
     }
     return `<svg viewBox="0 0 220 160">
-        <rect x="35" y="45" width="150" height="72" rx="10" fill="none" stroke="#ffca28" stroke-width="4"/>
-        <rect x="24" y="64" width="22" height="34" rx="4" fill="#ef5350"/>
-        <text x="35" y="85" fill="#fff" font-size="10" text-anchor="middle">+</text>
+        <rect x="35" y="45" width="150" height="72" rx="10" fill="none" stroke="#ffca28" stroke-width="4" class="svg-hotspot" data-choice="Closed (complete loop)" style="cursor:pointer"/>
+        <rect x="24" y="64" width="22" height="34" rx="4" fill="#ef5350" class="svg-hotspot" data-choice="Battery" style="cursor:pointer"/>
+        <text x="35" y="85" fill="#fff" font-size="10" text-anchor="middle" pointer-events="none">+</text>
         <circle cx="185" cy="81" r="16" fill="#fff59d" stroke="#fbc02d" stroke-width="3"/>
         <text x="185" y="86" font-size="14" text-anchor="middle">💡</text>
         <text x="110" y="142" fill="#80deea" font-size="11" text-anchor="middle">SIMPLE CIRCUIT</text>
+        ${hotspotHint}
     </svg>`;
 }
 
@@ -222,6 +235,17 @@ function loadNextQuestion() {
         qChoices.appendChild(btn);
     });
 
+    if (currentQ.interactive) {
+        diagramBox.querySelectorAll('.svg-hotspot').forEach(el => {
+            el.addEventListener('click', () => {
+                if (qLocked) return;
+                const picked = el.getAttribute('data-choice');
+                const matchBtn = Array.from(qChoices.querySelectorAll('.choice-btn')).find(b => b.dataset.choice === picked);
+                if (matchBtn) handleAnswer(matchBtn, picked);
+            });
+        });
+    }
+
     sounds.speak(currentQ.prompt);
 }
 
@@ -290,6 +314,39 @@ function startGame() {
     updateHUD();
     loadNextQuestion();
     if (sounds.bgmEnabled) sounds.bgmController.start();
+    startTimedRun();
+}
+
+let timedMode = false;
+let timeLeft = 120;
+let timedTimerId = null;
+
+function stopTimedRun() {
+    if (timedTimerId) {
+        clearInterval(timedTimerId);
+        timedTimerId = null;
+    }
+}
+
+function startTimedRun() {
+    stopTimedRun();
+    const toggle = document.getElementById('timed-mode-toggle');
+    const hud = document.getElementById('timed-hud');
+    const val = document.getElementById('timed-val');
+    timedMode = Boolean(toggle && toggle.checked);
+    if (hud) hud.style.display = timedMode ? 'block' : 'none';
+    if (!timedMode) return;
+    timeLeft = 120;
+    if (val) val.innerText = timeLeft;
+    timedTimerId = setInterval(() => {
+        if (!gameActive || gamePaused) return;
+        timeLeft--;
+        if (val) val.innerText = timeLeft;
+        if (timeLeft <= 0) {
+            stopTimedRun();
+            finishExpedition(false);
+        }
+    }, 1000);
 }
 
 function togglePause() {
@@ -305,13 +362,16 @@ function togglePause() {
     }
 }
 
-function finishExpedition() {
+function finishExpedition(completed = true) {
     gameActive = false;
+    stopTimedRun();
     sounds.stopSpeech();
     sounds.bgmController.stop();
     sounds.playFanfare([523.25, 659.25, 783.99, 1046.5]);
 
+    if (completed && timedMode && timeLeft > 0) score += timeLeft * 2;
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
+    const stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(acc, completed) : 3;
     let isNewBest = false;
     if (window.ArcadeProfile) {
         const prev = window.ArcadeProfile.loadProfile().games.science_explorer;
@@ -322,10 +382,12 @@ function finishExpedition() {
             score,
             wpm: 0,
             missedItems: Array.from(missedConcepts),
-            badgeId: 'science_whiz'
+            badgeId: completed ? 'science_whiz' : null
         });
     }
 
+    const starsEl = document.getElementById('final-stars-val');
+    if (starsEl) starsEl.innerText = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
     document.getElementById('new-record-badge').style.display = isNewBest ? 'block' : 'none';
     document.getElementById('final-score-val').innerText = score;
     document.getElementById('final-acc-val').innerText = `${acc}%`;
@@ -350,11 +412,16 @@ function finishExpedition() {
 function returnToMenu() {
     gameActive = false;
     gamePaused = false;
+    stopTimedRun();
     sounds.stopSpeech();
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     endScreen.classList.remove('active');
-    updateSciBanner();
+    const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+if (urlGrade && gradeSelect) {
+    gradeSelect.value = urlGrade;
+}
+updateSciBanner();
     startScreen.classList.add('active');
 }
 
@@ -386,4 +453,8 @@ document.getElementById('voice-toggle').addEventListener('click', () => sounds.t
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
 
+const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+if (urlGrade && gradeSelect) {
+    gradeSelect.value = urlGrade;
+}
 updateSciBanner();

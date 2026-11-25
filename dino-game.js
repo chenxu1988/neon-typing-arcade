@@ -272,6 +272,66 @@ function startGame(drillWords = null) {
     if (sounds.bgmEnabled) {
         sounds.bgmController.start();
     }
+    startTimedRun();
+}
+
+let timedMode = false;
+let timeLeft = 120;
+let timedTimerId = null;
+
+function stopTimedRun() {
+    if (timedTimerId) {
+        clearInterval(timedTimerId);
+        timedTimerId = null;
+    }
+}
+
+function startTimedRun() {
+    stopTimedRun();
+    const toggle = document.getElementById('timed-mode-toggle');
+    const hud = document.getElementById('timed-hud');
+    const val = document.getElementById('timed-val');
+    timedMode = Boolean(toggle && toggle.checked);
+    if (hud) hud.style.display = timedMode ? 'block' : 'none';
+    if (!timedMode) return;
+    timeLeft = 120;
+    if (val) val.innerText = timeLeft;
+    timedTimerId = setInterval(() => {
+        if (!gameActive || gamePaused) return;
+        timeLeft--;
+        if (val) val.innerText = timeLeft;
+        if (timeLeft <= 0) {
+            stopTimedRun();
+            showVictory(false);
+        }
+    }, 1000);
+}
+
+let wrongStreak = 0;
+let mashLockUntil = 0;
+
+function updateKeyCue() {
+    const cueEl = document.getElementById('key-cue');
+    if (!cueEl) return;
+    if (!gameActive || activeGrade !== 'grade3') {
+        cueEl.style.display = 'none';
+        return;
+    }
+    const sentence = activeLevelSentences[currentSentenceIndex] || '';
+    const ch = sentence[charIndex];
+    if (!ch) {
+        cueEl.style.display = 'none';
+        return;
+    }
+    if (/[A-Z]/.test(ch)) {
+        cueEl.innerText = `⇧ Hold Shift + ${ch.toLowerCase()} for "${ch}"`;
+        cueEl.style.display = 'inline-block';
+    } else if (/[.,!?'-]/.test(ch)) {
+        cueEl.innerText = `⌨️ Punctuation key: "${ch}"`;
+        cueEl.style.display = 'inline-block';
+    } else {
+        cueEl.style.display = 'none';
+    }
 }
 
 function loadSentence() {
@@ -286,7 +346,9 @@ function loadSentence() {
     });
 
     charIndex = 0;
+    wrongStreak = 0;
     updateDinoPosition();
+    updateKeyCue();
     sounds.speakSentence(sentence);
 }
 
@@ -312,13 +374,18 @@ function togglePause() {
 }
 
 function returnToMenu() {
+    stopTimedRun();
     gameActive = false;
     gamePaused = false;
     sounds.stopSpeech();
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     victoryScreen.classList.remove('active');
-    updateBestBanner();
+    const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+if (urlGrade && gradeSelect) {
+    gradeSelect.value = `grade${urlGrade}`;
+}
+updateBestBanner();
     startScreen.classList.add('active');
 }
 
@@ -330,6 +397,7 @@ function handleKeyPress(e) {
         return;
     }
     if (gamePaused) return;
+    if (Date.now() < mashLockUntil) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key.length !== 1) return;
 
@@ -349,6 +417,7 @@ function handleKeyPress(e) {
     totalTyped++;
 
     if (pressedChar === targetChar) {
+        wrongStreak = 0;
         sounds.playType();
         triggerWalking();
         spans[charIndex].classList.remove('char-current', 'char-wrong');
@@ -357,14 +426,24 @@ function handleKeyPress(e) {
 
         if (charIndex < targetSentence.length) {
             spans[charIndex].classList.add('char-current');
+            updateKeyCue();
         } else {
+            updateKeyCue();
             finishSentence();
         }
     } else {
         sounds.playError();
         errors++;
+        wrongStreak++;
         spans[charIndex].classList.add('char-wrong');
         recordMissedWordAt(targetSentence, charIndex);
+        if (wrongStreak >= 3) {
+            mashLockUntil = Date.now() + 400;
+            sentenceDisplay.classList.remove('shake');
+            void sentenceDisplay.offsetWidth;
+            sentenceDisplay.classList.add('shake');
+            setTimeout(() => sentenceDisplay.classList.remove('shake'), 350);
+        }
     }
 
     updateStats();
@@ -466,14 +545,16 @@ function renderPracticeSummary() {
     dinoPracticeContainer.appendChild(pills);
 }
 
-function showVictory() {
+function showVictory(completed = true) {
     gameActive = false;
+    stopTimedRun();
     sounds.bgmController.stop();
     sounds.stopSpeech();
     sounds.playFanfare([523.25, 659.25, 783.99, 1046.5]);
 
     const finalWpm = getWpm();
     const finalAcc = getAccuracy();
+    const stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(finalAcc, completed) : 3;
     const isNewBest = practiceDrillMode ? false : saveBestStats(finalWpm, finalAcc);
     updateBestBanner();
 
@@ -487,10 +568,12 @@ function showVictory() {
             score: finalWpm * 10,
             wpm: finalWpm,
             missedItems: lastMissedWords,
-            badgeId: 'dino_explorer'
+            badgeId: completed ? 'dino_explorer' : null
         });
     }
 
+    const starsEl = document.getElementById('final-stars-val');
+    if (starsEl) starsEl.innerText = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
     finalWpmVal.innerText = finalWpm;
     finalAccVal.innerText = finalAcc;
     newRecordBadge.style.display = isNewBest ? 'block' : 'none';
@@ -516,4 +599,8 @@ document.getElementById('display-container').addEventListener('click', () => {
     }
 });
 
+const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+if (urlGrade && gradeSelect) {
+    gradeSelect.value = `grade${urlGrade}`;
+}
 updateBestBanner();

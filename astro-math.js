@@ -47,6 +47,17 @@ class MathSoundManager extends window.ArcadeAudio.BaseSoundManager {
         }
         btn.blur();
     }
+
+    toggleVoice() {
+        this.voiceEnabled = !this.voiceEnabled;
+        const btn = document.getElementById('voice-toggle');
+        if (btn) {
+            btn.innerText = this.voiceEnabled ? '🗣️ Voice: On' : '🔇 Voice: Off';
+            btn.classList.toggle('active', this.voiceEnabled);
+            btn.blur();
+        }
+        if (!this.voiceEnabled) this.stopSpeech();
+    }
 }
 
 const sounds = new MathSoundManager();
@@ -196,13 +207,18 @@ function showHint(text, rows = 0, cols = 0) {
     msg.innerText = text;
     hintBanner.appendChild(msg);
 
-    if (rows > 0 && cols > 0 && rows <= 6 && cols <= 10) {
+    if (rows > 0 && cols > 0 && rows <= 12 && cols <= 12) {
+        const dotSize = cols > 8 ? 8 : 10;
         const grid = document.createElement('div');
         grid.className = 'array-grid-hint';
-        grid.style.gridTemplateColumns = `repeat(${cols}, 10px)`;
+        grid.style.gridTemplateColumns = `repeat(${cols}, ${dotSize}px)`;
         for (let i = 0; i < rows * cols; i++) {
             const dot = document.createElement('span');
             dot.className = 'array-dot';
+            if (cols > 8) {
+                dot.style.width = '7px';
+                dot.style.height = '7px';
+            }
             grid.appendChild(dot);
         }
         hintBanner.appendChild(grid);
@@ -304,34 +320,40 @@ function spawnMeteor() {
 
 function spawnBossProblem() {
     if (!gameActive || gamePaused || !bossActive || bossHp <= 0) return;
-    const prob = generateBossProblem(topicSelect.value);
-    const id = meteorIdCounter++;
-    const xPercent = 25 + Math.random() * 50;
-    const yPx = 95;
+    const salvoCount = (bossHp <= 2 && meteors.length === 0) ? 2 : 1;
+    if (salvoCount === 2) showHint('⚡ MOTHERSHIP OVERDRIVE — DUAL SHOT!');
 
-    const el = document.createElement('div');
-    el.className = 'meteor-card boss-problem';
-    el.style.left = `${xPercent}%`;
-    el.style.top = `${yPx}px`;
-    el.innerHTML = `<span class="meteor-icon">⚡</span><span class="meteor-eq">${prob.text}</span>`;
-    meteorsContainer.appendChild(el);
+    for (let s = 0; s < salvoCount; s++) {
+        const prob = generateBossProblem(topicSelect.value);
+        const id = meteorIdCounter++;
+        const xPercent = salvoCount === 2 ? (s === 0 ? 28 : 66) : (25 + Math.random() * 50);
+        const yPx = 95;
 
-    meteors.push({
-        id,
-        text: prob.text,
-        answer: prob.answer,
-        hint: prob.hint,
-        element: el,
-        x: xPercent,
-        y: yPx,
-        speed: baseSpeed * 0.9,
-        isBossProblem: true
-    });
+        const el = document.createElement('div');
+        el.className = 'meteor-card boss-problem';
+        el.style.left = `${xPercent}%`;
+        el.style.top = `${yPx}px`;
+        el.innerHTML = `<span class="meteor-icon">⚡</span><span class="meteor-eq">${prob.text}</span>`;
+        meteorsContainer.appendChild(el);
+
+        meteors.push({
+            id,
+            text: prob.text,
+            answer: prob.answer,
+            hint: prob.hint,
+            element: el,
+            x: xPercent,
+            y: yPx,
+            speed: baseSpeed * 0.9,
+            isBossProblem: true
+        });
+        if (s === 0 && sounds.speak) sounds.speak(prob.text);
+    }
 }
 
 function triggerBoss() {
     bossActive = true;
-    bossMaxHp = 4;
+    bossMaxHp = 5;
     bossHp = bossMaxHp;
     clearInterval(spawnTimer);
     mathBoss.classList.add('active');
@@ -440,7 +462,7 @@ function submitAnswer() {
             bossHealthBar.style.width = `${Math.max(0, (bossHp / bossMaxHp) * 100)}%`;
             if (bossHp <= 0) {
                 defeatBoss();
-            } else {
+            } else if (!meteors.some(m => m.isBossProblem)) {
                 bossTimer = setTimeout(spawnBossProblem, 1100);
             }
         } else if (score >= nextBossScore && !bossActive) {
@@ -625,6 +647,7 @@ document.getElementById('resume-btn').addEventListener('click', togglePause);
 document.getElementById('pause-menu-btn').addEventListener('click', returnToMenu);
 document.getElementById('gameover-menu-btn').addEventListener('click', returnToMenu);
 document.getElementById('hud-pause-btn').addEventListener('click', (e) => { togglePause(); e.currentTarget.blur(); });
+document.getElementById('voice-toggle').addEventListener('click', () => sounds.toggleVoice());
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
 

@@ -113,12 +113,12 @@
 | `T6.1` | `FEN-5` | `P0` | `DONE` | Restore `shared/profile.js` from git `HEAD` so `ArcadeProfile`, Star Shop, badges, and cosmetics work across all 8 games | `done` |
 | `T6.2` | `FEN-6` | `P0` | `DONE` | Repair `index.html` corrupted modal JS (`shopModal`/`playerModal` handlers) and fix hardcoded badge counts (`0/10`, `0/8` -> `11`) | `done` |
 | `T6.3` | `FEN-7` | `P0` | `DONE` | Fix `castle-siege.js` BGM (`bpm`/`lead` keys + `ChiptuneSequencer`), stop TTS on `togglePause()`, add `MAIN MENU` to Pause modal, and fix `index.html` wave copy (`30s`) | `done` |
-| `T6.4` | `FEN-8` | `P1` | `TODO` | Upgrade `index.html` filtering: add Subject filter (`All`, `ELA & Typing`, `Math`, `Science & History`) + pass `?grade=3\|4\|5` deep-link into games | — |
-| `T6.5` | `FEN-9` | `P1` | `TODO` | Standardize HUD, `Esc` Pause, `MAIN MENU` exit, keyboard shortcuts (`1–4`, `Enter`), and Web Speech TTS toggle across all 8 games | — |
-| `T6.6` | `FEN-10` | `P1` | `TODO` | Add 3-Star mastery thresholds + optional Timed mode for Chill games (`dino-game`, `word-quest`, `science-explorer`, `life-math`) | — |
-| `T6.7` | `FEN-11` | `P1` | `TODO` | Differentiate `science-explorer.js` with interactive STEM diagram challenges + expand `db/science-bank.js` (to 10+ per topic/grade) and `db/word-quest-bank.js` (to 10+ per mode/grade) | — |
-| `T6.8` | `FEN-12` | `P1` | `TODO` | Polish `dino-game.js` & `db/dino-sentences.js`: penalize/shake on key-mashing, add Shift/punctuation cue for Grade 3, and expand Grade 4/5 sentence pools | — |
-| `T6.9` | `FEN-13` | `P1` | `TODO` | Polish `fraction-dash.js` & `db/fraction-bank.js`: fix uncut reset, show both pizzas side-by-side during Compare, add Grade 3–5 scaling, deduplicate orders, and add `1–3`/`Enter` keys | — |
-| `T6.10` | `FEN-14` | `P1` | `TODO` | Polish `life-math.js`: enforce contiguous shapes in `area_build`, add single-coin undo, add perimeter side-length labels, and add Grade 3–5 scaling + TTS | — |
-| `T6.11` | `FEN-15` | `P1` | `TODO` | Upgrade `astro-math.js` (scale dot-array hints to `12×12` + multi-shot/shielded Calculator Boss) and `plane-game.js` (add 3-Stage Victory milestone + optional Endless mode) | — |
+| `T6.4` | `FEN-8` | `P1` | `DONE` | Upgrade `index.html` filtering: add Subject filter (`All`, `ELA & Typing`, `Math`, `Science & History`) + pass `?grade=3\|4\|5` deep-link into games | `done` |
+| `T6.5` | `FEN-9` | `P1` | `DONE` | Standardize HUD, `Esc` Pause, `MAIN MENU` exit, keyboard shortcuts (`1–4`, `Enter`), and Web Speech TTS toggle across all 8 games | `done` |
+| `T6.6` | `FEN-10` | `P1` | `DONE` | Add 3-Star mastery thresholds + optional Timed mode for Chill games (`dino-game`, `word-quest`, `science-explorer`, `life-math`) | `done` |
+| `T6.7` | `FEN-11` | `P1` | `DONE` | Differentiate `science-explorer.js` with interactive STEM diagram challenges + expand `db/science-bank.js` (to 10+ per topic/grade) and `db/word-quest-bank.js` (to 10+ per mode/grade) | `done` |
+| `T6.8` | `FEN-12` | `P1` | `DONE` | Polish `dino-game.js` & `db/dino-sentences.js`: penalize/shake on key-mashing, add Shift/punctuation cue for Grade 3, and expand Grade 4/5 sentence pools | `done` |
+| `T6.9` | `FEN-13` | `P1` | `DONE` | Polish `fraction-dash.js` & `db/fraction-bank.js`: fix uncut reset, show both pizzas side-by-side during Compare, add Grade 3–5 scaling, deduplicate orders, and add `1–3`/`Enter` keys | `done` |
+| `T6.10` | `FEN-14` | `P1` | `DONE` | Polish `life-math.js`: enforce contiguous shapes in `area_build`, add single-coin undo, add perimeter side-length labels, and add Grade 3–5 scaling + TTS | `done` |
+| `T6.11` | `FEN-15` | `P1` | `DONE` | Upgrade `astro-math.js` (scale dot-array hints to `12×12` + multi-shot/shielded Calculator Boss) and `plane-game.js` (add 3-Stage Victory milestone + optional Endless mode) | `done` |
 | `T6.12` | `FEN-16` | `P2` | `TODO` | Complete Star Shop cosmetics for `astro-math`, `science-explorer`, `life-math`, and `castle-siege`, plus remaining AI art upgrades (`TRIAGE-13`–`TRIAGE-18`) | — |
