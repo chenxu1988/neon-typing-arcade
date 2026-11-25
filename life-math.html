@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time, Money &amp; Area Dash — LAUSD Grade 3+</title>
+    <link rel="stylesheet" href="shared/ui.css">
+    <link rel="stylesheet" href="life-math.css">
+</head>
+<body>
+    <div id="game-container">
+        <header id="hud">
+            <div class="hud-item">SCORE: <span id="score-val">0</span></div>
+            <div class="hud-item">ROUND: <span id="round-val">1</span>/10</div>
+            <div class="hud-item">ACC: <span id="acc-val">100%</span></div>
+            <div class="hud-item">🔥 STREAK: <span id="streak-val">0</span></div>
+            <div class="hud-controls">
+                <button id="bgm-toggle" class="control-btn active" type="button">🎵 Music: On</button>
+                <button id="sound-toggle" class="control-btn active" type="button">🔊 Sound: On</button>
+            </div>
+        </header>
+
+        <main id="dash-stage">
+            <div class="challenge-header">
+                <span id="mode-tag" class="mode-tag">ANALOG CLOCK</span>
+                <div id="challenge-prompt" class="challenge-prompt">Press Start to begin Time, Money &amp; Area Dash!</div>
+            </div>
+
+            <!-- Visual Interactive Area -->
+            <div id="visual-workspace" class="visual-workspace"></div>
+
+            <!-- Controls / Choices -->
+            <div id="input-workspace" class="input-workspace"></div>
+
+            <div id="feedback-bar" class="feedback-bar"></div>
+        </main>
+
+        <!-- Start Modal -->
+        <div id="start-screen" class="modal active">
+            <h1 class="dash-title">⏰ TIME, MONEY &amp; AREA DASH</h1>
+            <p class="subtitle">Read analog clocks, count coins &amp; make change, and build shapes on the unit-square grid!</p>
+
+            <div class="selection-container">
+                <label for="mode-select" class="selection-label">PRACTICAL MATH MODE:</label>
+                <select id="mode-select" class="dash-select">
+                    <option value="mixed">✨ Mixed Dash (Time, Money &amp; Area)</option>
+                    <option value="time">⏰ Time: Analog Clocks</option>
+                    <option value="money">🪙 Money: Coins &amp; Change</option>
+                    <option value="area">📐 Geometry: Area &amp; Perimeter</option>
+                </select>
+            </div>
+
+            <div id="life-best-banner" class="best-banner">BEST: 0 PTS | 0% ACC</div>
+            <button id="start-btn" class="dash-btn" type="button">START DASH</button>
+            <a href="index.html" class="arcade-link">🏠 Back to Arcade Hub</a>
+        </div>
+
+        <!-- Pause Modal -->
+        <div id="pause-screen" class="modal">
+            <h1 class="dash-title">⏸️ DASH PAUSED</h1>
+            <p class="subtitle">Press <strong>ESC</strong> or click Resume.</p>
+            <div class="modal-actions">
+                <button id="resume-btn" class="dash-btn" type="button">RESUME</button>
+                <button id="pause-menu-btn" class="dash-btn secondary" type="button">MAIN MENU</button>
+            </div>
+        </div>
+
+        <!-- End Modal -->
+        <div id="end-screen" class="modal">
+            <h1 class="dash-title">🏆 DASH COMPLETE!</h1>
+            <p class="subtitle">Awesome real-world math skills!</p>
+            <div id="new-record-badge" class="new-record-badge" style="display: none;">🌟 NEW HIGH SCORE!</div>
+            <div class="final-score">SCORE: <span id="final-score-val">0</span></div>
+            <div class="final-stats">ACCURACY: <span id="final-acc-val">100%</span></div>
+            <div id="missed-review" class="missed-review"></div>
+            <div class="modal-actions">
+                <button id="restart-btn" class="dash-btn" type="button">PLAY AGAIN</button>
+                <button id="end-menu-btn" class="dash-btn secondary" type="button">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared/audio.js"></script>
+    <script src="shared/profile.js"></script>
+    <script src="life-math.js"></script>
+</body>
+</html>
