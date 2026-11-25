@@ -170,6 +170,30 @@
             margin-top: 20px;
             flex-wrap: wrap;
         }
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .shop-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.28);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            text-align: center;
+        }
+        .shop-item.equipped {
+            border-color: var(--arcade-yellow);
+            box-shadow: 0 0 14px rgba(255, 235, 59, 0.3);
+        }
+        .shop-icon { font-size: 1.8rem; }
+        .shop-name { font-size: 0.9rem; font-weight: 800; }
+        .shop-cat { font-size: 0.72rem; color: var(--arcade-muted); text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -179,7 +203,8 @@
     <div class="profile-bar">
         <span id="hub-stars" class="arcade-pill arcade-star-pill">⭐ 0 Stars</span>
         <span id="hub-streak" class="arcade-pill arcade-streak-pill">🔥 0-Day Streak</span>
-        <span id="hub-badges-count" class="arcade-pill">🏆 0/8 Badges</span>
+        <span id="hub-badges-count" class="arcade-pill">🏆 0/10 Badges</span>
+        <button id="open-shop-btn" class="arcade-btn secondary" type="button">🛍️ Star Shop</button>
         <button id="open-report-btn" class="arcade-btn" type="button">📊 Parent / Teacher Report</button>
     </div>
 
@@ -329,6 +354,21 @@
         </div>
     </div>
 
+    <!-- Star Shop Modal -->
+    <div id="shop-modal" class="arcade-modal" aria-hidden="true">
+        <div class="arcade-modal-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                <h2 style="margin: 0; color: var(--arcade-yellow);">🛍️ Star Shop</h2>
+                <span id="shop-stars-pill" class="arcade-pill arcade-star-pill">⭐ 0 Stars</span>
+            </div>
+            <p style="margin: 6px 0 0; color: var(--arcade-muted); font-size: 0.9rem;">Spend Stars earned in any game to unlock &amp; equip fun cosmetics!</p>
+            <div id="shop-grid" class="shop-grid"></div>
+            <div class="modal-actions" style="justify-content: flex-end;">
+                <button id="close-shop-btn" class="arcade-btn" type="button">Done</button>
+            </div>
+        </div>
+    </div>
+
     <script src="shared/profile.js"></script>
     <script>
         function renderHub() {
@@ -447,9 +487,133 @@
                     localStorage.removeItem('neonPlaneTypingStats');
                     localStorage.removeItem('dinoTypingStats');
                 } catch {}
-                renderHub();
+                const shopModal = document.getElementById('shop-modal');
+        function renderShopModal() {
+            const profile = window.ArcadeProfile.loadProfile();
+            document.getElementById('shop-stars-pill').innerText = `⭐ ${profile.stars} Stars`;
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = '';
+
+            window.ArcadeProfile.SHOP_ITEMS.forEach(item => {
+                const owned = profile.unlocks.includes(item.id);
+                const equipped = profile.equipped[item.category] === item.id;
+                const card = document.createElement('div');
+                card.className = `shop-item${equipped ? ' equipped' : ''}`;
+                card.innerHTML = `
+                    <div class="shop-icon">${item.icon}</div>
+                    <div class="shop-name">${item.name}</div>
+                    <div class="shop-cat">${item.category}</div>
+                `;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `arcade-btn${equipped ? '' : ' secondary'}`;
+                btn.style.padding = '6px 12px';
+                btn.style.fontSize = '0.8rem';
+
+                if (equipped) {
+                    btn.innerText = 'Equipped ✓';
+                    btn.addEventListener('click', () => {
+                        window.ArcadeProfile.equipItem(item.category, item.id);
+                        renderShopModal();
+                    });
+                } else if (owned) {
+                    btn.innerText = 'Equip';
+                    btn.addEventListener('click', () => {
+                        window.ArcadeProfile.equipItem(item.category, item.id);
+                        renderShopModal();
+                    });
+                } else {
+                    btn.innerText = `Buy (${item.cost} ⭐)`;
+                    btn.disabled = profile.stars < item.cost;
+                    if (btn.disabled) btn.style.opacity = '0.45';
+                    btn.addEventListener('click', () => {
+                        window.ArcadeProfile.purchaseItem(item.id);
+                        renderHub();
+                        renderShopModal();
+                    });
+                }
+
+                card.appendChild(btn);
+                grid.appendChild(card);
+            });
+        }
+
+        document.getElementById('open-shop-btn').addEventListener('click', () => {
+            renderShopModal();
+            shopModal.classList.add('active');
+            shopModal.setAttribute('aria-hidden', 'false');
+        });
+        document.getElementById('close-shop-btn').addEventListener('click', () => {
+            shopModal.classList.remove('active');
+            shopModal.setAttribute('aria-hidden', 'true');
+        });
+
+        renderHub();
                 renderReportModal();
             }
+        });
+
+        const shopModal = document.getElementById('shop-modal');
+        function renderShopModal() {
+            const profile = window.ArcadeProfile.loadProfile();
+            document.getElementById('shop-stars-pill').innerText = `⭐ ${profile.stars} Stars`;
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = '';
+
+            window.ArcadeProfile.SHOP_ITEMS.forEach(item => {
+                const owned = profile.unlocks.includes(item.id);
+                const equipped = profile.equipped[item.category] === item.id;
+                const card = document.createElement('div');
+                card.className = `shop-item${equipped ? ' equipped' : ''}`;
+                card.innerHTML = `
+                    <div class="shop-icon">${item.icon}</div>
+                    <div class="shop-name">${item.name}</div>
+                    <div class="shop-cat">${item.category}</div>
+                `;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `arcade-btn${equipped ? '' : ' secondary'}`;
+                btn.style.padding = '6px 12px';
+                btn.style.fontSize = '0.8rem';
+
+                if (equipped) {
+                    btn.innerText = 'Equipped ✓';
+                    btn.addEventListener('click', () => {
+                        window.ArcadeProfile.equipItem(item.category, item.id);
+                        renderShopModal();
+                    });
+                } else if (owned) {
+                    btn.innerText = 'Equip';
+                    btn.addEventListener('click', () => {
+                        window.ArcadeProfile.equipItem(item.category, item.id);
+                        renderShopModal();
+                    });
+                } else {
+                    btn.innerText = `Buy (${item.cost} ⭐)`;
+                    btn.disabled = profile.stars < item.cost;
+                    if (btn.disabled) btn.style.opacity = '0.45';
+                    btn.addEventListener('click', () => {
+                        window.ArcadeProfile.purchaseItem(item.id);
+                        renderHub();
+                        renderShopModal();
+                    });
+                }
+
+                card.appendChild(btn);
+                grid.appendChild(card);
+            });
+        }
+
+        document.getElementById('open-shop-btn').addEventListener('click', () => {
+            renderShopModal();
+            shopModal.classList.add('active');
+            shopModal.setAttribute('aria-hidden', 'false');
+        });
+        document.getElementById('close-shop-btn').addEventListener('click', () => {
+            shopModal.classList.remove('active');
+            shopModal.setAttribute('aria-hidden', 'true');
         });
 
         renderHub();

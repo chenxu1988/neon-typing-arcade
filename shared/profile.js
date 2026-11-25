@@ -16,6 +16,19 @@
         { id: 'streak_3', icon: '🔥', name: '3-Day Streak', desc: 'Play on 3 consecutive days' }
     ];
 
+    const SHOP_ITEMS = [
+        { id: 'plane_gold', category: 'plane', icon: '✨', name: 'Golden Ace Aura', cost: 3 },
+        { id: 'plane_emerald', category: 'plane', icon: '💚', name: 'Emerald Plasma', cost: 5 },
+        { id: 'plane_rainbow', category: 'plane', icon: '🌈', name: 'Hyper Rainbow', cost: 8 },
+        { id: 'dino_cap', category: 'dino', icon: '🧢', name: 'Explorer Cap', cost: 3 },
+        { id: 'dino_crown', category: 'dino', icon: '👑', name: 'Dino King Crown', cost: 6 },
+        { id: 'dino_astro', category: 'dino', icon: '👩‍🚀', name: 'Space Helmet', cost: 8 },
+        { id: 'exp_wizard', category: 'explorer', icon: '🧙', name: 'Word Wizard', cost: 4 },
+        { id: 'exp_knight', category: 'explorer', icon: '🛡️', name: 'Grammar Knight', cost: 6 },
+        { id: 'pizza_mushroom', category: 'pizza', icon: '🍄', name: 'Mushroom Deluxe', cost: 3 },
+        { id: 'pizza_star', category: 'pizza', icon: '⭐', name: 'Golden Star Pie', cost: 6 }
+    ];
+
     function getLocalDateKey(date = new Date()) {
         const y = date.getFullYear();
         const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -27,6 +40,8 @@
         return {
             stars: 0,
             badges: [],
+            unlocks: [],
+            equipped: { plane: null, dino: null, explorer: null, pizza: null },
             streak: { count: 0, lastPlayDate: null },
             sessions: { count: 0, lastPlayedAt: null },
             games: {},
@@ -44,8 +59,10 @@
                 ...parsed,
                 streak: { count: 0, lastPlayDate: null, ...(parsed.streak || {}) },
                 sessions: { count: 0, lastPlayedAt: null, ...(parsed.sessions || {}) },
+                equipped: { plane: null, dino: null, explorer: null, pizza: null, ...(parsed.equipped || {}) },
                 games: parsed.games || {},
                 badges: Array.isArray(parsed.badges) ? parsed.badges : [],
+                unlocks: Array.isArray(parsed.unlocks) ? parsed.unlocks : [],
                 missedLog: Array.isArray(parsed.missedLog) ? parsed.missedLog : []
             };
         } catch {
@@ -169,6 +186,33 @@
         return unlocked;
     }
 
+    function purchaseItem(itemId) {
+        const item = SHOP_ITEMS.find(i => i.id === itemId);
+        if (!item) return { ok: false, reason: 'Item not found' };
+        const profile = loadProfile();
+        if (profile.unlocks.includes(itemId)) {
+            profile.equipped[item.category] = itemId;
+            saveProfile(profile);
+            return { ok: true, profile };
+        }
+        if (profile.stars < item.cost) {
+            return { ok: false, reason: 'Not enough stars' };
+        }
+        profile.stars -= item.cost;
+        profile.unlocks.push(itemId);
+        profile.equipped[item.category] = itemId;
+        saveProfile(profile);
+        return { ok: true, profile };
+    }
+
+    function equipItem(category, itemId) {
+        const profile = loadProfile();
+        if (itemId && !profile.unlocks.includes(itemId)) return profile;
+        profile.equipped[category] = (profile.equipped[category] === itemId) ? null : itemId;
+        saveProfile(profile);
+        return profile;
+    }
+
     function resetProfile() {
         const fresh = createDefaultProfile();
         saveProfile(fresh);
@@ -177,11 +221,14 @@
 
     global.ArcadeProfile = {
         BADGE_CATALOG,
+        SHOP_ITEMS,
         loadProfile,
         saveProfile,
         recordSession,
         awardStars,
         unlockBadge,
+        purchaseItem,
+        equipItem,
         resetProfile
     };
 })(window);
