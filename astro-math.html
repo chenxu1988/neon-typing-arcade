@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Math Defense — LAUSD Grade 3+</title>
+    <link rel="stylesheet" href="shared/ui.css">
+    <link rel="stylesheet" href="astro-math.css">
+</head>
+<body>
+    <div id="game-container">
+        <header id="hud">
+            <div class="hud-item">SCORE: <span id="score-val">0</span></div>
+            <div class="hud-item">WAVE: <span id="wave-val">1</span></div>
+            <div class="hud-item">ACC: <span id="acc-val">100%</span></div>
+            <div class="hud-item" id="combo-hud">COMBO: <span id="combo-val">0</span> (<span id="mult-val">1.0</span>x)</div>
+            <div id="lives-container">
+                <span class="heart active">❤️</span>
+                <span class="heart active">❤️</span>
+                <span class="heart active">❤️</span>
+            </div>
+            <div class="hud-controls">
+                <button id="bgm-toggle" class="control-btn active" type="button">🎵 Music: On</button>
+                <button id="sound-toggle" class="control-btn active" type="button">🔊 Sound: On</button>
+            </div>
+        </header>
+
+        <main id="game-area">
+            <div class="starfield"></div>
+            <div id="meteors-container"></div>
+            <div id="lasers-container"></div>
+            <div id="fx-container"></div>
+
+            <!-- Boss Calculator Mothership (T3.3) -->
+            <div id="math-boss">
+                <div class="boss-body">🛸 CALCULATOR MOTHERSHIP</div>
+                <div id="boss-health-container"><div id="boss-health-bar"></div></div>
+            </div>
+
+            <!-- Visual Array / Grouping Hint Box -->
+            <div id="hint-banner" class="hint-banner"></div>
+
+            <!-- Answer Input Dock + Numpad -->
+            <div id="answer-dock">
+                <div class="answer-display-row">
+                    <span class="answer-label">ANSWER:</span>
+                    <span id="answer-input-display" class="answer-box">_</span>
+                    <button id="clear-btn" class="numpad-btn action" type="button">⌫</button>
+                    <button id="fire-btn" class="numpad-btn fire" type="button">FIRE ⚡</button>
+                </div>
+                <div id="numpad-grid" class="numpad-grid">
+                    <button class="numpad-btn" data-digit="1" type="button">1</button>
+                    <button class="numpad-btn" data-digit="2" type="button">2</button>
+                    <button class="numpad-btn" data-digit="3" type="button">3</button>
+                    <button class="numpad-btn" data-digit="4" type="button">4</button>
+                    <button class="numpad-btn" data-digit="5" type="button">5</button>
+                    <button class="numpad-btn" data-digit="6" type="button">6</button>
+                    <button class="numpad-btn" data-digit="7" type="button">7</button>
+                    <button class="numpad-btn" data-digit="8" type="button">8</button>
+                    <button class="numpad-btn" data-digit="9" type="button">9</button>
+                    <button class="numpad-btn" data-digit="0" type="button">0</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Start Modal -->
+        <div id="start-screen" class="modal active">
+            <h1 class="neon-title">🧮 ASTRO MATH DEFENSE</h1>
+            <p class="subtitle">Blast incoming math meteors! Type the answer and press <strong>ENTER</strong> (or click <strong>FIRE</strong>). Press <strong>ESC</strong> to pause.</p>
+
+            <div class="selection-row">
+                <div class="selection-container">
+                    <label for="topic-select" class="selection-label">GRADE &amp; TOPIC:</label>
+                    <select id="topic-select" class="neon-select">
+                        <option value="multiply">✖️ Grade 3: Multiplication (0–10)</option>
+                        <option value="divide">➗ Grade 3–4: Division Facts</option>
+                        <option value="addsub">➕ Grade 3–4: Add &amp; Subtract</option>
+                        <option value="orderops">🧠 Grade 5: Order of Operations</option>
+                    </select>
+                </div>
+                <div class="selection-container">
+                    <label for="difficulty-select" class="selection-label">SPEED:</label>
+                    <select id="difficulty-select" class="neon-select">
+                        <option value="easy">🌱 Easy</option>
+                        <option value="normal" selected>⚡ Normal</option>
+                        <option value="hard">🔥 Hard</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="topic-best-banner" class="sector-best-banner">BEST: 0 PTS | 0% ACC</div>
+            <button id="start-btn" class="action-btn" type="button">LAUNCH DEFENSE</button>
+            <a href="index.html" class="arcade-link">🏠 Back to Arcade Hub</a>
+        </div>
+
+        <!-- Pause Modal -->
+        <div id="pause-screen" class="modal">
+            <h1 class="neon-title">DEFENSE PAUSED</h1>
+            <p class="subtitle">Press <strong>ESC</strong> or click Resume to continue.</p>
+            <div class="gameover-actions">
+                <button id="resume-btn" class="action-btn" type="button">RESUME</button>
+                <button id="pause-menu-btn" class="action-btn secondary-btn" type="button">MAIN MENU</button>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="game-over-screen" class="modal">
+            <h1 class="neon-title error">STATION BREACHED</h1>
+            <p class="subtitle">Great effort! Review any missed math facts below.</p>
+            <div id="new-record-badge" class="new-record-badge" style="display: none;">🏆 NEW TOPIC HIGH SCORE!</div>
+            <div class="final-score">SCORE: <span id="final-score-val">0</span></div>
+            <div class="final-stats">ACCURACY: <span id="final-acc-val">100%</span> &nbsp;|&nbsp; WAVE: <span id="final-wave-val">1</span></div>
+            <div id="missed-facts-container" class="practice-words-container"></div>
+            <div class="gameover-actions">
+                <button id="restart-btn" class="action-btn" type="button">PLAY AGAIN</button>
+                <button id="gameover-menu-btn" class="action-btn secondary-btn" type="button">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared/audio.js"></script>
+    <script src="shared/profile.js"></script>
+    <script src="astro-math.js"></script>
+</body>
+</html>
