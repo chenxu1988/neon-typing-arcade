@@ -96,6 +96,26 @@ Create a lightweight `shared/` folder using standard browser ES modules (`<scrip
 
 ---
 
-## 5. Next Immediate Step
+## 5. Phase 5: Castle Siege & Future Subject Expansion
 
-Start `T4.1` (**Science Explorer** `science-explorer.html`), then **Time, Money & Area Dash** (`life-math.html`), followed by Star Shop and Polish.
+### Game 8: `castle-siege.html` — Castle Siege (History, Geography & Civics)
+- **Theme:** Medieval Castle Siege — Student Knights vs. Enemy Raiders (Dragons & Goblins).
+- **LAUSD Focus (Grades 3–5):**
+  - **Grade 3:** Continents & Oceans, Map Directions, Local & California Landmarks, Community Rules.
+  - **Grade 4:** California Regions, Gold Rush, Missions & Statehood, California Government.
+  - **Grade 5:** US Geography & Capitals, 3 Branches of Government, Revolutionary War, US Constitution.
+- **Core Loop (Timed Wave Auto-Battler):**
+  - Both castles start at `100 HP`.
+  - Each wave lasts **20 seconds** with a visible incoming Raider squad (`3–6` units).
+  - Correct answers summon `1` Knight; wrong answers trigger a `1s` cooldown and display the correct fact explanation (existing Knights stay).
+  - When time runs out, Knights and Raiders march to the center clash zone and battle: excess units deal `diff × 10` damage to the opposing castle (tie = `0` damage). Repeat until one castle reaches `0 HP`.
+
+### Future Subject Backlog
+- **Reading Comprehension (ELA):** Short 2–3 sentence passages with main idea, inference, and evidence questions (Grades 3–5).
+- **Logic & Number Patterns:** Sequence puzzles, input/output function tables, and shape-pattern reasoning (Grades 3–5).
+
+---
+
+## 6. Next Immediate Step
+
+Build **Castle Siege** (`T5.1`–`T5.4`: `db/history-bank.js`, `castle-siege.html`, `castle-siege.css`, `castle-siege.js`, Hub registration, and `castle_hero` badge).

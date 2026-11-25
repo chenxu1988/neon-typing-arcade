@@ -83,3 +83,16 @@
 - [x] `TRIAGE-8` (`P0`): Extract all game content banks into `db/*.js` (`window.ArcadeDB`, `file://` compatible) and add `scripts/validate-db.js`.
 - [x] `TRIAGE-9` (`P0`): Add `🏠 Hub` and `⏸️ Pause` buttons to the top HUD of all 7 games.
 - [x] `TRIAGE-10` (`P0`): Add multi-student profile login (name only, no password) + JSON Export/Import in `shared/profile.js` and `index.html`.
+- [ ] `TRIAGE-11` (`P2`): Future Game — **Reading Comprehension** (short Grade 3–5 passages with main idea, inference, and evidence).
+- [ ] `TRIAGE-12` (`P2`): Future Game — **Logic & Number Patterns** (sequences, input/output tables, shape reasoning).
+
+---
+
+## Phase 5: Castle Siege (History, Geography & Civics)
+
+| ID | Priority | Status | Task | Owner |
+|----|----------|--------|------|-------|
+| `T5.1` | `P0` | `TODO` | Create `db/history-bank.js` (`window.ArcadeDB.historyBank`, Grades 3–5 History, Geography & Civics) and validate in `scripts/validate-db.js` | `pending` |
+| `T5.2` | `P0` | `TODO` | Build `castle-siege.html` and `castle-siege.css` with medieval battlefield, castle HP bars, wave timer, HUD (`🏠 Hub`, `⏸️ Pause`, audio), and modals | `pending` |
+| `T5.3` | `P0` | `TODO` | Build `castle-siege.js` with 20s timed waves, 1s wrong-answer cooldown + fact explanation, center clash animation, Web Speech read-aloud, and `ArcadeProfile` integration | `pending` |
+| `T5.4` | `P0` | `TODO` | Register Castle Siege in `index.html`, add `castle_hero` badge in `shared/profile.js`, and update `README.md` | `pending` |
