@@ -1,0 +1,81 @@
+# LAUSD Grade 3+ Educational Arcade — Master Plan
+
+**Goal:** Grow **Neon Typing Arcade** into a multi-subject educational game suite for LAUSD Grade 3+ students (ELA, Math, and Typing) with zero build tools, Chromebook + tablet/touch support, and shared progression across all games.
+
+---
+
+## 1. Review of Current Games
+
+### `plane-game.html` — Neon Plane Typing
+- **What works well:** Strong arcade loop, 3 stages with distinct music and Bosses, `Easy`/`Normal`/`Hard` presets, `Tab`/`Backspace` target switching, `localStorage` best stats, Web Speech pronunciation, Custom Spelling List, and "Practice Missed Words" drill mode.
+- **Gaps for LAUSD Grade 3+:**
+  1. **Spelling without meaning:** Kids can type `inference` or `ecosystem` without learning what the word means.
+  2. **Desktop-only input:** Relies solely on physical `keydown` events; iPad/touchscreen users cannot play without an on-screen keyboard.
+  3. **Fixed Grade 3 & Grade 4 lists:** Needs Grade 5 ELA/Academic vocabulary and optional short definitions/context clues.
+
+### `dino-game.html` — Dinosaur Adventure Typing
+- **What works well:** Cute AI-generated Rex sprite and 5 biome backgrounds, 50-sentence pool, net WPM + accuracy, procedural chiptune music, Web Speech sentence read-aloud, and confetti celebrations.
+- **Gaps for LAUSD Grade 3+:**
+  1. **No grade/topic selector:** Levels 1–5 are fixed; a 3rd grader and 5th grader get the same sentences.
+  2. **No mistake review:** Tracks `errors` count, but doesn't show *which* words/punctuation caused trouble or offer a quick retry.
+  3. **Short session arc:** 5 levels × 4 sentences ends quickly; needs endless/free-play or themed packs (Science, History, ELA Grammar).
+
+### `index.html` — Arcade Hub & Shared Architecture
+- **What works well:** Clean two-card hub pulling `localStorage` best scores.
+- **Gaps as we scale to 5+ games:**
+  1. **Duplicated code:** `BGMController`, `SoundManager`, Web Speech helpers, and `localStorage` logic are duplicated in `plane-game.js` and `dino-game.js`.
+  2. **No cross-game motivation:** No shared Stars, Badges, Daily Streak, or Parent/Teacher Progress Summary.
+
+---
+
+## 2. Architecture Plan (Zero-Build Vanilla Modules)
+
+Create a lightweight `shared/` folder using standard browser ES modules (`<script type="module">`) or global-safe scripts so games still work via `file://` or GitHub Pages:
+
+- `shared/audio.js` — Unified `SoundManager`, Web Speech pronunciation (`speakText`), and reusable Web Audio chiptune sequencer.
+- `shared/profile.js` — Unified `localStorage` profile (`arcadeProfile`): Stars earned, unlocked Badges, Daily Streak, per-game stats, and missed-items log for Parent/Teacher review.
+- `shared/touch-keyboard.js` — Optional collapsible on-screen QWERTY / Number Pad overlay for tablet/touch devices.
+- `shared/ui.css` — Shared modal, HUD pill, badge, and responsive layout tokens.
+
+---
+
+## 3. Roadmap & Phases
+
+### Phase 1: Shared Foundation & Hub Progression
+1. Extract `shared/audio.js` and `shared/profile.js` without breaking `file://` local opening.
+2. Upgrade `index.html` with:
+   - **Star & Badge Bar** (e.g., *First Flight*, *100% Accuracy*, *Boss Slayer*, *Math Whiz*, *5-Day Streak*).
+   - **Grade Filter** (`All`, `Grade 3`, `Grade 4`, `Grade 5`).
+   - **Parent / Teacher Report Modal** showing time played, accuracy trends, and top missed words/facts across games.
+
+### Phase 2: Deepen Existing Games (Grade 3–5 + Meaning + Touch)
+1. **Plane Typing (`plane-game.html`):**
+   - Add **Grade 5 ELA** sector + kid-friendly **1-line definitions** shown on Game Over "Words to Practice" pills (and optional "Definition Hint" toggle).
+   - Add optional **on-screen keyboard** toggle for tablet play.
+2. **Dino Typing (`dino-game.html`):**
+   - Add **Grade / Theme Selector** (Grade 3 Basics, Grade 4 Science & Nature, Grade 5 History & Space).
+   - Add **Words to Practice** summary on the Victory screen.
+   - Add a **Pause** modal (`ESC`) and **Main Menu** button matching Plane Typing.
+
+### Phase 3: New LAUSD Grade 3+ Educational Games
+
+#### Game 3: `astro-math.html` — Astro Math Defense (Math Fluency)
+- **LAUSD Focus:** Grade 3–5 Multiplication facts (0–12), Division fact families, Multi-digit addition/subtraction, and Order of Operations.
+- **Core Loop:** Incoming meteors carry math equations (`7 × 8 = ?`). Type the answer (or tap the on-screen number pad / 4-choice shields on touch) to fire! Wrong answers give a visual hint (e.g., array/grouping cue) instead of harsh failure.
+- **Boss Mechanic:** Giant Calculator Mothership fires multi-step word problems or missing-factor puzzles (`6 × ? = 42`).
+
+#### Game 4: `word-quest.html` — Word Quest (ELA Meaning, Synonyms & Grammar)
+- **LAUSD Focus:** Context clues, Synonyms/Antonyms, Prefixes/Suffixes (`un-`, `re-`, `-ful`, `-less`), and Parts of Speech (Noun, Verb, Adjective, Adverb).
+- **Core Loop:** Guide an explorer across puzzle bridges. Each obstacle presents a short sentence with a highlighted target word or blank; pick or type the right answer to build the bridge and collect relics.
+- **Educational Hook:** Missed concepts are queued for spaced repetition later in the quest.
+
+#### Game 5: `fraction-dash.html` — Fraction Pizza Dash (Visual Fractions)
+- **LAUSD Focus:** Grade 3–4 fraction fundamentals — visual part-to-whole (`3/4`), equivalent fractions (`1/2 = 2/4`), comparing fractions (`2/3 > 3/5`), and simple fraction addition.
+- **Core Loop:** Hungry space/dino customers order visual pizza/pie slices (`"Give me 3/4!"` or `"Match an equivalent to 1/2!"`). Build or select the matching visual fraction before the order timer runs out.
+
+---
+
+## 4. Next Immediate Step
+
+Start with **Phase 1** or pick **one game** to build/upgrade first:
+- Recommended first code milestone: **Upgrade `dino-game.html` (Grade 3–5 selector + Pause/Menu + Practice summary)** or **Build `astro-math.html` (Game 3)** to bring Math into the Arcade right away.
