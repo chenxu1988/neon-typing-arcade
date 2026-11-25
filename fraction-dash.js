@@ -91,6 +91,11 @@ let selectedSlices = new Set();
 let currentOrder = null;
 let orderLocked = false;
 let missedOrders = new Set();
+const ORDER_TIME_MS = 18000;
+let orderRemainingMs = ORDER_TIME_MS;
+let timerInterval = null;
+
+const timerBar = document.getElementById('timer-bar');
 
 const pizzaSvg = document.getElementById('pizza-svg');
 const pizzaReadout = document.getElementById('pizza-readout');
@@ -218,6 +223,21 @@ function generateOrder() {
     };
 }
 
+function startOrderTimer() {
+    clearInterval(timerInterval);
+    orderRemainingMs = ORDER_TIME_MS;
+    timerBar.style.width = '100%';
+    timerInterval = setInterval(() => {
+        if (!gameActive || gamePaused || orderLocked) return;
+        orderRemainingMs -= 100;
+        timerBar.style.width = `${Math.max(0, (orderRemainingMs / ORDER_TIME_MS) * 100)}%`;
+        if (orderRemainingMs <= 0) {
+            clearInterval(timerInterval);
+            handleOrderResult(false, `Time's up! Order was ${currentOrder.label}.`);
+        }
+    }, 100);
+}
+
 function loadNextOrder() {
     if (!gameActive) return;
     if (orderIndex >= TOTAL_ORDERS) {
@@ -232,6 +252,7 @@ function loadNextOrder() {
     orderPrompt.innerText = currentOrder.prompt;
     feedbackBar.innerText = '';
     updateHUD();
+    startOrderTimer();
 
     if (currentOrder.type === 'compare') {
         builderControls.style.display = 'none';
@@ -249,6 +270,7 @@ function loadNextOrder() {
 
 function handleOrderResult(isCorrect, hintText) {
     orderLocked = true;
+    clearInterval(timerInterval);
     totalAttempts++;
     if (isCorrect) {
         sounds.playSuccess();
@@ -313,10 +335,26 @@ function startGame() {
 
 function finishShift() {
     gameActive = false;
+    clearInterval(timerInterval);
     sounds.bgmController.stop();
     sounds.playFanfare([523.25, 659.25, 783.99, 1046.5]);
 
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
+    let isNewBest = false;
+    if (window.ArcadeProfile) {
+        const prev = window.ArcadeProfile.loadProfile().games.fraction_dash;
+        isNewBest = score > (prev ? prev.bestScore : 0) && score > 0;
+        window.ArcadeProfile.recordSession({
+            gameId: 'fraction_dash',
+            accuracy: acc,
+            score,
+            wpm: 0,
+            missedItems: Array.from(missedOrders),
+            badgeId: 'fraction_chef'
+        });
+    }
+
+    document.getElementById('new-record-badge').style.display = isNewBest ? 'block' : 'none';
     document.getElementById('final-score-val').innerText = score;
     document.getElementById('final-acc-val').innerText = `${acc}%`;
 
@@ -350,6 +388,7 @@ function togglePause() {
 function returnToMenu() {
     gameActive = false;
     gamePaused = false;
+    clearInterval(timerInterval);
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     endScreen.classList.remove('active');

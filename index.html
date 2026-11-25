@@ -250,6 +250,19 @@
             <div id="quest-best" class="stats-pill">TOP SCORE: 0 PTS</div>
             <div class="play-cta">BEGIN QUEST →</div>
         </a>
+
+        <a href="fraction-dash.html" class="card" data-grades="3,4,5">
+            <div class="card-preview" style="font-size: 3.2rem;">🍕</div>
+            <div class="card-tags">
+                <span class="grade-tag">Grade 3–5</span>
+                <span class="grade-tag">Fractions</span>
+                <span class="grade-tag">Visual Math</span>
+            </div>
+            <h2>🍕 Fraction Pizza Dash</h2>
+            <p>Slice and serve visual fraction orders, build equivalent fractions, and compare fraction sizes before the kitchen timer runs out.</p>
+            <div id="pizza-best" class="stats-pill">TOP SCORE: 0 PTS</div>
+            <div class="play-cta">OPEN KITCHEN →</div>
+        </a>
     </div>
 
     <!-- Parent / Teacher Progress Report Modal -->
@@ -333,6 +346,9 @@
 
             const questStats = profile.games.word_quest || { bestScore: 0, bestAcc: 0 };
             document.getElementById('quest-best').innerText = `TOP SCORE: ${questStats.bestScore} PTS | ${questStats.bestAcc}% ACC`;
+
+            const pizzaStats = profile.games.fraction_dash || { bestScore: 0, bestAcc: 0 };
+            document.getElementById('pizza-best').innerText = `TOP SCORE: ${pizzaStats.bestScore} PTS | ${pizzaStats.bestAcc}% ACC`;
         }
 
         function renderReportModal() {
