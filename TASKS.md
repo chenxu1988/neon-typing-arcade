@@ -1,8 +1,9 @@
 # LAUSD Grade 3+ Arcade — Task Tracker
 
+**Source of Truth:** [Linear — LAUSD Grade 3+ Arcade](https://linear.app/fengyan-studio/project/lausd-grade-3-arcade-69c47bf92ea8) (`FEN-*`)
 **Status Legend:** `TODO` | `IN_PROGRESS` | `DONE` | `BLOCKED`
 **Priority Legend:** `P0` (Foundation / Critical) | `P1` (Core Feature) | `P2` (Polish / Nice-to-Have)
-**Workflow:** Pick task -> Implement -> Verify (`node --check` / test) -> Mark `DONE` + record commit SHA -> Commit.
+**Workflow:** Pick Linear ticket -> Branch `feat/FEN-<id>-<slug>` off `master` -> Implement -> Verify (`node --check` / test) -> Mark `DONE` + merge to `master`.
 
 ---
 
@@ -10,8 +11,8 @@
 
 | ID | Priority | Status | Task | Commit |
 | :--- | :--- | :--- | :--- | :--- |
-| `T1.1` | `P0` | `DONE` | Create `shared/audio.js` with unified `SoundManager`, `ChiptuneSequencer`, and `speakText()` (file:// compatible) | `758219a` |
-| `T1.2` | `P0` | `DONE` | Create `shared/profile.js` for unified `localStorage` (`arcadeProfile`: stars, badges, streak, per-game stats, missed items) | `done` |
+| `T1.1` | `P0` | `TODO` | Create `shared/audio.js` with unified `SoundManager`, `ChiptuneSequencer`, and `speakText()` (file:// compatible) | — |
+| `T1.2` | `P0` | `TODO` | Create `shared/profile.js` for unified `localStorage` (`arcadeProfile`: stars, badges, streak, per-game stats, missed items) | — |
 | `T1.3` | `P0` | `DONE` | Create `shared/ui.css` with shared modals, HUD pills, badge styles, and responsive breakpoints | `done` |
 | `T1.5` | `P1` | `DONE` | Upgrade `index.html` with Stars/Badges bar, Grade filter (`All`, `3`, `4`, `5`), and Parent/Teacher Progress Report modal | `done` |
 
@@ -75,16 +76,16 @@
 
 - [x] `TRIAGE-1` (`P2`): Replace remaining 3 inline SVGs in `plane-game.js` (`s2-elite`, `s3-fighter`, `s3-elite`) with matching AI-generated PNG sprites.
 - [x] `TRIAGE-2` (`P2`): Update `README.md` with new games and shared architecture once Phase 3 completes.
-- [ ] `TRIAGE-3` (`P2`): Create `shared/touch-keyboard.js` (collapsible on-screen QWERTY + 0–9 keypad for tablets/Chromebooks, formerly `T1.4`).
-- [ ] `TRIAGE-4` (`P2`): Wire `shared/touch-keyboard.js` toggle into `plane-game.html` for tablet play (formerly `T2.3`).
+- [~] `TRIAGE-3` (`WONTFIX`): ~~Create `shared/touch-keyboard.js`~~ — Dropped per desktop/keyboard-only scope decision.
+- [~] `TRIAGE-4` (`WONTFIX`): ~~Wire `shared/touch-keyboard.js` into `plane-game.html`~~ — Dropped per desktop/keyboard-only scope decision.
 - [x] `TRIAGE-5` (`P0`): Fix `Reset Progress` in Parent/Teacher modal to also clear `neonPlaneTypingStats` and `dinoTypingStats`.
 - [x] `TRIAGE-6` (`P0`): Start Fraction Pizza Dash orders with an uncut pizza (`totalSlices = 1`) so students must choose the denominator before selecting slices.
 - [x] `TRIAGE-7` (`P0`): Enforce strict grade isolation in `plane-game.js` (deduplicate G3/G4/G5 word lists), `word-quest.js`, and `science-explorer.js` (never fall back to other grades).
 - [x] `TRIAGE-8` (`P0`): Extract all game content banks into `db/*.js` (`window.ArcadeDB`, `file://` compatible) and add `scripts/validate-db.js`.
 - [x] `TRIAGE-9` (`P0`): Add `🏠 Hub` and `⏸️ Pause` buttons to the top HUD of all 7 games.
 - [x] `TRIAGE-10` (`P0`): Add multi-student profile login (name only, no password) + JSON Export/Import in `shared/profile.js` and `index.html`.
-- [ ] `TRIAGE-11` (`P2`): Future Game — **Reading Comprehension** (short Grade 3–5 passages with main idea, inference, and evidence).
-- [ ] `TRIAGE-12` (`P2`): Future Game — **Logic & Number Patterns** (sequences, input/output tables, shape reasoning).
+- [ ] `TRIAGE-11` (`P2`, `FEN-17`): Future Game — **Reading Comprehension** (short Grade 3–5 passages with main idea, inference, and evidence).
+- [ ] `TRIAGE-12` (`P2`, `FEN-18`): Future Game — **Logic & Number Patterns** (sequences, input/output tables, shape reasoning).
 - [ ] `TRIAGE-13` (`P2`): Art Upgrade (**Astro Math Defense** `astro-math.html`) — Replace CSS/emoji ship, meteors, Calculator Mothership boss, and space backdrop with AI-generated PNG sprites/backgrounds (`assets/`) + Hub card preview.
 - [ ] `TRIAGE-14` (`P2`): Art Upgrade (**Word Quest** `word-quest.html`) — Add AI-generated explorer avatar, sky-bridge/temple background, and Hub card preview (`assets/`).
 - [ ] `TRIAGE-15` (`P2`): Art Upgrade (**Fraction Pizza Dash** `fraction-dash.html`) — Keep interactive `<svg>` pizza cutter, add AI-generated pizzeria background, customer portraits, and Hub card preview (`assets/`).
@@ -102,3 +103,22 @@
 | `T5.2` | `P0` | `DONE` | Build `castle-siege.html` and `castle-siege.css` with medieval battlefield, castle HP bars, wave timer, HUD (`🏠 Hub`, `⏸️ Pause`, audio), and modals | `done` |
 | `T5.3` | `P0` | `DONE` | Build `castle-siege.js` with 20s timed waves, 1s wrong-answer cooldown + fact explanation, center clash animation, Web Speech read-aloud, and `ArcadeProfile` integration | `done` |
 | `T5.4` | `P0` | `DONE` | Register Castle Siege in `index.html`, add `castle_hero` badge in `shared/profile.js`, and update `README.md` | `done` |
+
+---
+
+## Phase 6: Pro Game Design Polish, Fixes & Parity (Desktop-First)
+
+| ID | Linear | Priority | Status | Task | Commit |
+|----|--------|----------|--------|------|--------|
+| `T6.1` | `FEN-5` | `P0` | `TODO` | Restore `shared/profile.js` from git `HEAD` so `ArcadeProfile`, Star Shop, badges, and cosmetics work across all 8 games | — |
+| `T6.2` | `FEN-6` | `P0` | `TODO` | Repair `index.html` corrupted modal JS (`shopModal`/`playerModal` handlers) and fix hardcoded badge counts (`0/10`, `0/8` -> `11`) | — |
+| `T6.3` | `FEN-7` | `P0` | `TODO` | Fix `castle-siege.js` BGM (`bpm`/`lead` keys + `ChiptuneSequencer`), stop TTS on `togglePause()`, add `MAIN MENU` to Pause modal, and fix `index.html` wave copy (`30s`) | — |
+| `T6.4` | `FEN-8` | `P1` | `TODO` | Upgrade `index.html` filtering: add Subject filter (`All`, `ELA & Typing`, `Math`, `Science & History`) + pass `?grade=3\|4\|5` deep-link into games | — |
+| `T6.5` | `FEN-9` | `P1` | `TODO` | Standardize HUD, `Esc` Pause, `MAIN MENU` exit, keyboard shortcuts (`1–4`, `Enter`), and Web Speech TTS toggle across all 8 games | — |
+| `T6.6` | `FEN-10` | `P1` | `TODO` | Add 3-Star mastery thresholds + optional Timed mode for Chill games (`dino-game`, `word-quest`, `science-explorer`, `life-math`) | — |
+| `T6.7` | `FEN-11` | `P1` | `TODO` | Differentiate `science-explorer.js` with interactive STEM diagram challenges + expand `db/science-bank.js` (to 10+ per topic/grade) and `db/word-quest-bank.js` (to 10+ per mode/grade) | — |
+| `T6.8` | `FEN-12` | `P1` | `TODO` | Polish `dino-game.js` & `db/dino-sentences.js`: penalize/shake on key-mashing, add Shift/punctuation cue for Grade 3, and expand Grade 4/5 sentence pools | — |
+| `T6.9` | `FEN-13` | `P1` | `TODO` | Polish `fraction-dash.js` & `db/fraction-bank.js`: fix uncut reset, show both pizzas side-by-side during Compare, add Grade 3–5 scaling, deduplicate orders, and add `1–3`/`Enter` keys | — |
+| `T6.10` | `FEN-14` | `P1` | `TODO` | Polish `life-math.js`: enforce contiguous shapes in `area_build`, add single-coin undo, add perimeter side-length labels, and add Grade 3–5 scaling + TTS | — |
+| `T6.11` | `FEN-15` | `P1` | `TODO` | Upgrade `astro-math.js` (scale dot-array hints to `12×12` + multi-shot/shielded Calculator Boss) and `plane-game.js` (add 3-Stage Victory milestone + optional Endless mode) | — |
+| `T6.12` | `FEN-16` | `P2` | `TODO` | Complete Star Shop cosmetics for `astro-math`, `science-explorer`, `life-math`, and `castle-siege`, plus remaining AI art upgrades (`TRIAGE-13`–`TRIAGE-18`) | — |

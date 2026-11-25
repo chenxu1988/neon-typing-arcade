@@ -116,6 +116,31 @@ Create a lightweight `shared/` folder using standard browser ES modules (`<scrip
 
 ---
 
-## 6. Next Immediate Step
+## 6. Phase 6: Pro Game Design Polish, Fixes & Parity (Desktop-First)
 
-Build **Castle Siege** (`T5.1`–`T5.4`: `db/history-bank.js`, `castle-siege.html`, `castle-siege.css`, `castle-siege.js`, Hub registration, and `castle_hero` badge).
+Based on the full 8-game design audit, prioritize fixing broken shared state and deepening the existing 8 games before adding new subjects. Target device: **Desktop / Chromebook (keyboard + mouse)** — on-screen touch keyboards (`TRIAGE-3`, `TRIAGE-4`) are out of scope.
+
+### 6A. Critical Blockers (`P0`)
+1. **Restore `shared/profile.js`:** Restore from git `HEAD` so `ArcadeProfile`, Star Shop, badges, and cosmetics work across all 8 games.
+2. **Fix `index.html` Hub JS & Badge Counts:** Repair the corrupted modal event handlers (lines 532–945) and align the hardcoded badge totals (`0/10`, `0/8`) with the actual `11` badges in `shared/profile.js`.
+3. **Fix Castle Siege Bugs:** Fix broken BGM (`tempo`/`melody` keys vs `bpm`/`lead` and missing `sound.startBgm()`/`stopBgm()`), stop speech on `togglePause()`, add `MAIN MENU` to the Pause modal, and align `index.html` card copy (`30s` waves).
+
+### 6B. Hub & Cross-Game Consistency (`P1`)
+1. **Subject Filter + Grade Deep-Link (`index.html`):** Replace/pair the non-filtering `Grade 3–5` tabs with Subject tabs (`All`, `ELA & Typing`, `Math`, `Science & History`), and pass `?grade=3|4|5` into games so they auto-select the chosen grade.
+2. **Unified HUD / Pause / TTS Bar:** Standardize `Esc` Pause, `MAIN MENU` exit, keyboard shortcuts (`1–4` choices, `Enter` submit), and Web Speech TTS toggles across all 8 games.
+3. **3-Star Mastery & Stakes:** Keep Chill default for Grade 3, add 3-Star mastery thresholds + optional Timed mode for passive games (`dino-game`, `word-quest`, `science-explorer`, `life-math`).
+
+### 6C. Per-Game Loop & Content Upgrades (`P1`–`P2`)
+1. **Science Explorer (`science-explorer.js`, `db/science-bank.js`):** Differentiate from `Word Quest` with interactive STEM diagram challenges (circuit/food-chain/orbit interactions) and expand `science-bank.js` from 28 items to 10+ per topic/grade.
+2. **Word Quest (`db/word-quest-bank.js`):** Expand from 5 items per `(mode, grade)` pair to 10+ so single-mode runs fill all 10 sky-bridge planks.
+3. **Dinosaur Adventure Typing (`dino-game.js`, `db/dino-sentences.js`):** Penalize/shake on key-mashing, add Shift/punctuation visual cues for Grade 3, and expand Grade 4/5 sentence pools beyond 6 sentences per level.
+4. **Fraction Pizza Dash (`fraction-dash.js`, `db/fraction-bank.js`):** Fix tedious uncut reset (`totalSlices = 1`), render both pizzas side-by-side *during* Compare mode, add Grade 3–5 scaling, deduplicate orders per shift, and add `1–3` / `Enter` shortcuts.
+5. **Time, Money & Area Dash (`life-math.js`):** Enforce contiguous/rectilinear shapes in `area_build`, add single-coin click-to-remove undo, add perimeter side-length labels, and add Grade 3–5 scaling + TTS read-aloud.
+6. **Astro Math Defense (`astro-math.js`) & Plane Typing (`plane-game.js`):** Scale `astro-math` dot-array hints up to `12×12` and upgrade Calculator Mothership Boss to multi-shot/shielded waves; add a 3-Stage Victory milestone (with optional Endless continuation) to `plane-game.js`.
+7. **Star Shop & AI Art Parity:** Add Star Shop cosmetics to the 4 missing games (`astro-math`, `science-explorer`, `life-math`, `castle-siege`) and complete AI art upgrades (`TRIAGE-13`–`TRIAGE-18`).
+
+---
+
+## 7. Next Immediate Step
+
+Execute **Phase 6A (`T6.1`–`T6.3`)** to restore `shared/profile.js`, repair `index.html`, and fix `castle-siege.js` BGM/Pause bugs.
