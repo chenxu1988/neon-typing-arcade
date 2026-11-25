@@ -204,7 +204,7 @@
         <button id="open-player-btn" class="arcade-pill" style="cursor:pointer;" type="button">👤 Player: Guest ▾</button>
         <span id="hub-stars" class="arcade-pill arcade-star-pill">⭐ 0 Stars</span>
         <span id="hub-streak" class="arcade-pill arcade-streak-pill">🔥 0-Day Streak</span>
-        <span id="hub-badges-count" class="arcade-pill">🏆 0/10 Badges</span>
+        <span id="hub-badges-count" class="arcade-pill">🏆 0/11 Badges</span>
         <button id="open-shop-btn" class="arcade-btn secondary" type="button">🛍️ Star Shop</button>
         <button id="open-report-btn" class="arcade-btn" type="button">📊 Parent / Teacher Report</button>
     </div>
@@ -326,7 +326,7 @@
                 <span class="grade-tag">Geography</span>
             </div>
             <h2>🏰 Castle Siege</h2>
-            <p>Answer History, Geography &amp; Civics questions in 20s waves to summon Knights, clash with Raiders, and topple the Raider Keep!</p>
+            <p>Answer History, Geography &amp; Civics questions in 30s waves to summon Knights, clash with Raiders, and topple the Raider Keep!</p>
             <div id="castle-best" class="stats-pill">TOP SCORE: 0 PTS</div>
             <div class="play-cta">DEFEND CASTLE →</div>
         </a>
@@ -353,7 +353,7 @@
                 </div>
                 <div class="arcade-stat-box">
                     <div class="label">Badges Earned</div>
-                    <div id="rep-badges" class="value">0/8</div>
+                    <div id="rep-badges" class="value">0/11</div>
                 </div>
             </div>
 
@@ -536,207 +536,7 @@
                     localStorage.removeItem('neonPlaneTypingStats');
                     localStorage.removeItem('dinoTypingStats');
                 } catch {}
-                const shopModal = document.getElementById('shop-modal');
-        function renderShopModal() {
-            const profile = window.ArcadeProfile.loadProfile();
-            document.getElementById('shop-stars-pill').innerText = `⭐ ${profile.stars} Stars`;
-            const grid = document.getElementById('shop-grid');
-            grid.innerHTML = '';
-
-            window.ArcadeProfile.SHOP_ITEMS.forEach(item => {
-                const owned = profile.unlocks.includes(item.id);
-                const equipped = profile.equipped[item.category] === item.id;
-                const card = document.createElement('div');
-                card.className = `shop-item${equipped ? ' equipped' : ''}`;
-                card.innerHTML = `
-                    <div class="shop-icon">${item.icon}</div>
-                    <div class="shop-name">${item.name}</div>
-                    <div class="shop-cat">${item.category}</div>
-                `;
-
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `arcade-btn${equipped ? '' : ' secondary'}`;
-                btn.style.padding = '6px 12px';
-                btn.style.fontSize = '0.8rem';
-
-                if (equipped) {
-                    btn.innerText = 'Equipped ✓';
-                    btn.addEventListener('click', () => {
-                        window.ArcadeProfile.equipItem(item.category, item.id);
-                        renderShopModal();
-                    });
-                } else if (owned) {
-                    btn.innerText = 'Equip';
-                    btn.addEventListener('click', () => {
-                        window.ArcadeProfile.equipItem(item.category, item.id);
-                        renderShopModal();
-                    });
-                } else {
-                    btn.innerText = `Buy (${item.cost} ⭐)`;
-                    btn.disabled = profile.stars < item.cost;
-                    if (btn.disabled) btn.style.opacity = '0.45';
-                    btn.addEventListener('click', () => {
-                        window.ArcadeProfile.purchaseItem(item.id);
-                        const playerModal = document.getElementById('player-modal');
-        function renderPlayerModal() {
-            const active = window.ArcadeProfile.getActiveUser();
-            const listEl = document.getElementById('player-list');
-            listEl.innerHTML = '';
-            window.ArcadeProfile.listUsers().forEach(name => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `arcade-btn${name === active ? '' : ' secondary'}`;
-                btn.style.padding = '6px 14px';
-                btn.innerText = name === active ? `👤 ${name} ✓` : `👤 ${name}`;
-                btn.addEventListener('click', () => {
-                    window.ArcadeProfile.switchUser(name);
-                    renderHub();
-                    renderPlayerModal();
-                });
-                listEl.appendChild(btn);
-            });
-        }
-
-        document.getElementById('open-player-btn').addEventListener('click', () => {
-            renderPlayerModal();
-            playerModal.classList.add('active');
-            playerModal.setAttribute('aria-hidden', 'false');
-        });
-        document.getElementById('close-player-btn').addEventListener('click', () => {
-            playerModal.classList.remove('active');
-            playerModal.setAttribute('aria-hidden', 'true');
-        });
-        document.getElementById('login-player-btn').addEventListener('click', () => {
-            const input = document.getElementById('player-name-input');
-            const name = input.value.trim();
-            if (!name) return;
-            window.ArcadeProfile.switchUser(name);
-            input.value = '';
-            renderHub();
-            renderPlayerModal();
-        });
-        document.getElementById('export-json-btn').addEventListener('click', () => {
-            const active = window.ArcadeProfile.getActiveUser();
-            const json = window.ArcadeProfile.exportProfileJSON(active);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${active.toLowerCase().replace(/[^a-z0-9_-]/g, '_')}-arcade-profile.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-        document.getElementById('import-json-btn').addEventListener('click', () => {
-            document.getElementById('import-json-file').click();
-        });
-        document.getElementById('import-json-file').addEventListener('change', (e) => {
-            const file = e.target.files && e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-                const res = window.ArcadeProfile.importProfileJSON(String(reader.result || ''));
-                if (res.ok) {
-                    renderHub();
-                    renderPlayerModal();
-                } else {
-                    alert(res.reason || 'Could not import profile.');
-                }
-            };
-            reader.readAsText(file);
-            e.target.value = '';
-        });
-
-        renderHub();
-                        renderShopModal();
-                    });
-                }
-
-                card.appendChild(btn);
-                grid.appendChild(card);
-            });
-        }
-
-        document.getElementById('open-shop-btn').addEventListener('click', () => {
-            renderShopModal();
-            shopModal.classList.add('active');
-            shopModal.setAttribute('aria-hidden', 'false');
-        });
-        document.getElementById('close-shop-btn').addEventListener('click', () => {
-            shopModal.classList.remove('active');
-            shopModal.setAttribute('aria-hidden', 'true');
-        });
-
-        const playerModal = document.getElementById('player-modal');
-        function renderPlayerModal() {
-            const active = window.ArcadeProfile.getActiveUser();
-            const listEl = document.getElementById('player-list');
-            listEl.innerHTML = '';
-            window.ArcadeProfile.listUsers().forEach(name => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `arcade-btn${name === active ? '' : ' secondary'}`;
-                btn.style.padding = '6px 14px';
-                btn.innerText = name === active ? `👤 ${name} ✓` : `👤 ${name}`;
-                btn.addEventListener('click', () => {
-                    window.ArcadeProfile.switchUser(name);
-                    renderHub();
-                    renderPlayerModal();
-                });
-                listEl.appendChild(btn);
-            });
-        }
-
-        document.getElementById('open-player-btn').addEventListener('click', () => {
-            renderPlayerModal();
-            playerModal.classList.add('active');
-            playerModal.setAttribute('aria-hidden', 'false');
-        });
-        document.getElementById('close-player-btn').addEventListener('click', () => {
-            playerModal.classList.remove('active');
-            playerModal.setAttribute('aria-hidden', 'true');
-        });
-        document.getElementById('login-player-btn').addEventListener('click', () => {
-            const input = document.getElementById('player-name-input');
-            const name = input.value.trim();
-            if (!name) return;
-            window.ArcadeProfile.switchUser(name);
-            input.value = '';
-            renderHub();
-            renderPlayerModal();
-        });
-        document.getElementById('export-json-btn').addEventListener('click', () => {
-            const active = window.ArcadeProfile.getActiveUser();
-            const json = window.ArcadeProfile.exportProfileJSON(active);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${active.toLowerCase().replace(/[^a-z0-9_-]/g, '_')}-arcade-profile.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-        document.getElementById('import-json-btn').addEventListener('click', () => {
-            document.getElementById('import-json-file').click();
-        });
-        document.getElementById('import-json-file').addEventListener('change', (e) => {
-            const file = e.target.files && e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-                const res = window.ArcadeProfile.importProfileJSON(String(reader.result || ''));
-                if (res.ok) {
-                    renderHub();
-                    renderPlayerModal();
-                } else {
-                    alert(res.reason || 'Could not import profile.');
-                }
-            };
-            reader.readAsText(file);
-            e.target.value = '';
-        });
-
-        renderHub();
+                renderHub();
                 renderReportModal();
             }
         });
@@ -783,76 +583,7 @@
                     if (btn.disabled) btn.style.opacity = '0.45';
                     btn.addEventListener('click', () => {
                         window.ArcadeProfile.purchaseItem(item.id);
-                        const playerModal = document.getElementById('player-modal');
-        function renderPlayerModal() {
-            const active = window.ArcadeProfile.getActiveUser();
-            const listEl = document.getElementById('player-list');
-            listEl.innerHTML = '';
-            window.ArcadeProfile.listUsers().forEach(name => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `arcade-btn${name === active ? '' : ' secondary'}`;
-                btn.style.padding = '6px 14px';
-                btn.innerText = name === active ? `👤 ${name} ✓` : `👤 ${name}`;
-                btn.addEventListener('click', () => {
-                    window.ArcadeProfile.switchUser(name);
-                    renderHub();
-                    renderPlayerModal();
-                });
-                listEl.appendChild(btn);
-            });
-        }
-
-        document.getElementById('open-player-btn').addEventListener('click', () => {
-            renderPlayerModal();
-            playerModal.classList.add('active');
-            playerModal.setAttribute('aria-hidden', 'false');
-        });
-        document.getElementById('close-player-btn').addEventListener('click', () => {
-            playerModal.classList.remove('active');
-            playerModal.setAttribute('aria-hidden', 'true');
-        });
-        document.getElementById('login-player-btn').addEventListener('click', () => {
-            const input = document.getElementById('player-name-input');
-            const name = input.value.trim();
-            if (!name) return;
-            window.ArcadeProfile.switchUser(name);
-            input.value = '';
-            renderHub();
-            renderPlayerModal();
-        });
-        document.getElementById('export-json-btn').addEventListener('click', () => {
-            const active = window.ArcadeProfile.getActiveUser();
-            const json = window.ArcadeProfile.exportProfileJSON(active);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${active.toLowerCase().replace(/[^a-z0-9_-]/g, '_')}-arcade-profile.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-        document.getElementById('import-json-btn').addEventListener('click', () => {
-            document.getElementById('import-json-file').click();
-        });
-        document.getElementById('import-json-file').addEventListener('change', (e) => {
-            const file = e.target.files && e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-                const res = window.ArcadeProfile.importProfileJSON(String(reader.result || ''));
-                if (res.ok) {
-                    renderHub();
-                    renderPlayerModal();
-                } else {
-                    alert(res.reason || 'Could not import profile.');
-                }
-            };
-            reader.readAsText(file);
-            e.target.value = '';
-        });
-
-        renderHub();
+                        renderHub();
                         renderShopModal();
                     });
                 }

@@ -11,8 +11,8 @@
 
 | ID | Priority | Status | Task | Commit |
 | :--- | :--- | :--- | :--- | :--- |
-| `T1.1` | `P0` | `TODO` | Create `shared/audio.js` with unified `SoundManager`, `ChiptuneSequencer`, and `speakText()` (file:// compatible) | — |
-| `T1.2` | `P0` | `TODO` | Create `shared/profile.js` for unified `localStorage` (`arcadeProfile`: stars, badges, streak, per-game stats, missed items) | — |
+| `T1.1` | `P0` | `DONE` | Create `shared/audio.js` with unified `SoundManager`, `ChiptuneSequencer`, and `speakText()` (file:// compatible) | `done` |
+| `T1.2` | `P0` | `DONE` | Create `shared/profile.js` for unified `localStorage` (`arcadeProfile`: stars, badges, streak, per-game stats, missed items) | `done` |
 | `T1.3` | `P0` | `DONE` | Create `shared/ui.css` with shared modals, HUD pills, badge styles, and responsive breakpoints | `done` |
 | `T1.5` | `P1` | `DONE` | Upgrade `index.html` with Stars/Badges bar, Grade filter (`All`, `3`, `4`, `5`), and Parent/Teacher Progress Report modal | `done` |
 
@@ -110,9 +110,9 @@
 
 | ID | Linear | Priority | Status | Task | Commit |
 |----|--------|----------|--------|------|--------|
-| `T6.1` | `FEN-5` | `P0` | `TODO` | Restore `shared/profile.js` from git `HEAD` so `ArcadeProfile`, Star Shop, badges, and cosmetics work across all 8 games | — |
-| `T6.2` | `FEN-6` | `P0` | `TODO` | Repair `index.html` corrupted modal JS (`shopModal`/`playerModal` handlers) and fix hardcoded badge counts (`0/10`, `0/8` -> `11`) | — |
-| `T6.3` | `FEN-7` | `P0` | `TODO` | Fix `castle-siege.js` BGM (`bpm`/`lead` keys + `ChiptuneSequencer`), stop TTS on `togglePause()`, add `MAIN MENU` to Pause modal, and fix `index.html` wave copy (`30s`) | — |
+| `T6.1` | `FEN-5` | `P0` | `DONE` | Restore `shared/profile.js` from git `HEAD` so `ArcadeProfile`, Star Shop, badges, and cosmetics work across all 8 games | `done` |
+| `T6.2` | `FEN-6` | `P0` | `DONE` | Repair `index.html` corrupted modal JS (`shopModal`/`playerModal` handlers) and fix hardcoded badge counts (`0/10`, `0/8` -> `11`) | `done` |
+| `T6.3` | `FEN-7` | `P0` | `DONE` | Fix `castle-siege.js` BGM (`bpm`/`lead` keys + `ChiptuneSequencer`), stop TTS on `togglePause()`, add `MAIN MENU` to Pause modal, and fix `index.html` wave copy (`30s`) | `done` |
 | `T6.4` | `FEN-8` | `P1` | `TODO` | Upgrade `index.html` filtering: add Subject filter (`All`, `ELA & Typing`, `Math`, `Science & History`) + pass `?grade=3\|4\|5` deep-link into games | — |
 | `T6.5` | `FEN-9` | `P1` | `TODO` | Standardize HUD, `Esc` Pause, `MAIN MENU` exit, keyboard shortcuts (`1–4`, `Enter`), and Web Speech TTS toggle across all 8 games | — |
 | `T6.6` | `FEN-10` | `P1` | `TODO` | Add 3-Star mastery thresholds + optional Timed mode for Chill games (`dino-game`, `word-quest`, `science-explorer`, `life-math`) | — |
