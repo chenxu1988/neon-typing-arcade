@@ -10,10 +10,9 @@
 
 | ID | Priority | Status | Task | Commit |
 | :--- | :--- | :--- | :--- | :--- |
-| `T1.1` | `P0` | `DONE` | Create `shared/audio.js` with unified `SoundManager`, `ChiptuneSequencer`, and `speakText()` (file:// compatible) | `done` |
-| `T1.2` | `P0` | `TODO` | Create `shared/profile.js` for unified `localStorage` (`arcadeProfile`: stars, badges, streak, per-game stats, missed items) | — |
+| `T1.1` | `P0` | `DONE` | Create `shared/audio.js` with unified `SoundManager`, `ChiptuneSequencer`, and `speakText()` (file:// compatible) | `758219a` |
+| `T1.2` | `P0` | `DONE` | Create `shared/profile.js` for unified `localStorage` (`arcadeProfile`: stars, badges, streak, per-game stats, missed items) | `done` |
 | `T1.3` | `P0` | `TODO` | Create `shared/ui.css` with shared modals, HUD pills, badge styles, and responsive breakpoints | — |
-| `T1.4` | `P1` | `TODO` | Create `shared/touch-keyboard.js` (collapsible on-screen QWERTY + 0–9 keypad for tablets/Chromebooks) | — |
 | `T1.5` | `P1` | `TODO` | Upgrade `index.html` with Stars/Badges bar, Grade filter (`All`, `3`, `4`, `5`), and Parent/Teacher Progress Report modal | — |
 
 ---
@@ -24,7 +23,6 @@
 | :--- | :--- | :--- | :--- | :--- |
 | `T2.1` | `P0` | `TODO` | Migrate `plane-game.js` to use `shared/audio.js` & `shared/profile.js` (award stars & log missed words) | — |
 | `T2.2` | `P1` | `TODO` | Add LAUSD Grade 5 ELA sector + kid-friendly 1-line word definitions on Plane Game Over "Words to Practice" pills | — |
-| `T2.3` | `P1` | `TODO` | Wire `shared/touch-keyboard.js` toggle into `plane-game.html` for tablet play | — |
 | `T2.4` | `P0` | `TODO` | Migrate `dino-game.js` to use `shared/audio.js` & `shared/profile.js` (award stars & log missed words) | — |
 | `T2.5` | `P1` | `TODO` | Add Grade 3 / 4 / 5 theme selector, `ESC` Pause modal, and Main Menu button to `dino-game.html` | — |
 | `T2.6` | `P1` | `TODO` | Add "Words to Practice" summary + 1-click drill retry on `dino-game.html` Victory screen | — |
@@ -62,3 +60,5 @@
 
 - [ ] `TRIAGE-1` (`P2`): Replace remaining 3 inline SVGs in `plane-game.js` (`s2-elite`, `s3-fighter`, `s3-elite`) with matching AI-generated PNG sprites.
 - [ ] `TRIAGE-2` (`P2`): Update `README.md` with new games and shared architecture once Phase 3 completes.
+- [ ] `TRIAGE-3` (`P2`): Create `shared/touch-keyboard.js` (collapsible on-screen QWERTY + 0–9 keypad for tablets/Chromebooks, formerly `T1.4`).
+- [ ] `TRIAGE-4` (`P2`): Wire `shared/touch-keyboard.js` toggle into `plane-game.html` for tablet play (formerly `T2.3`).
