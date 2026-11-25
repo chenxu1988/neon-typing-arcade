@@ -382,3 +382,12 @@ body {
     font-weight: 800;
     margin-bottom: 8px;
 }
+
+/* T6.14 Customer Bobbing & Pizza Breathing */
+.customer-avatar {
+    animation: arcade-bob 2.2s ease-in-out infinite;
+}
+
+.pizza-panel svg {
+    animation: arcade-breathe 4.2s ease-in-out infinite;
+}

@@ -497,3 +497,22 @@ body {
     .battlefield { grid-template-columns: 1fr; text-align: center; }
     .q-choices { grid-template-columns: 1fr; }
 }
+
+/* T6.14 In-Lane Micro-Patrol & Castle Breathing */
+.unit-img,
+.unit-icon {
+    animation: unitPop 0.25s ease-out, arcade-patrol 2.4s ease-in-out infinite;
+}
+
+.unit-img:nth-child(even),
+.unit-icon:nth-child(even) {
+    animation-delay: 0s, 0.9s;
+}
+
+.castle-sprite-img {
+    animation: arcade-breathe 3.8s ease-in-out infinite;
+}
+
+.castle-sprite-img.hit {
+    animation: castleShake 0.45s ease;
+}

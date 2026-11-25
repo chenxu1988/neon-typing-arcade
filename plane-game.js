@@ -1147,6 +1147,7 @@ function processCorrectChar() {
 }
 
 function fireLaser(wordElement) {
+    if (sounds.playAction) sounds.playAction('plane_laser');
     const areaRect = gameArea.getBoundingClientRect();
     const planeRect = playerPlane.getBoundingClientRect();
     const wordRect = wordElement.getBoundingClientRect();

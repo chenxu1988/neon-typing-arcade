@@ -138,6 +138,8 @@ Based on the full 8-game design audit, prioritize fixing broken shared state and
 5. **Time, Money & Area Dash (`life-math.js`):** Enforce contiguous/rectilinear shapes in `area_build`, add single-coin click-to-remove undo, add perimeter side-length labels, and add Grade 3–5 scaling + TTS read-aloud.
 6. **Astro Math Defense (`astro-math.js`) & Plane Typing (`plane-game.js`):** Scale `astro-math` dot-array hints up to `12×12` and upgrade Calculator Mothership Boss to multi-shot/shielded waves; add a 3-Stage Victory milestone (with optional Endless continuation) to `plane-game.js`.
 7. **Star Shop & AI Art Parity:** Add Star Shop cosmetics to the 4 missing games (`astro-math`, `science-explorer`, `life-math`, `castle-siege`) and complete AI art upgrades (`TRIAGE-13`–`TRIAGE-18`).
+8. **Action SFX Library (`shared/audio.js`):** Add short (<180ms), low-gain procedural action SFX (`summon`, `clash`, `castleHit`, `laser`, `explosion`, `slice`, `ovenDing`, `coin`, `tilePop`, `plank`, `roverPing`, `footstep`, `jump`) across all 8 games without overpowering Web Speech TTS.
+9. **Living Idle & Patrol Motion:** Add constrained `±8px` in-lane micro-patrol and idle bobbing/breathing (with staggered `animation-delay`) across Castle Siege (Knights/Raiders + clash sparks), Dino (idle breathing/hop), Word Quest (Explorer bounce), Astro Math (ship/meteor wobble), Science Explorer (Rover hover), Fraction Dash (customer bob), and Life Math (coin bounce/clock tick).
 
 ---
 

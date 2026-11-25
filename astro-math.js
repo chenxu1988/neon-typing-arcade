@@ -269,6 +269,7 @@ function fireLaserAt(meteorEl) {
     beam.style.width = `${dist}px`;
     beam.style.transform = `rotate(${angle}deg)`;
     lasersContainer.appendChild(beam);
+    if (sounds.playAction) sounds.playAction('laser');
     setTimeout(() => beam.remove(), 170);
 
     return { x: x2, y: y2 };

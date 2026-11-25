@@ -238,6 +238,54 @@
             this.playFanfare([523.25, 659.25, 783.99], 0.08);
         }
 
+        playAction(kind) {
+            if (!this.soundEnabled) return;
+            this.init();
+            if (!this.ctx) return;
+
+            const ttsDuck = (global.speechSynthesis && global.speechSynthesis.speaking) ? 0.65 : 1;
+            const v = (base) => Math.min(0.09, base * ttsDuck);
+
+            switch (kind) {
+                case 'summon':
+                    this.playTone(440, 0.11, 'triangle', v(0.07), 880);
+                    break;
+                case 'clash':
+                    this.playTone(220, 0.14, 'sawtooth', v(0.07), 90);
+                    this.playTone(1100, 0.09, 'triangle', v(0.05), 320);
+                    break;
+                case 'castle_hit':
+                    this.playTone(115, 0.16, 'triangle', v(0.09), 48);
+                    break;
+                case 'laser':
+                    this.playTone(920, 0.10, 'sawtooth', v(0.06), 280);
+                    break;
+                case 'plane_laser':
+                    this.playTone(780, 0.07, 'square', v(0.05), 260);
+                    break;
+                case 'slice':
+                    this.playTone(620, 0.08, 'triangle', v(0.07), 1120);
+                    break;
+                case 'coin':
+                    this.playTone(1318.5, 0.07, 'sine', v(0.07), 1760);
+                    break;
+                case 'plank':
+                    this.playTone(280, 0.10, 'triangle', v(0.07), 170);
+                    break;
+                case 'rover_ping':
+                    this.playTone(980, 0.11, 'sine', v(0.07), 1320);
+                    break;
+                case 'dino_step':
+                    this.playTone(190, 0.06, 'triangle', v(0.05), 120);
+                    break;
+                case 'dino_jump':
+                    this.playTone(320, 0.12, 'sine', v(0.07), 640);
+                    break;
+                default:
+                    this.playClick();
+            }
+        }
+
         playGameStart(theme = 'chime') {
             if (!this.soundEnabled) return;
             this.init();

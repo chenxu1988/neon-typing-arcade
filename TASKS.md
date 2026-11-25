@@ -122,3 +122,5 @@
 | `T6.10` | `FEN-14` | `P1` | `DONE` | Polish `life-math.js`: enforce contiguous shapes in `area_build`, add single-coin undo, add perimeter side-length labels, and add Grade 3–5 scaling + TTS | `done` |
 | `T6.11` | `FEN-15` | `P1` | `DONE` | Upgrade `astro-math.js` (scale dot-array hints to `12×12` + multi-shot/shielded Calculator Boss) and `plane-game.js` (add 3-Stage Victory milestone + optional Endless mode) | `done` |
 | `T6.12` | `FEN-16` | `P2` | `DONE` | Complete Star Shop cosmetics for `astro-math`, `science-explorer`, `life-math`, and `castle-siege`, plus remaining AI art upgrades (`TRIAGE-13`–`TRIAGE-18`) | `done` |
+| `T6.13` | `—` | `P1` | `DONE` | Add shared procedural Action SFX (<180ms, TTS-safe volume) to `shared/audio.js` and wire into all 8 games (summon, clash, castle hit, laser, slice, coin, plank, rover ping, dino step/jump) | `done` |
+| `T6.14` | `—` | `P1` | `DONE` | Add constrained `±8px` in-lane micro-patrol, idle breathing/bobbing, and clash/reaction animations across Castle Siege and all 7 other games | `done` |

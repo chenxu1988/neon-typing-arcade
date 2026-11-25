@@ -398,7 +398,8 @@ function loadNextChallenge() {
                 if (roundLocked) return;
                 builtCents += c.val;
                 selectedCoins.push(c.val);
-                sounds.playClick();
+                if (sounds.playAction) sounds.playAction('coin');
+                else sounds.playClick();
                 renderMoneyWorkspace();
             });
             coinsRow.appendChild(b);

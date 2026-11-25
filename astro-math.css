@@ -515,3 +515,12 @@ body {
     font-weight: bold;
     margin-bottom: 8px;
 }
+
+/* T6.14 Meteor & Boss Idle Bobbing */
+.meteor-card {
+    animation: arcade-bob 1.9s ease-in-out infinite;
+}
+
+#math-boss.active .boss-body {
+    animation: arcade-patrol 2.8s ease-in-out infinite;
+}

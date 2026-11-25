@@ -623,3 +623,13 @@ body {
     border-color: #a5d6a7;
     color: #c8e6c9;
 }
+
+/* T6.14 Goal Bob & Idle Breathing */
+@keyframes dino-goal-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+#goal-item {
+    animation: dino-goal-bob 2s ease-in-out infinite;
+}

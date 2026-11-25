@@ -259,6 +259,7 @@ function handleAnswer(btn, choice) {
 
     if (choice === currentQ.answer) {
         btn.classList.add('correct');
+        if (sounds.playAction) sounds.playAction('rover_ping');
         sounds.playSuccess();
         stopsDone++;
         streak++;

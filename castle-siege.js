@@ -231,7 +231,8 @@
             els.qFeedback.className = 'q-feedback ok';
             els.qFeedback.innerText = `⚔️ Knight summoned! ${q.explain}`;
             appendKnight();
-            sound.playSuccess();
+            if (sound.playAction) sound.playAction('summon');
+            else sound.playSuccess();
             updateHUD();
             setChoicesDisabled(true);
             setTimeout(() => {
@@ -298,7 +299,8 @@
 
         setTimeout(() => {
             els.clashSpark.classList.add('active');
-            sound.playTone(180, 0.18, 'sawtooth', 0.2, 70);
+            if (sound.playAction) sound.playAction('clash');
+            else sound.playTone(180, 0.18, 'sawtooth', 0.2, 70);
 
             const diff = state.knights - state.raiders;
             if (diff > 0) {
@@ -307,12 +309,14 @@
                 state.score += diff * 50;
                 els.waveBanner.innerText = `⚔️ VICTORY! +${dmg} DMG TO RAIDER KEEP!`;
                 els.enemyCastle.classList.add('hit');
+                if (sound.playAction) sound.playAction('castle_hit');
                 sound.playFanfare([523.25, 659.25, 783.99], 90);
             } else if (diff < 0) {
                 const dmg = Math.abs(diff) * DAMAGE_PER_UNIT;
                 state.playerHp = Math.max(0, state.playerHp - dmg);
                 els.waveBanner.innerText = `🐉 RAIDERS BREACH! -${dmg} HP TO YOUR CASTLE!`;
                 els.playerCastle.classList.add('hit');
+                if (sound.playAction) sound.playAction('castle_hit');
                 sound.playError();
             } else {
                 els.waveBanner.innerText = '🛡️ STALEMATE! SHIELDS HELD (0 DMG)!';

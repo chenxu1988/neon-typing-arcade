@@ -345,3 +345,8 @@ body {
     font-weight: 800;
     margin-bottom: 8px;
 }
+
+/* T6.14 Explorer Idle Bobbing */
+#explorer {
+    animation: arcade-bob 2.1s ease-in-out infinite;
+}

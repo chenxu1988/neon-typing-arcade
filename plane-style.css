@@ -1185,3 +1185,13 @@ body {
     0% { opacity: 1; transform: translate(-50%, -50%) scale(0.9); }
     100% { opacity: 0; transform: translate(-50%, -95px) scale(1.15); }
 }
+
+/* T6.14 Enemy & Boss Micro-Patrol */
+@keyframes plane-patrol {
+    0%, 100% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+}
+
+.enemy-ship {
+    animation: plane-patrol 2.6s ease-in-out infinite;
+}

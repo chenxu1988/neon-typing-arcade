@@ -160,7 +160,8 @@ function renderPizzaSVG(denom, selectedSet, interactive = true) {
                 if (!gameActive || gamePaused || orderLocked) return;
                 if (selectedSet.has(i)) selectedSet.delete(i);
                 else selectedSet.add(i);
-                sounds.playClick();
+                if (sounds.playAction) sounds.playAction('slice');
+                else sounds.playClick();
                 renderPizzaSVG(denom, selectedSet, true);
             });
         }
