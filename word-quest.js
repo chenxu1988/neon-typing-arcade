@@ -214,8 +214,15 @@ function handleChoice(btn, choice) {
         sounds.playSuccess();
         builtPlanks++;
         streak++;
-        score += currentQuestion.retried ? 50 : 100;
-        qFeedback.innerText = `✅ Correct! ${currentQuestion.explain}`;
+        let earned = currentQuestion.retried ? 50 : 100;
+        let relicNote = '';
+        if (streak > 0 && streak % 3 === 0) {
+            relics++;
+            earned += 50;
+            relicNote = ' 🏺 +1 RELIC (+50)!';
+        }
+        score += earned;
+        qFeedback.innerText = `✅ Correct! ${currentQuestion.explain}${relicNote}`;
         renderBridge();
         updateQuestHUD();
         setTimeout(loadNextQuestion, 1100);
@@ -282,6 +289,21 @@ function finishQuest() {
     sounds.playFanfare([523.25, 659.25, 783.99, 1046.5]);
 
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
+    let isNewBest = false;
+    if (window.ArcadeProfile) {
+        const prev = window.ArcadeProfile.loadProfile().games.word_quest;
+        isNewBest = score > (prev ? prev.bestScore : 0) && score > 0;
+        window.ArcadeProfile.recordSession({
+            gameId: 'word_quest',
+            accuracy: acc,
+            score,
+            wpm: 0,
+            missedItems: Array.from(missedKeys),
+            badgeId: 'word_wizard'
+        });
+    }
+
+    document.getElementById('new-record-badge').style.display = isNewBest ? 'block' : 'none';
     document.getElementById('final-score-val').innerText = score;
     document.getElementById('final-acc-val').innerText = `${acc}%`;
     document.getElementById('final-relic-val').innerText = relics;

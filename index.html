@@ -237,6 +237,19 @@
             <div id="math-best" class="stats-pill">TOP SCORE: 0 PTS</div>
             <div class="play-cta">LAUNCH DEFENSE →</div>
         </a>
+
+        <a href="word-quest.html" class="card" data-grades="3,4,5">
+            <div class="card-preview" style="font-size: 3.2rem;">📖</div>
+            <div class="card-tags">
+                <span class="grade-tag">Grade 3–5</span>
+                <span class="grade-tag">ELA Meaning</span>
+                <span class="grade-tag">Grammar</span>
+            </div>
+            <h2>📖 Word Quest</h2>
+            <p>Build the sky-bridge by solving Context Clues, Synonyms &amp; Antonyms, Parts of Speech, and Prefixes/Suffixes with read-aloud and relic rewards.</p>
+            <div id="quest-best" class="stats-pill">TOP SCORE: 0 PTS</div>
+            <div class="play-cta">BEGIN QUEST →</div>
+        </a>
     </div>
 
     <!-- Parent / Teacher Progress Report Modal -->
@@ -317,6 +330,9 @@
 
             const mathStats = profile.games.astro_math || { bestScore: 0, bestAcc: 0 };
             document.getElementById('math-best').innerText = `TOP SCORE: ${mathStats.bestScore} PTS | ${mathStats.bestAcc}% ACC`;
+
+            const questStats = profile.games.word_quest || { bestScore: 0, bestAcc: 0 };
+            document.getElementById('quest-best').innerText = `TOP SCORE: ${questStats.bestScore} PTS | ${questStats.bestAcc}% ACC`;
         }
 
         function renderReportModal() {
