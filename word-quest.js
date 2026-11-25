@@ -217,6 +217,7 @@ function applyExplorerAvatar() {
 
 function startGame() {
     sounds.init();
+    if (sounds.playGameStart) sounds.playGameStart('quest');
     applyExplorerAvatar();
     score = 0;
     builtPlanks = 0;

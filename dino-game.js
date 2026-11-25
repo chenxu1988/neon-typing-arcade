@@ -236,6 +236,7 @@ function applyDinoHat() {
 
 function startGame(drillWords = null) {
     sounds.init();
+    if (sounds.playGameStart) sounds.playGameStart('roar');
     applyDinoHat();
     practiceDrillMode = Array.isArray(drillWords) && drillWords.length > 0;
     activeGrade = gradeSelect ? gradeSelect.value : 'grade3';

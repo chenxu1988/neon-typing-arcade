@@ -236,6 +236,65 @@
             this.playFanfare([523.25, 659.25, 783.99], 0.08);
         }
 
+        playGameStart(theme = 'chime') {
+            if (!this.soundEnabled) return;
+            this.init();
+            if (!this.ctx) return;
+
+            const t = this.ctx.currentTime;
+            const scheduleNote = (freq, startOffset, dur, type, vol, endFreq = null) => {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, t + startOffset);
+                if (endFreq !== null) {
+                    osc.frequency.exponentialRampToValueAtTime(Math.max(1, endFreq), t + startOffset + dur);
+                }
+                gain.gain.setValueAtTime(0.001, t + startOffset);
+                gain.gain.linearRampToValueAtTime(vol, t + startOffset + 0.025);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + startOffset + dur);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(t + startOffset);
+                osc.stop(t + startOffset + dur + 0.02);
+            };
+
+            switch (theme) {
+                case 'horn':
+                    scheduleNote(174.61, 0, 0.24, 'sawtooth', 0.11, 220);
+                    scheduleNote(261.63, 0.18, 0.45, 'sawtooth', 0.12, 261.63);
+                    scheduleNote(130.81, 0.18, 0.45, 'triangle', 0.10, 130.81);
+                    break;
+                case 'launch':
+                    scheduleNote(120, 0, 0.38, 'sawtooth', 0.09, 640);
+                    scheduleNote(880, 0.22, 0.16, 'sine', 0.08, 1320);
+                    break;
+                case 'roar':
+                    scheduleNote(150, 0, 0.42, 'sawtooth', 0.14, 58);
+                    scheduleNote(75, 0.04, 0.38, 'triangle', 0.12, 42);
+                    break;
+                case 'powerup':
+                    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => scheduleNote(f, i * 0.06, 0.14, 'square', 0.06));
+                    break;
+                case 'quest':
+                    [587.33, 739.99, 880, 1174.66].forEach((f, i) => scheduleNote(f, i * 0.07, 0.18, 'triangle', 0.09));
+                    break;
+                case 'bell':
+                    scheduleNote(987.77, 0, 0.18, 'sine', 0.11);
+                    scheduleNote(1318.51, 0.09, 0.30, 'sine', 0.11);
+                    break;
+                case 'sonar':
+                    scheduleNote(880, 0, 0.14, 'sine', 0.09);
+                    scheduleNote(1318.51, 0.16, 0.24, 'sine', 0.09);
+                    break;
+                case 'chime':
+                default:
+                    scheduleNote(1318.51, 0, 0.14, 'triangle', 0.10);
+                    scheduleNote(1975.53, 0.08, 0.28, 'sine', 0.10);
+                    break;
+            }
+        }
+
         speak(text, force = false) {
             speakText(text, { enabled: this.voiceEnabled, force });
         }

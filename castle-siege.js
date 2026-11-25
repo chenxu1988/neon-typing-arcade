@@ -403,6 +403,7 @@
 
     function startGame() {
         sound.init();
+        if (sound.playGameStart) sound.playGameStart('horn');
         if (sound.startBgm) sound.startBgm('march');
 
         state.running = true;

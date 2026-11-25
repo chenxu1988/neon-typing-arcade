@@ -372,6 +372,7 @@ function updatePizzaBanner() {
 
 function startGame() {
     sounds.init();
+    if (sounds.playGameStart) sounds.playGameStart('bell');
     score = 0;
     orderIndex = 0;
     streak = 0;

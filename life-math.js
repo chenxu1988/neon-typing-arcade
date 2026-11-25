@@ -404,6 +404,7 @@ function finishRound(isCorrect, hint) {
 
 function startGame() {
     sounds.init();
+    if (sounds.playGameStart) sounds.playGameStart('chime');
     score = 0;
     roundIdx = 0;
     streak = 0;

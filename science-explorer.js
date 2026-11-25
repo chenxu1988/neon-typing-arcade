@@ -271,6 +271,7 @@ function handleAnswer(btn, choice) {
 
 function startGame() {
     sounds.init();
+    if (sounds.playGameStart) sounds.playGameStart('sonar');
     score = 0;
     stopsDone = 0;
     discoveries = 0;

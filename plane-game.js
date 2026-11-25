@@ -643,6 +643,7 @@ function startGame(drillWords = null) {
     clearBossTimers();
     clearEmpTimer();
     sounds.stopSpeech();
+    if (sounds.playGameStart) sounds.playGameStart('launch');
 
     score = 0;
     lives = MAX_LIVES;

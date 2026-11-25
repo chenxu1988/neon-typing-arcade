@@ -470,6 +470,7 @@ function submitAnswer() {
 
 function startGame() {
     sounds.init();
+    if (sounds.playGameStart) sounds.playGameStart('powerup');
     activeDifficulty = DIFFICULTY_PRESETS[difficultySelect.value] || DIFFICULTY_PRESETS.normal;
     baseSpeed = activeDifficulty.baseSpeed;
     spawnDelay = activeDifficulty.spawnMs;
