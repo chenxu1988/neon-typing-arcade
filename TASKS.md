@@ -85,6 +85,12 @@
 - [x] `TRIAGE-10` (`P0`): Add multi-student profile login (name only, no password) + JSON Export/Import in `shared/profile.js` and `index.html`.
 - [ ] `TRIAGE-11` (`P2`): Future Game — **Reading Comprehension** (short Grade 3–5 passages with main idea, inference, and evidence).
 - [ ] `TRIAGE-12` (`P2`): Future Game — **Logic & Number Patterns** (sequences, input/output tables, shape reasoning).
+- [ ] `TRIAGE-13` (`P2`): Art Upgrade (**Astro Math Defense** `astro-math.html`) — Replace CSS/emoji ship, meteors, Calculator Mothership boss, and space backdrop with AI-generated PNG sprites/backgrounds (`assets/`) + Hub card preview.
+- [ ] `TRIAGE-14` (`P2`): Art Upgrade (**Word Quest** `word-quest.html`) — Add AI-generated explorer avatar, sky-bridge/temple background, and Hub card preview (`assets/`).
+- [ ] `TRIAGE-15` (`P2`): Art Upgrade (**Fraction Pizza Dash** `fraction-dash.html`) — Keep interactive `<svg>` pizza cutter, add AI-generated pizzeria background, customer portraits, and Hub card preview (`assets/`).
+- [ ] `TRIAGE-16` (`P2`): Art Upgrade (**Science Explorer** `science-explorer.html`) — Keep dynamic `<svg>` STEM diagrams, add AI-generated Science Rover sprite, alien/lab expedition backdrop, and Hub card preview (`assets/`).
+- [ ] `TRIAGE-17` (`P2`): Art Upgrade (**Time, Money & Area Dash** `life-math.html`) — Keep interactive `<svg>` analog clock, add AI-generated shop/workshop backdrop, mascot/coin art, and Hub card preview (`assets/`).
+- [ ] `TRIAGE-18` (`P2`): Art Upgrade (**Castle Siege** `castle-siege.html`) — Replace emoji castles (`🏰`/`🏯`) and troops (`⚔️`/`🐉`/`👺`) with AI-generated medieval battlefield background, castle sprites, Knight, Goblin/Dragon sprites, and Hub card preview (`assets/`).
 
 ---
 
