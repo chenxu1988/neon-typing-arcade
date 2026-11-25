@@ -42,7 +42,7 @@
 | ID | Priority | Status | Task | Commit |
 | :--- | :--- | :--- | :--- | :--- |
 | `T3.4` | `P1` | `DONE` | Scaffold `word-quest.html`, `word-quest.css`, `word-quest.js` with Grade 3–5 ELA modes (Context Clues, Synonyms/Antonyms, Parts of Speech, Prefixes/Suffixes) | `done` |
-| `T3.5` | `P1` | `TODO` | Implement bridge-building quest loop, spaced-repetition retry for missed questions, and Web Speech read-aloud | — |
+| `T3.5` | `P1` | `DONE` | Implement bridge-building quest loop, spaced-repetition retry for missed questions, and Web Speech read-aloud | `done` |
 | `T3.6` | `P2` | `TODO` | Add relic rewards, star integration, and register card in `index.html` | — |
 
 ### Game 5: Fraction Pizza Dash (`fraction-dash.html`)

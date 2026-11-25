@@ -95,15 +95,77 @@ const QUEST_BANK = [
     { grade: 5, mode: 'affixes', category: 'PREFIXES & SUFFIXES', key: 'mislead', prompt: 'What does the prefix "mis-" mean in "mislead"?', choices: ['Wrongly', 'Together', 'Halfway', 'Upward'], answer: 'Wrongly', explain: '"Mis-" means wrongly or badly.' }
 ];
 
+const TOTAL_PLANKS = 10;
+
 let gameActive = false;
 let gamePaused = false;
 let score = 0;
+let builtPlanks = 0;
+let relics = 0;
+let streak = 0;
+let totalAttempts = 0;
+let wrongAttempts = 0;
+let questQueue = [];
+let currentQuestion = null;
+let currentQuestionLocked = false;
+let missedKeys = new Set();
 
 const startScreen = document.getElementById('start-screen');
 const pauseScreen = document.getElementById('pause-screen');
 const endScreen = document.getElementById('end-screen');
 const modeSelect = document.getElementById('mode-select');
 const gradeSelect = document.getElementById('grade-select');
+const bridgeTrack = document.getElementById('bridge-track');
+const explorer = document.getElementById('explorer');
+const qCategory = document.getElementById('q-category');
+const qPrompt = document.getElementById('q-prompt');
+const qChoices = document.getElementById('q-choices');
+const qFeedback = document.getElementById('q-feedback');
+
+function shuffleArray(arr) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+}
+
+function buildQuestQueue(mode, grade) {
+    const g = Number(grade);
+    const primary = QUEST_BANK.filter(q => (mode === 'mixed' || q.mode === mode) && q.grade === g);
+    const sameMode = QUEST_BANK.filter(q => (mode === 'mixed' || q.mode === mode) && q.grade !== g);
+    const pool = [...shuffleArray(primary), ...shuffleArray(sameMode), ...shuffleArray(QUEST_BANK)];
+    const picked = [];
+    const seen = new Set();
+    for (const q of pool) {
+        if (picked.length >= TOTAL_PLANKS) break;
+        if (!seen.has(q.prompt)) {
+            seen.add(q.prompt);
+            picked.push({ ...q, retried: false });
+        }
+    }
+    return picked;
+}
+
+function renderBridge() {
+    bridgeTrack.innerHTML = '';
+    for (let i = 0; i < TOTAL_PLANKS; i++) {
+        const plank = document.createElement('div');
+        plank.className = `bridge-plank${i < builtPlanks ? ' built' : ''}`;
+        bridgeTrack.appendChild(plank);
+    }
+    const pct = (builtPlanks / TOTAL_PLANKS) * 82;
+    explorer.style.left = `calc(${pct}% + 20px)`;
+}
+
+function updateQuestHUD() {
+    document.getElementById('score-val').innerText = score;
+    document.getElementById('step-val').innerText = builtPlanks;
+    const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
+    document.getElementById('acc-val').innerText = `${acc}%`;
+    document.getElementById('relic-val').innerText = relics;
+}
 
 function updateQuestBanner() {
     const profile = window.ArcadeProfile ? window.ArcadeProfile.loadProfile() : { games: {} };
@@ -111,15 +173,133 @@ function updateQuestBanner() {
     document.getElementById('quest-best-banner').innerText = `BEST: ${stats.bestScore} PTS | ${stats.bestAcc}% ACC`;
 }
 
+function loadNextQuestion() {
+    if (!gameActive) return;
+    if (builtPlanks >= TOTAL_PLANKS || questQueue.length === 0) {
+        finishQuest();
+        return;
+    }
+
+    currentQuestion = questQueue.shift();
+    currentQuestionLocked = false;
+    qCategory.innerText = currentQuestion.retried ? `${currentQuestion.category} (RETRY)` : currentQuestion.category;
+    qPrompt.innerText = currentQuestion.prompt;
+    qFeedback.innerText = '';
+    qChoices.innerHTML = '';
+
+    const shuffledChoices = shuffleArray(currentQuestion.choices);
+    shuffledChoices.forEach((choice, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'choice-btn';
+        btn.dataset.choice = choice;
+        btn.innerText = `${idx + 1}. ${choice}`;
+        btn.addEventListener('click', () => handleChoice(btn, choice));
+        qChoices.appendChild(btn);
+    });
+
+    sounds.speak(currentQuestion.prompt);
+}
+
+function handleChoice(btn, choice) {
+    if (!gameActive || gamePaused || currentQuestionLocked || !currentQuestion) return;
+    currentQuestionLocked = true;
+    totalAttempts++;
+
+    const buttons = qChoices.querySelectorAll('.choice-btn');
+    buttons.forEach(b => { b.disabled = true; });
+
+    if (choice === currentQuestion.answer) {
+        btn.classList.add('correct');
+        sounds.playSuccess();
+        builtPlanks++;
+        streak++;
+        score += currentQuestion.retried ? 50 : 100;
+        qFeedback.innerText = `✅ Correct! ${currentQuestion.explain}`;
+        renderBridge();
+        updateQuestHUD();
+        setTimeout(loadNextQuestion, 1100);
+    } else {
+        btn.classList.add('wrong');
+        buttons.forEach(b => {
+            if (b.dataset.choice === currentQuestion.answer) b.classList.add('correct');
+        });
+        sounds.playError();
+        wrongAttempts++;
+        streak = 0;
+        missedKeys.add(currentQuestion.key);
+        qFeedback.innerText = `❌ ${currentQuestion.explain}`;
+        updateQuestHUD();
+
+        // Spaced-repetition retry: re-insert 2 questions later if not already retried
+        if (!currentQuestion.retried) {
+            const insertAt = Math.min(2, questQueue.length);
+            questQueue.splice(insertAt, 0, { ...currentQuestion, retried: true });
+        }
+        setTimeout(loadNextQuestion, 1750);
+    }
+}
+
 function startGame() {
     sounds.init();
     score = 0;
+    builtPlanks = 0;
+    relics = 0;
+    streak = 0;
+    totalAttempts = 0;
+    wrongAttempts = 0;
+    missedKeys = new Set();
+    questQueue = buildQuestQueue(modeSelect.value, gradeSelect.value);
     gameActive = true;
     gamePaused = false;
+
     startScreen.classList.remove('active');
     pauseScreen.classList.remove('active');
     endScreen.classList.remove('active');
+    renderBridge();
+    updateQuestHUD();
+    loadNextQuestion();
     if (sounds.bgmEnabled) sounds.bgmController.start();
+}
+
+function togglePause() {
+    if (!gameActive) return;
+    gamePaused = !gamePaused;
+    if (gamePaused) {
+        sounds.stopSpeech();
+        sounds.bgmController.stop();
+        pauseScreen.classList.add('active');
+    } else {
+        pauseScreen.classList.remove('active');
+        if (sounds.bgmEnabled) sounds.bgmController.start();
+    }
+}
+
+function finishQuest() {
+    gameActive = false;
+    sounds.stopSpeech();
+    sounds.bgmController.stop();
+    sounds.playFanfare([523.25, 659.25, 783.99, 1046.5]);
+
+    const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
+    document.getElementById('final-score-val').innerText = score;
+    document.getElementById('final-acc-val').innerText = `${acc}%`;
+    document.getElementById('final-relic-val').innerText = relics;
+
+    const review = document.getElementById('missed-review');
+    review.innerHTML = '';
+    if (missedKeys.size === 0) {
+        review.innerHTML = '<span class="missed-pill" style="border-color:#4caf50;background:rgba(76,175,80,0.2)">✨ Flawless Quest!</span>';
+    } else {
+        Array.from(missedKeys).slice(0, 8).forEach(k => {
+            const pill = document.createElement('span');
+            pill.className = 'missed-pill';
+            pill.innerText = k;
+            review.appendChild(pill);
+        });
+    }
+
+    endScreen.classList.add('active');
 }
 
 function returnToMenu() {
@@ -133,6 +313,25 @@ function returnToMenu() {
     startScreen.classList.add('active');
 }
 
+window.addEventListener('keydown', e => {
+    if (!gameActive) return;
+    if (e.key === 'Escape') {
+        e.preventDefault();
+        togglePause();
+        return;
+    }
+    if (gamePaused || currentQuestionLocked) return;
+    if (/^[1-4]$/.test(e.key)) {
+        const idx = Number(e.key) - 1;
+        const btns = qChoices.querySelectorAll('.choice-btn');
+        if (btns[idx]) btns[idx].click();
+    }
+});
+
+qPrompt.addEventListener('click', () => {
+    if (gameActive && currentQuestion) sounds.speak(currentQuestion.prompt, true);
+});
+document.getElementById('resume-btn').addEventListener('click', togglePause);
 document.getElementById('start-btn').addEventListener('click', startGame);
 document.getElementById('restart-btn').addEventListener('click', startGame);
 document.getElementById('pause-menu-btn').addEventListener('click', returnToMenu);
