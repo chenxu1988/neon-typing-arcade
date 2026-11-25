@@ -169,7 +169,7 @@ const STAGES = [
         enemies: {
             scout: '<img src="assets/s2-scout.png" class="enemy-ship scout-sprite" alt="">',
             fighter: '<img src="assets/s2-fighter.png" class="enemy-ship fighter-sprite" alt="">',
-            elite: '<svg class="enemy-ship elite-sprite" viewBox="0 0 80 80"><polygon points="40,74 12,32 6,12 28,22 40,8 52,22 74,12 68,32" fill="#00838f" stroke="#071824" stroke-width="3.5"/><polygon points="40,62 24,34 40,18 56,34" fill="#ffb300" stroke="#071824" stroke-width="3"/><circle cx="40" cy="40" r="8" fill="#00e5ff" stroke="#fff" stroke-width="2"/></svg>'
+            elite: '<img src="assets/s2-elite.png" class="enemy-ship elite-sprite" alt="">'
         }
     },
     {
@@ -179,8 +179,8 @@ const STAGES = [
         track: 'stage3',
         enemies: {
             scout: '<img src="assets/s3-scout.png" class="enemy-ship scout-sprite" alt="">',
-            fighter: '<svg class="enemy-ship fighter-sprite" viewBox="0 0 64 64"><path d="M32 58 L6 20 Q20 28 32 10 Q44 28 58 20 Z" fill="#4a148c" stroke="#ff007f" stroke-width="3"/><polygon points="32,48 24,28 32,18 40,28" fill="#ff007f"/><circle cx="32" cy="33" r="5" fill="#fff"/></svg>',
-            elite: '<svg class="enemy-ship elite-sprite" viewBox="0 0 80 80"><polygon points="40,74 6,24 20,10 34,26 40,8 46,26 60,10 74,24" fill="#2a0845" stroke="#ff007f" stroke-width="3.5"/><polygon points="40,60 22,32 40,16 58,32" fill="#c2185b" stroke="#120024" stroke-width="2.5"/><circle cx="40" cy="38" r="9" fill="#ff073a" stroke="#fff" stroke-width="2"/></svg>'
+            fighter: '<img src="assets/s3-fighter.png" class="enemy-ship fighter-sprite" alt="">',
+            elite: '<img src="assets/s3-elite.png" class="enemy-ship elite-sprite" alt="">'
         }
     }
 ];
