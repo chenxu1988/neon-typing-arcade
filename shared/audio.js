@@ -167,6 +167,8 @@
             this.soundEnabled = true;
             this.bgmEnabled = true;
             this.voiceEnabled = true;
+            this._startSfxUntil = 0;
+            this._pendingSpeakTimer = null;
             this.bgmController = new ChiptuneSequencer(tracks, defaultTrack);
         }
 
@@ -241,6 +243,7 @@
             this.init();
             if (!this.ctx) return;
 
+            this._startSfxUntil = Date.now() + 700;
             const t = this.ctx.currentTime;
             const scheduleNote = (freq, startOffset, dur, type, vol, endFreq = null) => {
                 const osc = this.ctx.createOscillator();
@@ -296,10 +299,26 @@
         }
 
         speak(text, force = false) {
-            speakText(text, { enabled: this.voiceEnabled, force });
+            if (this._pendingSpeakTimer) {
+                clearTimeout(this._pendingSpeakTimer);
+                this._pendingSpeakTimer = null;
+            }
+            const delay = !force ? Math.max(0, this._startSfxUntil - Date.now()) : 0;
+            if (delay > 0) {
+                this._pendingSpeakTimer = setTimeout(() => {
+                    this._pendingSpeakTimer = null;
+                    speakText(text, { enabled: this.voiceEnabled, force });
+                }, delay);
+            } else {
+                speakText(text, { enabled: this.voiceEnabled, force });
+            }
         }
 
         stopSpeech() {
+            if (this._pendingSpeakTimer) {
+                clearTimeout(this._pendingSpeakTimer);
+                this._pendingSpeakTimer = null;
+            }
             stopSpeech();
         }
     }
