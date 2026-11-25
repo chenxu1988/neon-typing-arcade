@@ -124,6 +124,26 @@ function renderPizzaSVG(denom, selectedSet, interactive = true) {
     pizzaSvg.appendChild(crust);
 
     const r = 96;
+    if (denom <= 1) {
+        const whole = document.createElementNS(ns, 'circle');
+        whole.setAttribute('cx', '0');
+        whole.setAttribute('cy', '0');
+        whole.setAttribute('r', String(r));
+        whole.setAttribute('fill', '#4a2030');
+        whole.setAttribute('stroke', '#2b121d');
+        whole.setAttribute('stroke-width', '3');
+        if (interactive) {
+            whole.setAttribute('class', 'pizza-slice');
+            whole.addEventListener('click', () => {
+                feedbackBar.innerText = '🔪 Pick how many SLICES to cut first!';
+                sounds.playClick();
+            });
+        }
+        pizzaSvg.appendChild(whole);
+        pizzaReadout.innerText = 'Uncut Pizza — Pick Slices!';
+        return;
+    }
+
     for (let i = 0; i < denom; i++) {
         const a1 = (i / denom) * Math.PI * 2 - Math.PI / 2;
         const a2 = ((i + 1) / denom) * Math.PI * 2 - Math.PI / 2;
@@ -264,7 +284,7 @@ function loadNextOrder() {
     } else {
         compareControls.style.display = 'none';
         builderControls.style.display = 'flex';
-        setActiveDenominator(currentOrder.type === 'equiv' ? currentOrder.targetDenom : currentOrder.denom);
+        setActiveDenominator(1);
     }
 }
 
@@ -291,6 +311,11 @@ function handleOrderResult(isCorrect, hintText) {
 
 function servePizzaOrder() {
     if (!gameActive || gamePaused || orderLocked || !currentOrder || currentOrder.type === 'compare') return;
+    if (totalSlices <= 1) {
+        feedbackBar.innerText = '🔪 Pick how many SLICES to cut first!';
+        sounds.playError();
+        return;
+    }
     const builtVal = selectedSlices.size / totalSlices;
     const targetVal = currentOrder.num / currentOrder.denom;
     const isEqual = Math.abs(builtVal - targetVal) < 1e-6;
