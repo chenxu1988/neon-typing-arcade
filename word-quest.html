@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Quest — LAUSD Grade 3+ ELA</title>
+    <link rel="stylesheet" href="shared/ui.css">
+    <link rel="stylesheet" href="word-quest.css">
+</head>
+<body>
+    <div id="game-container">
+        <header id="hud">
+            <div class="hud-item">SCORE: <span id="score-val">0</span></div>
+            <div class="hud-item">BRIDGE: <span id="step-val">0</span>/10</div>
+            <div class="hud-item">ACC: <span id="acc-val">100%</span></div>
+            <div class="hud-item" id="relics-hud">🏺 RELICS: <span id="relic-val">0</span></div>
+            <div class="hud-controls">
+                <button id="voice-toggle" class="control-btn active" type="button">🗣️ Voice: On</button>
+                <button id="bgm-toggle" class="control-btn active" type="button">🎵 Music: On</button>
+                <button id="sound-toggle" class="control-btn active" type="button">🔊 Sound: On</button>
+            </div>
+        </header>
+
+        <main id="quest-stage">
+            <!-- Bridge Scene -->
+            <div id="bridge-scene">
+                <div class="temple-goal" title="Relic Temple">🏛️</div>
+                <div id="explorer" class="explorer">🧭</div>
+                <div id="bridge-track" class="bridge-track"></div>
+            </div>
+
+            <!-- Question Card -->
+            <div id="question-card" class="question-card">
+                <div id="q-category" class="q-category">CONTEXT CLUES</div>
+                <div id="q-prompt" class="q-prompt" title="Click to hear question">Press Start to begin your Word Quest!</div>
+                <div id="q-choices" class="q-choices"></div>
+                <div id="q-feedback" class="q-feedback"></div>
+            </div>
+        </main>
+
+        <!-- Start Modal -->
+        <div id="start-screen" class="modal active">
+            <h1 class="quest-title">📖 WORD QUEST</h1>
+            <p class="subtitle">Cross the sky-bridge by solving Context Clues, Synonyms &amp; Antonyms, Parts of Speech, and Prefixes/Suffixes! Press <strong>1–4</strong> or click an answer.</p>
+
+            <div class="selection-row">
+                <div class="selection-container">
+                    <label for="mode-select" class="selection-label">ELA SKILL MODE:</label>
+                    <select id="mode-select" class="quest-select">
+                        <option value="mixed">✨ Mixed ELA Quest (All Skills)</option>
+                        <option value="context">🔍 Context Clues</option>
+                        <option value="synonyms">🔄 Synonyms &amp; Antonyms</option>
+                        <option value="grammar">🏷️ Parts of Speech</option>
+                        <option value="affixes">🧩 Prefixes &amp; Suffixes</option>
+                    </select>
+                </div>
+                <div class="selection-container">
+                    <label for="grade-select" class="selection-label">GRADE LEVEL:</label>
+                    <select id="grade-select" class="quest-select">
+                        <option value="3">🎒 Grade 3</option>
+                        <option value="4">🚀 Grade 4</option>
+                        <option value="5">🎓 Grade 5</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="quest-best-banner" class="best-banner">BEST: 0 PTS | 0% ACC</div>
+            <button id="start-btn" class="quest-btn" type="button">BEGIN QUEST</button>
+            <a href="index.html" class="arcade-link">🏠 Back to Arcade Hub</a>
+        </div>
+
+        <!-- Pause Modal -->
+        <div id="pause-screen" class="modal">
+            <h1 class="quest-title">⏸️ QUEST PAUSED</h1>
+            <p class="subtitle">Press <strong>ESC</strong> or click Resume to continue crossing the bridge.</p>
+            <div class="modal-actions">
+                <button id="resume-btn" class="quest-btn" type="button">RESUME</button>
+                <button id="pause-menu-btn" class="quest-btn secondary" type="button">MAIN MENU</button>
+            </div>
+        </div>
+
+        <!-- Victory / Summary Modal -->
+        <div id="end-screen" class="modal">
+            <h1 class="quest-title">🏆 TEMPLE REACHED!</h1>
+            <p class="subtitle">You built the sky-bridge and mastered the ELA challenges!</p>
+            <div id="new-record-badge" class="new-record-badge" style="display: none;">🌟 NEW HIGH SCORE!</div>
+            <div class="final-score">SCORE: <span id="final-score-val">0</span></div>
+            <div class="final-stats">ACCURACY: <span id="final-acc-val">100%</span> &nbsp;|&nbsp; RELICS: <span id="final-relic-val">0</span></div>
+            <div id="missed-review" class="missed-review"></div>
+            <div class="modal-actions">
+                <button id="restart-btn" class="quest-btn" type="button">PLAY AGAIN</button>
+                <button id="end-menu-btn" class="quest-btn secondary" type="button">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared/audio.js"></script>
+    <script src="shared/profile.js"></script>
+    <script src="word-quest.js"></script>
+</body>
+</html>
