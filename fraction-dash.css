@@ -1,0 +1,358 @@
+:root {
+    --bg-dark: #1a0b12;
+    --panel: #2b121d;
+    --cheese: #ffeb3b;
+    --crust: #e65100;
+    --sauce: #d32f2f;
+    --cyan: #00f0ff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: radial-gradient(circle at top, #4a192c 0%, var(--bg-dark) 75%);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+}
+
+#game-container {
+    width: 95vw;
+    max-width: 900px;
+    height: 88vh;
+    background: var(--panel);
+    border: 4px solid var(--cheese);
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 36px rgba(255, 235, 59, 0.25);
+}
+
+#hud {
+    background: rgba(26, 11, 18, 0.96);
+    border-bottom: 2px solid var(--cheese);
+    padding: 10px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px 14px;
+    font-weight: bold;
+    font-size: 0.94rem;
+    z-index: 10;
+}
+
+.hud-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.control-btn {
+    background: transparent;
+    border: 2px solid var(--cyan);
+    color: var(--cyan);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.82rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.control-btn.active {
+    border-color: var(--cheese);
+    color: var(--cheese);
+}
+
+#kitchen-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px 22px;
+    overflow-y: auto;
+}
+
+.order-ticket {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(0, 0, 0, 0.34);
+    border: 2px solid rgba(255, 235, 59, 0.45);
+    border-radius: 14px;
+    padding: 12px 16px;
+}
+
+.customer-avatar {
+    font-size: 2.4rem;
+}
+
+.order-info {
+    flex: 1;
+}
+
+.order-tag {
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: var(--cyan);
+    margin-bottom: 3px;
+}
+
+.order-prompt {
+    font-size: 1.24rem;
+    font-weight: 800;
+}
+
+.timer-wrap {
+    width: 140px;
+}
+
+.timer-label {
+    font-size: 0.7rem;
+    color: #d7ccc8;
+    margin-bottom: 4px;
+    text-align: right;
+}
+
+.timer-bar-bg {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.timer-bar {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #4caf50, #ffeb3b, #ff5722);
+    transition: width 0.1s linear;
+}
+
+.workspace {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.pizza-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.pizza-svg {
+    width: 220px;
+    height: 220px;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
+}
+
+.pizza-slice {
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.pizza-slice:hover {
+    filter: brightness(1.15);
+}
+
+.pizza-readout {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: var(--cheese);
+    letter-spacing: 2px;
+}
+
+.builder-controls, .compare-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.compare-controls {
+    flex-direction: row;
+    gap: 12px;
+}
+
+.denom-row, .serve-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.denom-btn, .compare-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 235, 59, 0.45);
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.96rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.denom-btn.active {
+    background: var(--cheese);
+    color: #1a0b12;
+}
+
+.compare-btn:hover {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: #050214;
+}
+
+.kitchen-btn {
+    background: var(--cheese);
+    color: #1a0b12;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 1.02rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.kitchen-btn.secondary {
+    background: transparent;
+    color: var(--cyan);
+    border: 2px solid var(--cyan);
+}
+
+.feedback-bar {
+    min-height: 1.4em;
+    text-align: center;
+    font-weight: 800;
+    color: var(--cheese);
+}
+
+/* Modals */
+.modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 8, 14, 0.94);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    text-align: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.pizza-title {
+    font-size: 2.3rem;
+    margin: 0 0 10px;
+    color: var(--cheese);
+}
+
+.subtitle {
+    color: #e2cfd6;
+    max-width: 540px;
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+.selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.selection-label {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #d7ccc8;
+}
+
+.pizza-select {
+    background: #1a0b12;
+    color: #fff;
+    border: 2px solid var(--cyan);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.best-banner {
+    color: var(--cheese);
+    font-weight: 800;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 235, 59, 0.4);
+    margin-bottom: 18px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.arcade-link {
+    margin-top: 14px;
+    color: #d7ccc8;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.final-score {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--cheese);
+    margin-bottom: 6px;
+}
+
+.final-stats {
+    color: #e2cfd6;
+    margin-bottom: 14px;
+}
+
+.missed-review {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.missed-pill {
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: rgba(255, 0, 127, 0.18);
+    border: 1px solid #ff007f;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.new-record-badge {
+    color: var(--cheese);
+    font-weight: 800;
+    margin-bottom: 8px;
+}

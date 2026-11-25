@@ -48,7 +48,7 @@
 ### Game 5: Fraction Pizza Dash (`fraction-dash.html`)
 | ID | Priority | Status | Task | Commit |
 | :--- | :--- | :--- | :--- | :--- |
-| `T3.7` | `P1` | `TODO` | Scaffold `fraction-dash.html`, `fraction-dash.css`, `fraction-dash.js` with interactive SVG pizza/pie slice builder | — |
+| `T3.7` | `P1` | `DONE` | Scaffold `fraction-dash.html`, `fraction-dash.css`, `fraction-dash.js` with interactive SVG pizza/pie slice builder | `done` |
 | `T3.8` | `P1` | `TODO` | Implement Grade 3–5 challenge modes (Build Fraction, Equivalent Fractions, Compare `>`/`<`/`=`) | — |
 | `T3.9` | `P2` | `TODO` | Add customer order timer, combo streaks, star rewards, and register card in `index.html` | — |
 
