@@ -80,6 +80,7 @@ let errors = 0;
 let totalTyped = 0;
 let startTime = null;
 let gameActive = false;
+let missedWords = new Set();
 
 const levelVal = document.getElementById('level-val');
 const stepVal = document.getElementById('step-val');
@@ -99,109 +100,33 @@ const finalWpmVal = document.getElementById('final-wpm-val');
 const finalAccVal = document.getElementById('final-acc-val');
 const newRecordBadge = document.getElementById('new-record-badge');
 
-// --- Cheerful Procedural Chiptune BGM ---
-const DINO_NOTES = {
-    C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00,
-    C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00,
-    C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00
+// --- Cheerful Procedural Chiptune BGM (via shared/audio.js) ---
+const DINO_TRACKS = {
+    main: {
+        bpm: 125,
+        leadWave: 'triangle',
+        bassWave: 'sine',
+        leadVol: 0.035,
+        bassVol: 0.045,
+        drums: false,
+        lead: [
+            'C5', null, 'E5', 'G5', 'A5', null, 'G5', 'E5',
+            'F5', null, 'D5', null, 'E5', 'C5', 'G4', null,
+            'C5', null, 'E5', 'G5', 'A5', 'G5', 'E5', 'D5',
+            'C5', null, 'G4', 'A4', 'C5', null, null, null
+        ],
+        bass: [
+            'C3', 'G3', 'C3', 'G3', 'F3', 'C3', 'C3', 'G3',
+            'F3', 'C3', 'G3', 'D3', 'C3', 'G3', 'C3', null,
+            'C3', 'G3', 'C3', 'G3', 'F3', 'C3', 'G3', 'D3',
+            'C3', 'G3', 'F3', 'G3', 'C3', null, null, null
+        ]
+    }
 };
 
-const DINO_MELODY = [
-    'C5', null, 'E5', 'G5', 'A5', null, 'G5', 'E5',
-    'F5', null, 'D5', null, 'E5', 'C5', 'G4', null,
-    'C5', null, 'E5', 'G5', 'A5', 'G5', 'E5', 'D5',
-    'C5', null, 'G4', 'A4', 'C5', null, null, null
-];
-
-const DINO_BASS = [
-    'C3', 'G3', 'C3', 'G3', 'F3', 'C3', 'C3', 'G3',
-    'F3', 'C3', 'G3', 'D3', 'C3', 'G3', 'C3', null,
-    'C3', 'G3', 'C3', 'G3', 'F3', 'C3', 'G3', 'D3',
-    'C3', 'G3', 'F3', 'G3', 'C3', null, null, null
-];
-
-class BGMController {
+class SoundManager extends window.ArcadeAudio.BaseSoundManager {
     constructor() {
-        this.ctx = null;
-        this.isPlaying = false;
-        this.step = 0;
-        this.timerId = null;
-    }
-
-    setContext(ctx) {
-        this.ctx = ctx;
-    }
-
-    start() {
-        if (this.isPlaying || !this.ctx) return;
-        this.isPlaying = true;
-        this.step = 0;
-        this.playStep();
-        this.timerId = setInterval(() => this.playStep(), 240);
-    }
-
-    stop() {
-        this.isPlaying = false;
-        if (this.timerId) {
-            clearInterval(this.timerId);
-            this.timerId = null;
-        }
-    }
-
-    playStep() {
-        if (!this.isPlaying || !this.ctx || this.ctx.state !== 'running') return;
-        const idx = this.step % DINO_MELODY.length;
-        const now = this.ctx.currentTime;
-
-        const lead = DINO_MELODY[idx];
-        if (lead && DINO_NOTES[lead]) {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(DINO_NOTES[lead], now);
-            gain.gain.setValueAtTime(0.035, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.2);
-        }
-
-        const bass = DINO_BASS[idx];
-        if (bass && DINO_NOTES[bass]) {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(DINO_NOTES[bass], now);
-            gain.gain.setValueAtTime(0.045, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.22);
-        }
-
-        this.step++;
-    }
-}
-
-class SoundManager {
-    constructor() {
-        this.ctx = null;
-        this.soundEnabled = true;
-        this.bgmEnabled = true;
-        this.voiceEnabled = true;
-        this.bgmController = new BGMController();
-    }
-
-    init() {
-        if (!this.ctx) {
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-            this.bgmController.setContext(this.ctx);
-        }
-        if (this.ctx.state === 'suspended') {
-            this.ctx.resume();
-        }
+        super(DINO_TRACKS, 'main');
     }
 
     toggleSound() {
@@ -239,73 +164,16 @@ class SoundManager {
     }
 
     speakSentence(text, force = false) {
-        if ((!this.voiceEnabled && !force) || !('speechSynthesis' in window) || !text) return;
-        try {
-            window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'en-US';
-            utter.rate = 0.92;
-            utter.pitch = 1.05;
-            window.speechSynthesis.speak(utter);
-        } catch {
-            // Ignore speech restrictions
-        }
-    }
-
-    stopSpeech() {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-        }
+        window.ArcadeAudio.speakText(text, {
+            enabled: this.voiceEnabled,
+            force,
+            rate: 0.92,
+            pitch: 1.05
+        });
     }
 
     playType() {
-        if (!this.soundEnabled) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(700 + Math.random() * 260, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.05);
-        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.05);
-    }
-
-    playError() {
-        if (!this.soundEnabled) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(130, this.ctx.currentTime);
-        osc.frequency.linearRampToValueAtTime(70, this.ctx.currentTime + 0.14);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.14);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.14);
-    }
-
-    playFanfare(notes = [523.25, 659.25, 783.99]) {
-        if (!this.soundEnabled) return;
-        this.init();
-        const t = this.ctx.currentTime;
-        notes.forEach((freq, i) => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, t + i * 0.09);
-            gain.gain.setValueAtTime(0.09, t + i * 0.09);
-            gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.09 + 0.22);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(t + i * 0.09);
-            osc.stop(t + i * 0.09 + 0.22);
-        });
+        this.playClick();
     }
 }
 
@@ -414,6 +282,7 @@ function startGame() {
     totalTyped = 0;
     startTime = null;
     gameActive = true;
+    missedWords = new Set();
 
     wpmVal.innerText = '0';
     accuracyVal.innerText = '100';
@@ -481,6 +350,7 @@ function handleKeyPress(e) {
         sounds.playError();
         errors++;
         spans[charIndex].classList.add('char-wrong');
+        recordMissedWordAt(targetSentence, charIndex);
     }
 
     updateStats();
@@ -538,6 +408,17 @@ function nextLevel() {
     loadSentence();
 }
 
+function recordMissedWordAt(sentence, idx) {
+    let start = idx;
+    let end = idx;
+    while (start > 0 && /[a-zA-Z'-]/.test(sentence[start - 1])) start--;
+    while (end < sentence.length && /[a-zA-Z'-]/.test(sentence[end])) end++;
+    const word = sentence.slice(start, end).toLowerCase().replace(/^['-]+|['-]+$/g, '');
+    if (word.length >= 2) {
+        missedWords.add(word);
+    }
+}
+
 function showVictory() {
     gameActive = false;
     sounds.bgmController.stop();
@@ -548,6 +429,17 @@ function showVictory() {
     const finalAcc = getAccuracy();
     const isNewBest = saveBestStats(finalWpm, finalAcc);
     updateBestBanner();
+
+    if (window.ArcadeProfile) {
+        window.ArcadeProfile.recordSession({
+            gameId: 'dino',
+            accuracy: finalAcc,
+            score: finalWpm * 10,
+            wpm: finalWpm,
+            missedItems: Array.from(missedWords),
+            badgeId: 'dino_explorer'
+        });
+    }
 
     finalWpmVal.innerText = finalWpm;
     finalAccVal.innerText = finalAcc;
