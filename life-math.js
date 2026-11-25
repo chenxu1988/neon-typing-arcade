@@ -483,6 +483,15 @@ function finishRound(isCorrect, hint) {
 function startGame() {
     sounds.init();
     if (sounds.playGameStart) sounds.playGameStart('chime');
+    if (window.ArcadeProfile && visualWorkspace) {
+        const eq = window.ArcadeProfile.loadProfile().equipped.life;
+        visualWorkspace.style.border = eq === 'life_gold'
+            ? '2px solid #ffeb3b'
+            : eq === 'life_cyber'
+                ? '2px solid #00f0ff'
+                : '';
+        visualWorkspace.style.borderRadius = eq ? '14px' : '';
+    }
     score = 0;
     roundIdx = 0;
     streak = 0;

@@ -209,10 +209,11 @@
     }
 
     function appendRaider() {
-        const span = document.createElement('span');
-        span.className = 'unit-icon';
-        span.innerText = state.wave % 2 === 0 ? '🐉' : '👺';
-        els.raiderSquad.appendChild(span);
+        const img = document.createElement('img');
+        img.src = 'assets/castle-raider.jpg';
+        img.alt = 'Raider';
+        img.className = 'unit-img';
+        els.raiderSquad.appendChild(img);
     }
 
     function handleAnswer(choice, btnEl) {
@@ -405,6 +406,14 @@
         sound.init();
         if (sound.playGameStart) sound.playGameStart('horn');
         if (sound.bgmEnabled && sound.bgmController) sound.bgmController.start();
+        if (window.ArcadeProfile && els.playerCastle) {
+            const eq = window.ArcadeProfile.loadProfile().equipped.castle;
+            els.playerCastle.style.boxShadow = eq === 'castle_dragon'
+                ? '0 0 18px rgba(255, 87, 34, 0.8)'
+                : eq === 'castle_paladin'
+                    ? '0 0 18px rgba(255, 224, 130, 0.8)'
+                    : '';
+        }
 
         state.running = true;
         state.paused = false;

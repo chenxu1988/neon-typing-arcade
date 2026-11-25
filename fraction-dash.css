@@ -78,6 +78,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     padding: 16px 22px;
+    background: linear-gradient(rgba(26, 11, 18, 0.58), rgba(26, 11, 18, 0.74)), url('assets/pizza-bg.jpg') center/cover no-repeat;
     overflow-y: auto;
 }
 
