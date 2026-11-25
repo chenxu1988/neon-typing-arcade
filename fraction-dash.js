@@ -477,6 +477,7 @@ document.getElementById('start-btn').addEventListener('click', startGame);
 document.getElementById('restart-btn').addEventListener('click', startGame);
 document.getElementById('pause-menu-btn').addEventListener('click', returnToMenu);
 document.getElementById('end-menu-btn').addEventListener('click', returnToMenu);
+document.getElementById('hud-pause-btn').addEventListener('click', (e) => { togglePause(); e.currentTarget.blur(); });
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
 

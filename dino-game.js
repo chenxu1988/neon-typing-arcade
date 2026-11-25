@@ -505,6 +505,7 @@ practiceMissedBtn.addEventListener('click', () => startGame(lastMissedWords));
 document.getElementById('resume-btn').addEventListener('click', togglePause);
 document.getElementById('pause-menu-btn').addEventListener('click', returnToMenu);
 document.getElementById('victory-menu-btn').addEventListener('click', returnToMenu);
+document.getElementById('hud-pause-btn').addEventListener('click', (e) => { togglePause(); e.currentTarget.blur(); });
 document.getElementById('voice-toggle').addEventListener('click', () => sounds.toggleVoice());
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());

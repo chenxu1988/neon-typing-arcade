@@ -1783,6 +1783,7 @@ resumeBtn.addEventListener('click', () => {
 gameoverMenuBtn.addEventListener('click', returnToMenu);
 pauseMenuBtn.addEventListener('click', returnToMenu);
 
+document.getElementById('hud-pause-btn').addEventListener('click', (e) => { togglePause(); e.currentTarget.blur(); });
 document.getElementById('voice-toggle').addEventListener('click', () => sounds.toggleVoice());
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
