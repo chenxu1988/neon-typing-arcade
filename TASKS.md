@@ -10,7 +10,7 @@
 
 | ID | Priority | Status | Task | Commit |
 | :--- | :--- | :--- | :--- | :--- |
-| `T1.1` | `P0` | `TODO` | Create `shared/audio.js` with unified `SoundManager`, `ChiptuneSequencer`, and `speakText()` (file:// compatible) | — |
+| `T1.1` | `P0` | `DONE` | Create `shared/audio.js` with unified `SoundManager`, `ChiptuneSequencer`, and `speakText()` (file:// compatible) | `done` |
 | `T1.2` | `P0` | `TODO` | Create `shared/profile.js` for unified `localStorage` (`arcadeProfile`: stars, badges, streak, per-game stats, missed items) | — |
 | `T1.3` | `P0` | `TODO` | Create `shared/ui.css` with shared modals, HUD pills, badge styles, and responsive breakpoints | — |
 | `T1.4` | `P1` | `TODO` | Create `shared/touch-keyboard.js` (collapsible on-screen QWERTY + 0–9 keypad for tablets/Chromebooks) | — |
