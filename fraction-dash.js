@@ -302,10 +302,28 @@ function loadNextOrder() {
     }
 }
 
+function buildMiniPizzaSVG(num, denom) {
+    let slices = '';
+    const r = 40;
+    for (let i = 0; i < denom; i++) {
+        const a1 = (i / denom) * Math.PI * 2 - Math.PI / 2;
+        const a2 = ((i + 1) / denom) * Math.PI * 2 - Math.PI / 2;
+        const x1 = Math.cos(a1) * r;
+        const y1 = Math.sin(a1) * r;
+        const x2 = Math.cos(a2) * r;
+        const y2 = Math.sin(a2) * r;
+        const largeArc = (a2 - a1) > Math.PI ? 1 : 0;
+        const fill = i < num ? '#ffeb3b' : '#4a2030';
+        slices += `<path d="M 0 0 L ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 ${largeArc} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${fill}" stroke="#2b121d" stroke-width="2"/>`;
+    }
+    return `<svg class="mini-pizza-svg" viewBox="-46 -46 92 92"><circle cx="0" cy="0" r="44" fill="#e65100"/>${slices}</svg>`;
+}
+
 function handleOrderResult(isCorrect, hintText) {
     orderLocked = true;
     clearInterval(timerInterval);
     totalAttempts++;
+    let delayMs = 1150;
     if (isCorrect) {
         sounds.playSuccess();
         streak++;
@@ -316,11 +334,27 @@ function handleOrderResult(isCorrect, hintText) {
         wrongAttempts++;
         streak = 0;
         missedOrders.add(currentOrder.label);
-        feedbackBar.innerText = `❌ ${hintText}`;
+        feedbackBar.innerHTML = `<div>❌ ${hintText}</div>`;
+        if (currentOrder.type === 'equiv') {
+            const targetNum = (currentOrder.num * currentOrder.targetDenom) / currentOrder.denom;
+            feedbackBar.innerHTML += `<div class="equiv-viz-row">
+                <div class="mini-pizza-box">${buildMiniPizzaSVG(currentOrder.num, currentOrder.denom)}<span>${currentOrder.num}/${currentOrder.denom}</span></div>
+                <span>=</span>
+                <div class="mini-pizza-box">${buildMiniPizzaSVG(targetNum, currentOrder.targetDenom)}<span>${targetNum}/${currentOrder.targetDenom}</span></div>
+            </div>`;
+            delayMs = 2000;
+        } else if (currentOrder.type === 'compare') {
+            feedbackBar.innerHTML += `<div class="equiv-viz-row">
+                <div class="mini-pizza-box">${buildMiniPizzaSVG(currentOrder.a[0], currentOrder.a[1])}<span>${currentOrder.a[0]}/${currentOrder.a[1]}</span></div>
+                <span>${currentOrder.op}</span>
+                <div class="mini-pizza-box">${buildMiniPizzaSVG(currentOrder.b[0], currentOrder.b[1])}<span>${currentOrder.b[0]}/${currentOrder.b[1]}</span></div>
+            </div>`;
+            delayMs = 2000;
+        }
     }
     updateHUD();
     orderIndex++;
-    setTimeout(loadNextOrder, 1150);
+    setTimeout(loadNextOrder, delayMs);
 }
 
 function servePizzaOrder() {

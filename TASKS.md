@@ -65,7 +65,7 @@
 | `T4.5` | `P1` | `DONE` | Add Star Shop catalog (`unlocks`, `equipped`, `purchaseItem`, `equipItem`) to `shared/profile.js` + Star Shop modal in `index.html` | `done` |
 | `T4.6` | `P1` | `DONE` | Wire equipped Star Shop cosmetics into Plane (aura/trail), Dino (hats), Word Quest (avatars), and Fraction Dash (toppings) | `done` |
 | `T4.7` | `P1` | `DONE` | Expand `word-quest.js` bank to 60+ LAUSD Grade 3–5 questions + add visual dot-array grid in `astro-math.js` | `done` |
-| `T4.8` | `P1` | `TODO` | Add side-by-side Equivalence Visualizer in `fraction-dash.js` on missed Equivalent/Compare orders | — |
+| `T4.8` | `P1` | `DONE` | Add side-by-side Equivalence Visualizer in `fraction-dash.js` on missed Equivalent/Compare orders | `done` |
 
 ---
 
