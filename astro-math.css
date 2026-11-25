@@ -217,6 +217,23 @@ body {
     opacity: 1;
 }
 
+.array-grid-hint {
+    display: inline-grid;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.array-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--neon-blue);
+    box-shadow: 0 0 6px var(--neon-blue);
+}
+
 /* Answer Dock */
 #answer-dock {
     position: absolute;

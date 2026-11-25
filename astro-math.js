@@ -61,13 +61,12 @@ function generateMathProblem(topic) {
     if (topic === 'multiply') {
         const a = Math.floor(Math.random() * 11);
         const b = Math.floor(Math.random() * 11);
-        const visualGroup = (a > 0 && a <= 5 && b > 0 && b <= 6)
-            ? ` (${Array(a).fill('●'.repeat(b)).join(' | ')})`
-            : '';
         return {
             text: `${a} × ${b} = ?`,
             answer: a * b,
-            hint: `Hint: ${a} groups of ${b}${visualGroup}`
+            rows: a,
+            cols: b,
+            hint: `Hint: ${a} rows of ${b} dots`
         };
     }
     if (topic === 'divide') {
@@ -77,6 +76,8 @@ function generateMathProblem(topic) {
         return {
             text: `${a} ÷ ${b} = ?`,
             answer: ans,
+            rows: b,
+            cols: ans,
             hint: `Hint: Think ${b} × ? = ${a}`
         };
     }
@@ -188,12 +189,28 @@ function updateStatsUI() {
     comboHud.classList.toggle('active', combo > 0);
 }
 
-function showHint(text) {
+function showHint(text, rows = 0, cols = 0) {
     if (!text) return;
-    hintBanner.innerText = text;
+    hintBanner.innerHTML = '';
+    const msg = document.createElement('div');
+    msg.innerText = text;
+    hintBanner.appendChild(msg);
+
+    if (rows > 0 && cols > 0 && rows <= 6 && cols <= 10) {
+        const grid = document.createElement('div');
+        grid.className = 'array-grid-hint';
+        grid.style.gridTemplateColumns = `repeat(${cols}, 10px)`;
+        for (let i = 0; i < rows * cols; i++) {
+            const dot = document.createElement('span');
+            dot.className = 'array-dot';
+            grid.appendChild(dot);
+        }
+        hintBanner.appendChild(grid);
+    }
+
     hintBanner.classList.add('active');
     if (hintTimeout) clearTimeout(hintTimeout);
-    hintTimeout = setTimeout(() => hintBanner.classList.remove('active'), 3200);
+    hintTimeout = setTimeout(() => hintBanner.classList.remove('active'), 3600);
 }
 
 function spawnFloatingText(x, y, text) {
@@ -275,6 +292,8 @@ function spawnMeteor() {
         id,
         text: prob.text,
         answer: prob.answer,
+        rows: prob.rows || 0,
+        cols: prob.cols || 0,
         hint: prob.hint,
         element: el,
         x: xPercent,
@@ -442,7 +461,7 @@ function submitAnswer() {
         if (meteors.length > 0) {
             const lowest = [...meteors].sort((a, b) => b.y - a.y)[0];
             missedFacts.set(lowest.text, (missedFacts.get(lowest.text) || 0) + 1);
-            showHint(lowest.hint);
+            showHint(lowest.hint, lowest.rows, lowest.cols);
         }
     }
 
