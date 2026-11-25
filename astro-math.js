@@ -254,6 +254,16 @@ function fireLaserAt(meteorEl) {
 
     const beam = document.createElement('div');
     beam.className = 'laser-beam';
+    if (window.ArcadeProfile) {
+        const eq = window.ArcadeProfile.loadProfile().equipped.astro;
+        if (eq === 'astro_plasma') {
+            beam.style.background = 'linear-gradient(90deg, #ff007f, #00f0ff)';
+            beam.style.boxShadow = '0 0 14px #ff007f';
+        } else if (eq === 'astro_nova') {
+            beam.style.background = 'linear-gradient(90deg, #fffb00, #39ff14)';
+            beam.style.boxShadow = '0 0 16px #fffb00';
+        }
+    }
     beam.style.left = `${x1}px`;
     beam.style.top = `${y1}px`;
     beam.style.width = `${dist}px`;
@@ -301,7 +311,7 @@ function spawnMeteor() {
     el.className = 'meteor-card';
     el.style.left = `${xPercent}%`;
     el.style.top = `${yPx}px`;
-    el.innerHTML = `<span class="meteor-icon">☄️</span><span class="meteor-eq">${prob.text}</span>`;
+    el.innerHTML = `<img src="assets/astro-meteor.jpg" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid #00f0ff;" alt=""><span class="meteor-eq">${prob.text}</span>`;
     meteorsContainer.appendChild(el);
 
     meteors.push({

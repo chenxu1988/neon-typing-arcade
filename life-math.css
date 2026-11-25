@@ -76,6 +76,7 @@ body {
     align-items: center;
     padding: 16px 22px;
     gap: 12px;
+    background: linear-gradient(rgba(9, 26, 22, 0.6), rgba(9, 26, 22, 0.78)), url('assets/life-bg.jpg') center/cover no-repeat;
     overflow-y: auto;
 }
 

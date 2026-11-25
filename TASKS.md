@@ -86,12 +86,12 @@
 - [x] `TRIAGE-10` (`P0`): Add multi-student profile login (name only, no password) + JSON Export/Import in `shared/profile.js` and `index.html`.
 - [ ] `TRIAGE-11` (`P2`, `FEN-17`): Future Game — **Reading Comprehension** (short Grade 3–5 passages with main idea, inference, and evidence).
 - [ ] `TRIAGE-12` (`P2`, `FEN-18`): Future Game — **Logic & Number Patterns** (sequences, input/output tables, shape reasoning).
-- [ ] `TRIAGE-13` (`P2`): Art Upgrade (**Astro Math Defense** `astro-math.html`) — Replace CSS/emoji ship, meteors, Calculator Mothership boss, and space backdrop with AI-generated PNG sprites/backgrounds (`assets/`) + Hub card preview.
-- [ ] `TRIAGE-14` (`P2`): Art Upgrade (**Word Quest** `word-quest.html`) — Add AI-generated explorer avatar, sky-bridge/temple background, and Hub card preview (`assets/`).
-- [ ] `TRIAGE-15` (`P2`): Art Upgrade (**Fraction Pizza Dash** `fraction-dash.html`) — Keep interactive `<svg>` pizza cutter, add AI-generated pizzeria background, customer portraits, and Hub card preview (`assets/`).
-- [ ] `TRIAGE-16` (`P2`): Art Upgrade (**Science Explorer** `science-explorer.html`) — Keep dynamic `<svg>` STEM diagrams, add AI-generated Science Rover sprite, alien/lab expedition backdrop, and Hub card preview (`assets/`).
-- [ ] `TRIAGE-17` (`P2`): Art Upgrade (**Time, Money & Area Dash** `life-math.html`) — Keep interactive `<svg>` analog clock, add AI-generated shop/workshop backdrop, mascot/coin art, and Hub card preview (`assets/`).
-- [ ] `TRIAGE-18` (`P2`): Art Upgrade (**Castle Siege** `castle-siege.html`) — Added AI battlefield BG (`castle-bg.jpg`), castles (`castle-player.jpg`, `castle-enemy.jpg`), Knight (`castle-knight.jpg`), and Hub preview; Raider sprite (`castle-raider.jpg`) pending image-gen quota reset.
+- [x] `TRIAGE-13` (`P2`): Art Upgrade (**Astro Math Defense** `astro-math.html`) — Replace CSS/emoji ship, meteors, Calculator Mothership boss, and space backdrop with AI-generated PNG sprites/backgrounds (`assets/`) + Hub card preview.
+- [x] `TRIAGE-14` (`P2`): Art Upgrade (**Word Quest** `word-quest.html`) — Add AI-generated explorer avatar, sky-bridge/temple background, and Hub card preview (`assets/`).
+- [x] `TRIAGE-15` (`P2`): Art Upgrade (**Fraction Pizza Dash** `fraction-dash.html`) — Keep interactive `<svg>` pizza cutter, add AI-generated pizzeria background, customer portraits, and Hub card preview (`assets/`).
+- [x] `TRIAGE-16` (`P2`): Art Upgrade (**Science Explorer** `science-explorer.html`) — Keep dynamic `<svg>` STEM diagrams, add AI-generated Science Rover sprite, alien/lab expedition backdrop, and Hub card preview (`assets/`).
+- [x] `TRIAGE-17` (`P2`): Art Upgrade (**Time, Money & Area Dash** `life-math.html`) — Keep interactive `<svg>` analog clock, add AI-generated shop/workshop backdrop, mascot/coin art, and Hub card preview (`assets/`).
+- [x] `TRIAGE-18` (`P2`): Art Upgrade (**Castle Siege** `castle-siege.html`) — Added AI battlefield BG (`castle-bg.jpg`), castles (`castle-player.jpg`, `castle-enemy.jpg`), Knight (`castle-knight.jpg`), Raider sprite (`castle-raider.jpg`), and Hub preview.
 
 ---
 
@@ -121,4 +121,4 @@
 | `T6.9` | `FEN-13` | `P1` | `DONE` | Polish `fraction-dash.js` & `db/fraction-bank.js`: fix uncut reset, show both pizzas side-by-side during Compare, add Grade 3–5 scaling, deduplicate orders, and add `1–3`/`Enter` keys | `done` |
 | `T6.10` | `FEN-14` | `P1` | `DONE` | Polish `life-math.js`: enforce contiguous shapes in `area_build`, add single-coin undo, add perimeter side-length labels, and add Grade 3–5 scaling + TTS | `done` |
 | `T6.11` | `FEN-15` | `P1` | `DONE` | Upgrade `astro-math.js` (scale dot-array hints to `12×12` + multi-shot/shielded Calculator Boss) and `plane-game.js` (add 3-Stage Victory milestone + optional Endless mode) | `done` |
-| `T6.12` | `FEN-16` | `P2` | `TODO` | Complete Star Shop cosmetics for `astro-math`, `science-explorer`, `life-math`, and `castle-siege`, plus remaining AI art upgrades (`TRIAGE-13`–`TRIAGE-18`) | — |
+| `T6.12` | `FEN-16` | `P2` | `DONE` | Complete Star Shop cosmetics for `astro-math`, `science-explorer`, `life-math`, and `castle-siege`, plus remaining AI art upgrades (`TRIAGE-13`–`TRIAGE-18`) | `done` |

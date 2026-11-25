@@ -75,6 +75,7 @@ body {
     justify-content: space-between;
     gap: 14px;
     padding: 16px 22px 20px;
+    background: linear-gradient(rgba(4, 21, 31, 0.58), rgba(4, 21, 31, 0.75)), url('assets/science-bg.jpg') center/cover no-repeat;
     overflow-y: auto;
 }
 

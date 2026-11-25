@@ -209,10 +209,17 @@ function handleChoice(btn, choice) {
 }
 
 function applyExplorerAvatar() {
-    if (!window.ArcadeProfile) return;
+    if (!window.ArcadeProfile) {
+        explorer.innerHTML = '<img src="assets/quest-explorer.jpg" style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid #ffeb3b;" alt="Explorer">';
+        return;
+    }
     const map = { exp_wizard: '🧙', exp_knight: '🛡️' };
     const eq = window.ArcadeProfile.loadProfile().equipped.explorer;
-    explorer.innerText = map[eq] || '🧭';
+    if (map[eq]) {
+        explorer.innerText = map[eq];
+    } else {
+        explorer.innerHTML = '<img src="assets/quest-explorer.jpg" style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid #ffeb3b;" alt="Explorer">';
+    }
 }
 
 function startGame() {

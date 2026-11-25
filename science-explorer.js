@@ -296,6 +296,14 @@ function handleAnswer(btn, choice) {
 function startGame() {
     sounds.init();
     if (sounds.playGameStart) sounds.playGameStart('sonar');
+    if (window.ArcadeProfile && rover) {
+        const eq = window.ArcadeProfile.loadProfile().equipped.science;
+        const img = rover.querySelector('img');
+        if (img) {
+            img.style.borderColor = eq === 'sci_gold' ? '#ffca28' : eq === 'sci_turbo' ? '#76ff03' : '#00e5ff';
+            img.style.boxShadow = eq === 'sci_gold' ? '0 0 14px #ffca28' : eq === 'sci_turbo' ? '0 0 14px #76ff03' : '';
+        }
+    }
     score = 0;
     stopsDone = 0;
     discoveries = 0;

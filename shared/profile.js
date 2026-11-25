@@ -28,7 +28,15 @@
         { id: 'exp_wizard', category: 'explorer', icon: '🧙', name: 'Word Wizard', cost: 4 },
         { id: 'exp_knight', category: 'explorer', icon: '🛡️', name: 'Grammar Knight', cost: 6 },
         { id: 'pizza_mushroom', category: 'pizza', icon: '🍄', name: 'Mushroom Deluxe', cost: 3 },
-        { id: 'pizza_star', category: 'pizza', icon: '⭐', name: 'Golden Star Pie', cost: 6 }
+        { id: 'pizza_star', category: 'pizza', icon: '⭐', name: 'Golden Star Pie', cost: 6 },
+        { id: 'astro_plasma', category: 'astro', icon: '⚡', name: 'Plasma Laser', cost: 4 },
+        { id: 'astro_nova', category: 'astro', icon: '🌟', name: 'Nova Beam', cost: 7 },
+        { id: 'sci_turbo', category: 'science', icon: '🔋', name: 'Turbo Rover', cost: 4 },
+        { id: 'sci_gold', category: 'science', icon: '🛸', name: 'Astro Rover', cost: 7 },
+        { id: 'life_gold', category: 'life', icon: '🪙', name: 'Golden Clock', cost: 4 },
+        { id: 'life_cyber', category: 'life', icon: '💎', name: 'Neon Clock', cost: 7 },
+        { id: 'castle_paladin', category: 'castle', icon: '⚔️', name: 'Paladin Crest', cost: 4 },
+        { id: 'castle_dragon', category: 'castle', icon: '🐉', name: 'Dragon Banner', cost: 7 }
     ];
 
     function getLocalDateKey(date = new Date()) {
@@ -43,7 +51,7 @@
             stars: 0,
             badges: [],
             unlocks: [],
-            equipped: { plane: null, dino: null, explorer: null, pizza: null },
+            equipped: { plane: null, dino: null, explorer: null, pizza: null, astro: null, science: null, life: null, castle: null },
             streak: { count: 0, lastPlayDate: null },
             sessions: { count: 0, lastPlayedAt: null },
             games: {},
@@ -59,7 +67,7 @@
             ...parsed,
             streak: { count: 0, lastPlayDate: null, ...(parsed.streak || {}) },
             sessions: { count: 0, lastPlayedAt: null, ...(parsed.sessions || {}) },
-            equipped: { plane: null, dino: null, explorer: null, pizza: null, ...(parsed.equipped || {}) },
+            equipped: { plane: null, dino: null, explorer: null, pizza: null, astro: null, science: null, life: null, castle: null, ...(parsed.equipped || {}) },
             games: parsed.games || {},
             badges: Array.isArray(parsed.badges) ? parsed.badges : [],
             unlocks: Array.isArray(parsed.unlocks) ? parsed.unlocks : [],
