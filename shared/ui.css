@@ -1,0 +1,204 @@
+/* Shared UI tokens, pills, badges, modals, and responsive helpers for Neon Typing Arcade */
+:root {
+    --arcade-bg: #070314;
+    --arcade-card: #0f0a2a;
+    --arcade-blue: #00f0ff;
+    --arcade-pink: #ff007f;
+    --arcade-yellow: #ffeb3b;
+    --arcade-green: #39ff14;
+    --arcade-red: #ff073a;
+    --arcade-text: #ffffff;
+    --arcade-muted: #b4b0d6;
+}
+
+/* HUD & Stat Pills */
+.arcade-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    background: rgba(0, 240, 255, 0.08);
+    color: var(--arcade-blue);
+}
+
+.arcade-star-pill {
+    border-color: rgba(255, 235, 59, 0.5);
+    background: rgba(255, 235, 59, 0.1);
+    color: var(--arcade-yellow);
+}
+
+.arcade-streak-pill {
+    border-color: rgba(255, 0, 127, 0.5);
+    background: rgba(255, 0, 127, 0.12);
+    color: #ff80ab;
+}
+
+/* Badges */
+.arcade-badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.arcade-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 235, 59, 0.45);
+    background: rgba(255, 235, 59, 0.1);
+    color: #fff;
+    transition: transform 0.15s ease;
+}
+
+.arcade-badge.unlocked:hover {
+    transform: translateY(-2px);
+}
+
+.arcade-badge.locked {
+    opacity: 0.42;
+    filter: grayscale(85%);
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Filter Tabs */
+.arcade-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.arcade-tab {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(0, 240, 255, 0.35);
+    color: var(--arcade-muted);
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.arcade-tab:hover {
+    border-color: var(--arcade-blue);
+    color: #fff;
+}
+
+.arcade-tab.active {
+    background: var(--arcade-blue);
+    border-color: var(--arcade-blue);
+    color: #050214;
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.45);
+}
+
+/* Shared Buttons */
+.arcade-btn {
+    background: transparent;
+    border: 2px solid var(--arcade-blue);
+    color: var(--arcade-blue);
+    padding: 9px 18px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.arcade-btn:hover {
+    background: var(--arcade-blue);
+    color: #050214;
+    box-shadow: 0 0 18px rgba(0, 240, 255, 0.45);
+}
+
+.arcade-btn.secondary {
+    border-color: var(--arcade-pink);
+    color: var(--arcade-pink);
+}
+
+.arcade-btn.secondary:hover {
+    background: var(--arcade-pink);
+    color: #fff;
+    box-shadow: 0 0 18px rgba(255, 0, 127, 0.45);
+}
+
+/* Shared Modal Overlay */
+.arcade-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 2, 18, 0.86);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.arcade-modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.arcade-modal-card {
+    width: min(640px, 100%);
+    max-height: 85vh;
+    overflow-y: auto;
+    background: var(--arcade-card);
+    border: 2px solid var(--arcade-blue);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 0 36px rgba(0, 240, 255, 0.28);
+    color: #fff;
+}
+
+.arcade-report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.arcade-stat-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+}
+
+.arcade-stat-box .label {
+    font-size: 0.78rem;
+    color: var(--arcade-muted);
+    margin-bottom: 4px;
+}
+
+.arcade-stat-box .value {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--arcade-yellow);
+}
+
+@media (max-width: 640px) {
+    .arcade-modal-card {
+        padding: 18px;
+    }
+    .arcade-tab {
+        padding: 6px 12px;
+        font-size: 0.82rem;
+    }
+}
