@@ -40,6 +40,10 @@ Welcome to **Neon Typing Arcade** — a zero-build educational game suite for LA
 * **Grade 3–5 Practical Math**: Analog clock reading, coin/change counting, and unit-square Area & Perimeter.
 * **Gameplay**: Interactive SVG clock, clickable coin builder, and `6×6` unit-square grid.
 
+### 9. 🏰 Castle Siege (`castle-siege.html`)
+* **Grade 3–5 Social Studies**: Geography & Maps, California & U.S. History, and Civics & Government.
+* **Gameplay**: 20-second timed waves to summon Knights, clash animation against incoming Raiders, `100 HP` castles, `1s` wrong-answer cooldown with fact explanations, and Web Speech read-aloud.
+
 ---
 
 ## 🧱 Shared Architecture (`shared/`)

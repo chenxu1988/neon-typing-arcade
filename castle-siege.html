@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Castle Siege — LAUSD Grade 3–5 History, Geography &amp; Civics</title>
+    <link rel="stylesheet" href="shared/ui.css">
+    <link rel="stylesheet" href="castle-siege.css">
+</head>
+<body>
+    <div id="game-container">
+        <header id="hud">
+            <div class="hud-item">WAVE: <span id="wave-val">1</span></div>
+            <div class="hud-item">⏱️ TIME: <span id="timer-val">20s</span></div>
+            <div class="hud-item">SCORE: <span id="score-val">0</span></div>
+            <div class="hud-item">ACC: <span id="acc-val">100%</span></div>
+            <div class="hud-controls">
+                <button id="voice-toggle" class="control-btn active" type="button">🗣️ Voice: On</button>
+                <button id="bgm-toggle" class="control-btn active" type="button">🎵 Music: On</button>
+                <button id="sound-toggle" class="control-btn active" type="button">🔊 Sound: On</button>
+                <button id="hud-pause-btn" class="control-btn" type="button" title="Pause (ESC)">⏸️</button>
+                <a href="index.html" class="control-btn" style="text-decoration: none;" title="Arcade Hub">🏠 Hub</a>
+            </div>
+        </header>
+
+        <main id="siege-stage">
+            <!-- Medieval Battlefield -->
+            <section class="battlefield" aria-label="Castle Siege Battlefield">
+                <div class="castle-side left">
+                    <div class="castle-label">🏰 YOUR CASTLE</div>
+                    <div class="hp-bar-wrap">
+                        <div id="player-hp-bar" class="hp-bar player" style="width: 100%;"></div>
+                    </div>
+                    <div id="player-hp-text" class="hp-text">100 / 100 HP</div>
+                    <div class="castle-sprite" id="player-castle">🏰</div>
+                    <div class="squad-count player">⚔️ Knights: <span id="knight-count">0</span></div>
+                </div>
+
+                <div class="arena-lane">
+                    <div id="wave-banner" class="wave-banner">SUMMON KNIGHTS!</div>
+                    <div class="troop-lanes">
+                        <div id="knight-squad" class="troop-squad left" aria-label="Your Knights"></div>
+                        <div id="clash-spark" class="clash-spark" aria-hidden="true">💥</div>
+                        <div id="raider-squad" class="troop-squad right" aria-label="Enemy Raiders"></div>
+                    </div>
+                </div>
+
+                <div class="castle-side right">
+                    <div class="castle-label">🌋 RAIDER KEEP</div>
+                    <div class="hp-bar-wrap">
+                        <div id="enemy-hp-bar" class="hp-bar enemy" style="width: 100%;"></div>
+                    </div>
+                    <div id="enemy-hp-text" class="hp-text">100 / 100 HP</div>
+                    <div class="castle-sprite" id="enemy-castle">🏯</div>
+                    <div class="squad-count enemy">🐉 Raiders: <span id="raider-count">0</span></div>
+                </div>
+            </section>
+
+            <!-- Question Command Panel -->
+            <section class="command-panel">
+                <div class="q-header">
+                    <span id="q-topic" class="q-topic">HISTORY &amp; CIVICS</span>
+                    <span id="cooldown-pill" class="cooldown-pill hidden">⏳ Cooldown 1s...</span>
+                </div>
+                <div id="q-prompt" class="q-prompt" title="Click to hear question">Press Start to defend your castle!</div>
+                <div id="q-choices" class="q-choices"></div>
+                <div id="q-feedback" class="q-feedback"></div>
+            </section>
+        </main>
+
+        <!-- Start Modal -->
+        <div id="start-screen" class="modal active">
+            <h1 class="siege-title">🏰 CASTLE SIEGE</h1>
+            <p class="subtitle">Answer History, Geography &amp; Civics questions in <strong>20-second waves</strong> to summon Knights! Outnumber the Raiders when the horn blows to smash their Keep. Press <strong>1–4</strong> or click.</p>
+
+            <div class="selection-row">
+                <div class="selection-container">
+                    <label for="topic-select" class="selection-label">SUBJECT:</label>
+                    <select id="topic-select" class="siege-select">
+                        <option value="mixed">✨ Mixed Social Studies</option>
+                        <option value="geo">🗺️ Geography &amp; Maps</option>
+                        <option value="history">📜 History &amp; Landmarks</option>
+                        <option value="civics">🏛️ Civics &amp; Government</option>
+                    </select>
+                </div>
+                <div class="selection-container">
+                    <label for="grade-select" class="selection-label">GRADE:</label>
+                    <select id="grade-select" class="siege-select">
+                        <option value="3">🎒 Grade 3</option>
+                        <option value="4">🚀 Grade 4</option>
+                        <option value="5">🎓 Grade 5</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="siege-best-banner" class="best-banner">BEST: 0 PTS | 0% ACC</div>
+            <button id="start-btn" class="siege-btn" type="button">SOUND THE HORN</button>
+            <a href="index.html" class="arcade-link">🏠 Back to Arcade Hub</a>
+        </div>
+
+        <!-- Pause Modal -->
+        <div id="pause-screen" class="modal">
+            <h1 class="siege-title" style="color: #ffe082;">⏸️ SIEGE PAUSED</h1>
+            <p class="subtitle">Take a breather! Your castle and Knights are holding the line.</p>
+            <button id="resume-btn" class="siege-btn" type="button">RESUME BATTLE</button>
+            <a href="index.html" class="arcade-link">🏠 Back to Arcade Hub</a>
+        </div>
+
+        <!-- End Modal -->
+        <div id="end-screen" class="modal">
+            <h1 id="end-title" class="siege-title">🏆 VICTORY!</h1>
+            <p id="end-subtitle" class="subtitle"></p>
+            <div class="end-stats">
+                <div class="stat-pill">WAVES: <span id="end-waves">0</span></div>
+                <div class="stat-pill">SCORE: <span id="end-score">0</span></div>
+                <div class="stat-pill">ACCURACY: <span id="end-acc">100%</span></div>
+                <div class="stat-pill">STARS EARNED: <span id="end-stars">+0 ⭐</span></div>
+            </div>
+            <div id="end-missed-wrap" class="missed-review hidden">
+                <div class="missed-title">Facts to Review:</div>
+                <div id="end-missed-list" class="missed-items"></div>
+            </div>
+            <div style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
+                <button id="restart-btn" class="siege-btn" type="button">NEW SIEGE</button>
+            </div>
+            <a href="index.html" class="arcade-link">🏠 Back to Arcade Hub</a>
+        </div>
+    </div>
+
+    <script src="shared/audio.js"></script>
+    <script src="shared/profile.js"></script>
+    <script src="db/history-bank.js"></script>
+    <script src="castle-siege.js"></script>
+</body>
+</html>

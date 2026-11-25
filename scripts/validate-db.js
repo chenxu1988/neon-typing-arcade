@@ -8,7 +8,7 @@ const dbDir = path.join(__dirname, '..', 'db');
 const sandbox = { window: {} };
 sandbox.global = sandbox;
 
-for (const file of ['ela-words.js', 'dino-sentences.js', 'word-quest-bank.js', 'science-bank.js', 'fraction-bank.js']) {
+for (const file of ['ela-words.js', 'dino-sentences.js', 'word-quest-bank.js', 'science-bank.js', 'fraction-bank.js', 'history-bank.js']) {
     const code = fs.readFileSync(path.join(dbDir, file), 'utf8');
     vm.runInNewContext(code, sandbox, { filename: file });
 }
@@ -33,8 +33,8 @@ for (const w of g4) {
     if (g5.has(w)) fail(`elaWords overlap G4 & G5: ${w}`);
 }
 
-// 2. Check Word Quest & Science Explorer banks
-for (const [name, bank] of [['wordQuestBank', db.wordQuestBank], ['scienceBank', db.scienceBank]]) {
+// 2. Check Word Quest, Science Explorer & Castle Siege banks
+for (const [name, bank] of [['wordQuestBank', db.wordQuestBank], ['scienceBank', db.scienceBank], ['historyBank', db.historyBank]]) {
     const seenPrompts = new Set();
     bank.forEach((q, idx) => {
         if (![3, 4, 5].includes(q.grade)) fail(`${name}[${idx}] invalid grade: ${q.grade}`);
@@ -61,6 +61,6 @@ if (failures > 0) {
 }
 console.log(
     `DB OK: elaWords(G3:${g3.size}, G4:${g4.size}, G5:${g5.size}), ` +
-    `wordQuest(${db.wordQuestBank.length}), science(${db.scienceBank.length}), ` +
+    `wordQuest(${db.wordQuestBank.length}), science(${db.scienceBank.length}), history(${db.historyBank.length}), ` +
     `fractions(build:${db.fractionBank.build.length}, equiv:${db.fractionBank.equiv.length}, cmp:${db.fractionBank.compare.length})`
 );

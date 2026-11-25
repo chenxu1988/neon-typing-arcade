@@ -14,6 +14,7 @@
         { id: 'fraction_chef', icon: '🍕', name: 'Fraction Chef', desc: 'Complete a Fraction Dash run' },
         { id: 'science_whiz', icon: '🔬', name: 'Science Whiz', desc: 'Complete a Science Explorer expedition' },
         { id: 'time_master', icon: '⏰', name: 'Time & Money Pro', desc: 'Complete a Time, Money & Area Dash run' },
+        { id: 'castle_hero', icon: '🏰', name: 'Castle Defender', desc: 'Win a Castle Siege battle' },
         { id: 'streak_3', icon: '🔥', name: '3-Day Streak', desc: 'Play on 3 consecutive days' }
     ];
 

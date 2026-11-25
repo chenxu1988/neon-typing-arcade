@@ -315,6 +315,21 @@
             <div id="life-best" class="stats-pill">TOP SCORE: 0 PTS</div>
             <div class="play-cta">START DASH →</div>
         </a>
+
+        <a href="castle-siege.html" class="card" data-grades="3,4,5">
+            <div class="card-preview" style="display:flex;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(135deg,#1e293b,#451a03);">
+                🏰⚔️🐉
+            </div>
+            <div class="card-tags">
+                <span class="grade-tag">Grade 3–5</span>
+                <span class="grade-tag">History &amp; Civics</span>
+                <span class="grade-tag">Geography</span>
+            </div>
+            <h2>🏰 Castle Siege</h2>
+            <p>Answer History, Geography &amp; Civics questions in 20s waves to summon Knights, clash with Raiders, and topple the Raider Keep!</p>
+            <div id="castle-best" class="stats-pill">TOP SCORE: 0 PTS</div>
+            <div class="play-cta">DEFEND CASTLE →</div>
+        </a>
     </div>
 
     <!-- Parent / Teacher Progress Report Modal -->
@@ -452,6 +467,9 @@
 
             const lifeStats = profile.games.life_math || { bestScore: 0, bestAcc: 0 };
             document.getElementById('life-best').innerText = `TOP SCORE: ${lifeStats.bestScore} PTS | ${lifeStats.bestAcc}% ACC`;
+
+            const castleStats = profile.games.castle_siege || { bestScore: 0, bestAcc: 0 };
+            document.getElementById('castle-best').innerText = `TOP SCORE: ${castleStats.bestScore} PTS | ${castleStats.bestAcc}% ACC`;
         }
 
         function renderReportModal() {
