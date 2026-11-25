@@ -172,7 +172,9 @@ let pausedAt = null;
 let totalPausedMs = 0;
 let gamePaused = false;
 let gameActive = false;
+let practiceDrillMode = false;
 let missedWords = new Set();
+let lastMissedWords = [];
 
 const levelVal = document.getElementById('level-val');
 const stepVal = document.getElementById('step-val');
@@ -190,6 +192,8 @@ const pauseScreen = document.getElementById('pause-screen');
 const victoryScreen = document.getElementById('victory-screen');
 const gradeSelect = document.getElementById('grade-select');
 const bestStatsBanner = document.getElementById('best-stats-banner');
+const dinoPracticeContainer = document.getElementById('dino-practice-container');
+const practiceMissedBtn = document.getElementById('practice-missed-btn');
 const finalWpmVal = document.getElementById('final-wpm-val');
 const finalAccVal = document.getElementById('final-acc-val');
 const newRecordBadge = document.getElementById('new-record-badge');
@@ -369,8 +373,9 @@ function pickLevelSentences(level) {
     return pool.slice(0, SENTENCES_PER_LEVEL);
 }
 
-function startGame() {
+function startGame(drillWords = null) {
     sounds.init();
+    practiceDrillMode = Array.isArray(drillWords) && drillWords.length > 0;
     activeGrade = gradeSelect ? gradeSelect.value : 'grade3';
     currentLevel = 1;
     currentSentenceIndex = 0;
@@ -389,7 +394,15 @@ function startGame() {
     pauseScreen.classList.remove('active');
     victoryScreen.classList.remove('active');
 
-    activeLevelSentences = pickLevelSentences(currentLevel);
+    if (practiceDrillMode) {
+        const chunks = [];
+        for (let i = 0; i < drillWords.length; i += 4) {
+            chunks.push(drillWords.slice(i, i + 4).join(' '));
+        }
+        activeLevelSentences = chunks;
+    } else {
+        activeLevelSentences = pickLevelSentences(currentLevel);
+    }
     applyBiome(true);
     loadSentence();
 
@@ -534,6 +547,10 @@ function finishSentence() {
 }
 
 function nextLevel() {
+    if (practiceDrillMode) {
+        showVictory();
+        return;
+    }
     currentLevel++;
     if (currentLevel > BIOMES.length) {
         showVictory();
@@ -557,6 +574,35 @@ function recordMissedWordAt(sentence, idx) {
     }
 }
 
+function renderPracticeSummary() {
+    dinoPracticeContainer.innerHTML = '';
+    const title = document.createElement('div');
+    title.className = 'dino-practice-title';
+    const pills = document.createElement('div');
+    pills.className = 'dino-practice-pills';
+
+    if (lastMissedWords.length === 0) {
+        title.innerText = 'TYPING REPORT:';
+        const pill = document.createElement('span');
+        pill.className = 'dino-practice-pill flawless';
+        pill.innerText = '✨ FLAWLESS! NO MISSED WORDS';
+        pills.appendChild(pill);
+    } else {
+        title.innerText = 'WORDS TO PRACTICE (CLICK TO HEAR):';
+        lastMissedWords.slice(0, 8).forEach(word => {
+            const pill = document.createElement('button');
+            pill.type = 'button';
+            pill.className = 'dino-practice-pill';
+            pill.innerText = `🔊 ${word}`;
+            pill.addEventListener('click', () => sounds.speakSentence(word, true));
+            pills.appendChild(pill);
+        });
+    }
+
+    dinoPracticeContainer.appendChild(title);
+    dinoPracticeContainer.appendChild(pills);
+}
+
 function showVictory() {
     gameActive = false;
     sounds.bgmController.stop();
@@ -565,16 +611,19 @@ function showVictory() {
 
     const finalWpm = getWpm();
     const finalAcc = getAccuracy();
-    const isNewBest = saveBestStats(finalWpm, finalAcc);
+    const isNewBest = practiceDrillMode ? false : saveBestStats(finalWpm, finalAcc);
     updateBestBanner();
 
-    if (window.ArcadeProfile) {
+    lastMissedWords = Array.from(missedWords);
+    practiceMissedBtn.style.display = lastMissedWords.length > 0 ? 'inline-block' : 'none';
+
+    if (window.ArcadeProfile && !practiceDrillMode) {
         window.ArcadeProfile.recordSession({
             gameId: 'dino',
             accuracy: finalAcc,
             score: finalWpm * 10,
             wpm: finalWpm,
-            missedItems: Array.from(missedWords),
+            missedItems: lastMissedWords,
             badgeId: 'dino_explorer'
         });
     }
@@ -582,13 +631,15 @@ function showVictory() {
     finalWpmVal.innerText = finalWpm;
     finalAccVal.innerText = finalAcc;
     newRecordBadge.style.display = isNewBest ? 'block' : 'none';
+    renderPracticeSummary();
     victoryScreen.classList.add('active');
 }
 
 // --- Event Listeners ---
 window.addEventListener('keydown', handleKeyPress);
-document.getElementById('start-btn').addEventListener('click', startGame);
-document.getElementById('play-again-btn').addEventListener('click', startGame);
+document.getElementById('start-btn').addEventListener('click', () => startGame());
+document.getElementById('play-again-btn').addEventListener('click', () => startGame());
+practiceMissedBtn.addEventListener('click', () => startGame(lastMissedWords));
 document.getElementById('resume-btn').addEventListener('click', togglePause);
 document.getElementById('pause-menu-btn').addEventListener('click', returnToMenu);
 document.getElementById('victory-menu-btn').addEventListener('click', returnToMenu);

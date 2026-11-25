@@ -548,3 +548,46 @@ body {
 .modal-btn.secondary:hover {
     background: rgba(255, 255, 255, 0.28);
 }
+
+.dino-practice-container {
+    max-width: 560px;
+    margin-bottom: 20px;
+}
+
+.dino-practice-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #c8e6c9;
+    margin-bottom: 8px;
+}
+
+.dino-practice-pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.dino-practice-pill {
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid #FFEB3B;
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.dino-practice-pill:hover {
+    background: rgba(255, 235, 59, 0.28);
+    transform: scale(1.05);
+}
+
+.dino-practice-pill.flawless {
+    cursor: default;
+    border-color: #a5d6a7;
+    color: #c8e6c9;
+}
