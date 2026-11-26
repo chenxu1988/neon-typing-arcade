@@ -316,12 +316,12 @@ function loadNextOrder() {
         cmpWrap.style.display = 'flex';
         cmpWrap.innerHTML = `
             <div style="text-align:center;">
-                <svg viewBox="-46 -46 92 92" width="110" height="110">${buildMiniPizzaSVG(currentOrder.a[0], currentOrder.a[1])}</svg>
+                <div style="width:110px;height:110px;margin:0 auto;">${buildMiniPizzaSVG(currentOrder.a[0], currentOrder.a[1])}</div>
                 <div style="font-weight:900;color:#ffe082;">${currentOrder.a[0]}/${currentOrder.a[1]}</div>
             </div>
             <div style="font-size:1.8rem;font-weight:900;color:#00e5ff;">?</div>
             <div style="text-align:center;">
-                <svg viewBox="-46 -46 92 92" width="110" height="110">${buildMiniPizzaSVG(currentOrder.b[0], currentOrder.b[1])}</svg>
+                <div style="width:110px;height:110px;margin:0 auto;">${buildMiniPizzaSVG(currentOrder.b[0], currentOrder.b[1])}</div>
                 <div style="font-weight:900;color:#ffe082;">${currentOrder.b[0]}/${currentOrder.b[1]}</div>
             </div>
         `;
