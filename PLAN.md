@@ -143,6 +143,21 @@ Based on the full 8-game design audit, prioritize fixing broken shared state and
 
 ---
 
-## 7. Next Immediate Step
+## 7. Phase 7: Post-Phase-6 Bugfixes, Content Depth & Mastery
 
-Execute **Phase 6A (`T6.1`–`T6.3`)** to restore `shared/profile.js`, repair `index.html`, and fix `castle-siege.js` BGM/Pause bugs.
+### 7A. Critical Post-Phase-6 Bugfixes (`P0`)
+1. **Castle Siege (`castle-siege.js`, `castle-siege.html`):** Pass seconds (`0.09`/`0.11`) instead of milliseconds to `playFanfare()`, add `MAIN MENU` to the End modal, fix Voice Off button text (`🔇 Voice: Off`), and guard `state.running` in wave-end `setTimeout`.
+2. **Plane Typing & Astro Math (`plane-game.js`, `astro-math.js`):** Remove duplicate laser SFX (`playLaser` + `playAction('plane_laser')`) and block `Esc` pause on `#victory-choice-screen` in `plane-game.js`. Wire `?grade=` deep-link, avoid restarting normal meteor spawner on Boss unpause, clear `bossTimer`/hide `#math-boss` on `returnToMenu()`, and call `stopSpeech()` on pause/end in `astro-math.js`.
+3. **Timed Mode & Lifecycle Cleanup (`dino-game.js`, `word-quest.js`, `fraction-dash.js`, `science-explorer.js`, `life-math.js`):** Align Timed Mode expiry star display with awarded stars in `recordSession()`, cancel pending `setTimeout` timers on `returnToMenu()`/`startGame()`, and stop overwriting user grade choices with `?grade=` inside `returnToMenu()`.
+4. **Fraction Dash & Life Math (`fraction-dash.js`, `life-math.js`):** Restore uncut pizza reset (`setActiveDenominator(1)`) and call `stopSpeech()` on pause/end in `fraction-dash.js`; fix `challengePrompt` click listener leak on `returnToMenu()` and add `Enter` submit in Money/Area modes in `life-math.js`.
+
+### 7B. Content Depth, Onboarding & Mastery (`P1`–`P2`)
+1. **Fraction & Science Content Expansion:** Expand `db/fraction-bank.js` to 25+ items per mode across Grades 3–5 (or procedural generation) and `db/science-bank.js` to 10+ items per topic/grade with `interactive: true` SVG hotspots on 15+ Science questions.
+2. **Onboarding & Grade Mastery Ranks:** Add a 1-line Goal + Key-badge strip (`[1-4]`, `[Enter]`, `[Tab]`, `[Esc]`) on all 8 start screens, and track per-game/grade Mastery Ranks (`Bronze`/`Silver`/`Gold`) in `shared/profile.js` and `index.html`.
+3. **Star Shop Cosmetic Polish:** Upgrade subtle border-only cosmetics (`science`, `life`, `castle`) with visible badges/overlays, and keep the AI Explorer portrait with a badge overlay in `word-quest.js` instead of swapping to emoji.
+
+---
+
+## 8. Next Immediate Step
+
+Execute **Phase 7 (`T7.1`–`T7.4`)** to clear all `P0` post-Phase-6 bugs before expanding `db/fraction-bank.js` and `db/science-bank.js`.

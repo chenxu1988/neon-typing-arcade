@@ -124,3 +124,18 @@
 | `T6.12` | `FEN-16` | `P2` | `DONE` | Complete Star Shop cosmetics for `astro-math`, `science-explorer`, `life-math`, and `castle-siege`, plus remaining AI art upgrades (`TRIAGE-13`–`TRIAGE-18`) | `done` |
 | `T6.13` | `—` | `P1` | `DONE` | Add shared procedural Action SFX (<180ms, TTS-safe volume) to `shared/audio.js` and wire into all 8 games (summon, clash, castle hit, laser, slice, coin, plank, rover ping, dino step/jump) | `done` |
 | `T6.14` | `—` | `P1` | `DONE` | Add constrained `±8px` in-lane micro-patrol, idle breathing/bobbing, and clash/reaction animations across Castle Siege and all 7 other games | `done` |
+
+---
+
+## Phase 7: Post-Phase-6 Bugfixes, Content Depth & Mastery
+
+| ID | Linear | Priority | Status | Task | Commit |
+|----|--------|----------|--------|------|--------|
+| `T7.1` | `—` | `P0` | `DONE` | Fix `castle-siege.js` & `castle-siege.html`: pass seconds (`0.09`/`0.11`) to `playFanfare()`, add `MAIN MENU` to End modal, fix Voice Off label (`🔇`), and guard `state.running` in wave-end `setTimeout` | `ca7a511` |
+| `T7.2` | `—` | `P0` | `DONE` | Fix `plane-game.js` (remove duplicate laser SFX + block `Esc` on `#victory-choice-screen`) and `astro-math.js` (wire `?grade=`, don't restart normal spawner when unpausing Boss, clear `bossTimer`/hide `#math-boss` on `returnToMenu()`, add `stopSpeech()` on pause/end) | `ca7a511` |
+| `T7.3` | `—` | `P0` | `DONE` | Fix Timed Mode 0-star display vs awarded stars mismatch (`dino`, `word-quest`, `science`, `life-math`), cancel pending `setTimeout`s on `returnToMenu()`/`startGame()`, and stop `?grade=` from overwriting user grade pick in `returnToMenu()` | `ca7a511` |
+| `T7.4` | `—` | `P0` | `DONE` | Fix `fraction-dash.js` uncut pizza reset (`setActiveDenominator(1)` + `stopSpeech()` on pause/end) and `life-math.js` (`challengePrompt` click listener leak on `returnToMenu()` + `Enter` submit in Money/Area modes) | `ca7a511` |
+| `T7.5` | `—` | `P1` | `TODO` | Expand `db/fraction-bank.js` to 25+ items per mode across Grades 3–5 (or procedural generation) and validate in `scripts/validate-db.js` | — |
+| `T7.6` | `—` | `P1` | `TODO` | Expand `db/science-bank.js` to 10+ items per topic/grade and enable `interactive: true` SVG hotspots on 15+ Science questions | — |
+| `T7.7` | `—` | `P1` | `TODO` | Add 1-line Goal + Key-badge onboarding strip (`[1-4]`, `[Enter]`, `[Tab]`, `[Esc]`) to all 8 start screens + Grade Mastery Ranks (`Bronze`/`Silver`/`Gold` per game+grade) in `shared/profile.js` & `index.html` | — |
+| `T7.8` | `—` | `P2` | `TODO` | Upgrade subtle Star Shop cosmetics (`science`, `life`, `castle` visible badges/overlays) and keep AI Explorer portrait with badge overlay in `word-quest.js` instead of emoji swap | — |
