@@ -553,12 +553,15 @@ function togglePause() {
     gamePaused = !gamePaused;
     if (gamePaused) {
         clearInterval(spawnTimer);
+        sounds.stopSpeech();
         sounds.bgmController.stop();
         pauseScreen.classList.add('active');
     } else {
         pauseScreen.classList.remove('active');
         if (sounds.bgmEnabled) sounds.bgmController.start();
-        spawnTimer = setInterval(spawnMeteor, spawnDelay);
+        if (!bossActive) {
+            spawnTimer = setInterval(spawnMeteor, spawnDelay);
+        }
         lastFrameTime = performance.now();
         animFrameId = requestAnimationFrame(gameLoop);
     }
@@ -571,6 +574,7 @@ function endGame() {
     if (bossTimer) clearTimeout(bossTimer);
     cancelAnimationFrame(animFrameId);
     mathBoss.classList.remove('active');
+    sounds.stopSpeech();
     sounds.bgmController.stop();
 
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
@@ -618,8 +622,12 @@ function endGame() {
 function returnToMenu() {
     gameActive = false;
     gamePaused = false;
+    bossActive = false;
     clearInterval(spawnTimer);
+    if (bossTimer) clearTimeout(bossTimer);
     cancelAnimationFrame(animFrameId);
+    mathBoss.classList.remove('active');
+    sounds.stopSpeech();
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     gameOverScreen.classList.remove('active');
@@ -662,4 +670,9 @@ document.getElementById('voice-toggle').addEventListener('click', () => sounds.t
 document.getElementById('bgm-toggle').addEventListener('click', () => sounds.toggleBGM());
 document.getElementById('sound-toggle').addEventListener('click', () => sounds.toggleSound());
 
+const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
+if (urlGrade && topicSelect) {
+    const gradeTopicMap = { '3': 'multiply', '4': 'divide', '5': 'orderops' };
+    if (gradeTopicMap[urlGrade]) topicSelect.value = gradeTopicMap[urlGrade];
+}
 updateTopicBanner();

@@ -332,7 +332,7 @@ function loadNextOrder() {
         pizzaSvg.style.display = '';
         compareControls.style.display = 'none';
         builderControls.style.display = 'flex';
-        setActiveDenominator(4);
+        setActiveDenominator(1);
     }
 }
 
@@ -388,7 +388,8 @@ function handleOrderResult(isCorrect, hintText) {
     }
     updateHUD();
     orderIndex++;
-    setTimeout(loadNextOrder, delayMs);
+    clearTimeout(nextOrderTimer);
+    nextOrderTimer = setTimeout(loadNextOrder, delayMs);
 }
 
 function servePizzaOrder() {
@@ -422,7 +423,11 @@ function updatePizzaBanner() {
     document.getElementById('pizza-best-banner').innerText = `BEST: ${stats.bestScore} PTS | ${stats.bestAcc}% ACC`;
 }
 
+let nextOrderTimer = null;
+
 function startGame() {
+    clearTimeout(nextOrderTimer);
+    nextOrderTimer = null;
     sounds.init();
     if (sounds.playGameStart) sounds.playGameStart('bell');
     score = 0;
@@ -443,7 +448,10 @@ function startGame() {
 
 function finishShift() {
     gameActive = false;
+    clearTimeout(nextOrderTimer);
+    nextOrderTimer = null;
     clearInterval(timerInterval);
+    sounds.stopSpeech();
     sounds.bgmController.stop();
     sounds.playFanfare([523.25, 659.25, 783.99, 1046.5]);
 
@@ -485,6 +493,7 @@ function togglePause() {
     if (!gameActive) return;
     gamePaused = !gamePaused;
     if (gamePaused) {
+        sounds.stopSpeech();
         sounds.bgmController.stop();
         pauseScreen.classList.add('active');
     } else {
@@ -496,7 +505,10 @@ function togglePause() {
 function returnToMenu() {
     gameActive = false;
     gamePaused = false;
+    clearTimeout(nextOrderTimer);
+    nextOrderTimer = null;
     clearInterval(timerInterval);
+    sounds.stopSpeech();
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     endScreen.classList.remove('active');

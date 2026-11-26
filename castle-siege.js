@@ -298,6 +298,7 @@
         els.raiderSquad.classList.add('marching');
 
         setTimeout(() => {
+            if (!state.running) return;
             els.clashSpark.classList.add('active');
             if (sound.playAction) sound.playAction('clash');
             else sound.playTone(180, 0.18, 'sawtooth', 0.2, 70);
@@ -310,7 +311,7 @@
                 els.waveBanner.innerText = `⚔️ VICTORY! +${dmg} DMG TO RAIDER KEEP!`;
                 els.enemyCastle.classList.add('hit');
                 if (sound.playAction) sound.playAction('castle_hit');
-                sound.playFanfare([523.25, 659.25, 783.99], 90);
+                sound.playFanfare([523.25, 659.25, 783.99], 0.09);
             } else if (diff < 0) {
                 const dmg = Math.abs(diff) * DAMAGE_PER_UNIT;
                 state.playerHp = Math.max(0, state.playerHp - dmg);
@@ -329,10 +330,11 @@
                 els.enemyCastle.classList.remove('hit');
                 els.playerCastle.classList.remove('hit');
                 els.clashSpark.classList.remove('active');
+                if (!state.running) return;
 
                 if (state.enemyHp <= 0 || state.playerHp <= 0) {
                     finishSiege(state.enemyHp <= 0);
-                } else if (state.running) {
+                } else {
                     state.wave++;
                     startWave();
                 }
@@ -350,7 +352,7 @@
         const acc = state.attempts === 0 ? 100 : Math.round((state.correct / state.attempts) * 100);
         if (victory) {
             state.score += 300;
-            sound.playFanfare([523.25, 659.25, 783.99, 1046.5], 110);
+            sound.playFanfare([523.25, 659.25, 783.99, 1046.5], 0.11);
         }
 
         let starsEarned = 0;
@@ -470,6 +472,7 @@
     document.getElementById('restart-btn').addEventListener('click', startGame);
     document.getElementById('resume-btn').addEventListener('click', togglePause);
     document.getElementById('pause-menu-btn').addEventListener('click', returnToMenu);
+    document.getElementById('end-menu-btn').addEventListener('click', returnToMenu);
     document.getElementById('hud-pause-btn').addEventListener('click', togglePause);
     els.qPrompt.addEventListener('click', () => {
         if (state.currentQ && sound.speak) sound.speak(state.currentQ.prompt, true);
@@ -479,7 +482,7 @@
     voiceBtn.addEventListener('click', () => {
         sound.voiceEnabled = !sound.voiceEnabled;
         voiceBtn.classList.toggle('active', sound.voiceEnabled);
-        voiceBtn.innerText = sound.voiceEnabled ? '🗣️ Voice: On' : '🗣️ Voice: Off';
+        voiceBtn.innerText = sound.voiceEnabled ? '🗣️ Voice: On' : '🔇 Voice: Off';
         if (!sound.voiceEnabled && sound.stopSpeech) sound.stopSpeech();
     });
 

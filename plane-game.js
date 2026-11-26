@@ -1025,7 +1025,7 @@ function updateLivesUI() {
 }
 
 function togglePause() {
-    if (!gameActive) return;
+    if (!gameActive || (victoryChoiceScreen && victoryChoiceScreen.classList.contains('active'))) return;
 
     gamePaused = !gamePaused;
 
@@ -1077,6 +1077,7 @@ function handleKeyPress(e) {
     if (!gameActive) return;
 
     if (e.key === 'Escape') {
+        if (victoryChoiceScreen && victoryChoiceScreen.classList.contains('active')) return;
         e.preventDefault();
         togglePause();
         return;
@@ -1147,7 +1148,6 @@ function processCorrectChar() {
 }
 
 function fireLaser(wordElement) {
-    if (sounds.playAction) sounds.playAction('plane_laser');
     const areaRect = gameArea.getBoundingClientRect();
     const planeRect = playerPlane.getBoundingClientRect();
     const wordRect = wordElement.getBoundingClientRect();

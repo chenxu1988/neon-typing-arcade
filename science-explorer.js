@@ -274,7 +274,8 @@ function handleAnswer(btn, choice) {
         qFeedback.innerText = `✅ ${currentQ.explain}${note}`;
         renderTrail();
         updateHUD();
-        setTimeout(loadNextQuestion, 1150);
+        clearTimeout(nextQuestionTimer);
+        nextQuestionTimer = setTimeout(loadNextQuestion, 1150);
     } else {
         btn.classList.add('wrong');
         btns.forEach(b => {
@@ -290,11 +291,16 @@ function handleAnswer(btn, choice) {
         if (!currentQ.retried) {
             queue.splice(Math.min(2, queue.length), 0, { ...currentQ, retried: true });
         }
-        setTimeout(loadNextQuestion, 1750);
+        clearTimeout(nextQuestionTimer);
+        nextQuestionTimer = setTimeout(loadNextQuestion, 1750);
     }
 }
 
+let nextQuestionTimer = null;
+
 function startGame() {
+    clearTimeout(nextQuestionTimer);
+    nextQuestionTimer = null;
     sounds.init();
     if (sounds.playGameStart) sounds.playGameStart('sonar');
     if (window.ArcadeProfile && rover) {
@@ -380,12 +386,12 @@ function finishExpedition(completed = true) {
 
     if (completed && timedMode && timeLeft > 0) score += timeLeft * 2;
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
-    const stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(acc, completed) : 3;
+    let stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(acc, true) : 3;
     let isNewBest = false;
     if (window.ArcadeProfile) {
         const prev = window.ArcadeProfile.loadProfile().games.science_explorer;
         isNewBest = score > (prev ? prev.bestScore : 0) && score > 0;
-        window.ArcadeProfile.recordSession({
+        const res = window.ArcadeProfile.recordSession({
             gameId: 'science_explorer',
             accuracy: acc,
             score,
@@ -393,6 +399,9 @@ function finishExpedition(completed = true) {
             missedItems: Array.from(missedConcepts),
             badgeId: completed ? 'science_whiz' : null
         });
+        if (res && typeof res.starsEarned === 'number') {
+            stars = res.starsEarned;
+        }
     }
 
     const starsEl = document.getElementById('final-stars-val');
@@ -421,16 +430,14 @@ function finishExpedition(completed = true) {
 function returnToMenu() {
     gameActive = false;
     gamePaused = false;
+    clearTimeout(nextQuestionTimer);
+    nextQuestionTimer = null;
     stopTimedRun();
     sounds.stopSpeech();
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     endScreen.classList.remove('active');
-    const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
-if (urlGrade && gradeSelect) {
-    gradeSelect.value = urlGrade;
-}
-updateSciBanner();
+    updateSciBanner();
     startScreen.classList.add('active');
 }
 

@@ -187,7 +187,8 @@ function handleChoice(btn, choice) {
         qFeedback.innerText = `✅ Correct! ${currentQuestion.explain}${relicNote}`;
         renderBridge();
         updateQuestHUD();
-        setTimeout(loadNextQuestion, 1100);
+        clearTimeout(nextQuestionTimer);
+        nextQuestionTimer = setTimeout(loadNextQuestion, 1100);
     } else {
         btn.classList.add('wrong');
         buttons.forEach(b => {
@@ -205,7 +206,8 @@ function handleChoice(btn, choice) {
             const insertAt = Math.min(2, questQueue.length);
             questQueue.splice(insertAt, 0, { ...currentQuestion, retried: true });
         }
-        setTimeout(loadNextQuestion, 1750);
+        clearTimeout(nextQuestionTimer);
+        nextQuestionTimer = setTimeout(loadNextQuestion, 1750);
     }
 }
 
@@ -223,7 +225,11 @@ function applyExplorerAvatar() {
     }
 }
 
+let nextQuestionTimer = null;
+
 function startGame() {
+    clearTimeout(nextQuestionTimer);
+    nextQuestionTimer = null;
     sounds.init();
     if (sounds.playGameStart) sounds.playGameStart('quest');
     applyExplorerAvatar();
@@ -302,12 +308,12 @@ function finishQuest(completed = true) {
 
     if (completed && timedMode && timeLeft > 0) score += timeLeft * 2;
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
-    const stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(acc, completed) : 3;
+    let stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(acc, true) : 3;
     let isNewBest = false;
     if (window.ArcadeProfile) {
         const prev = window.ArcadeProfile.loadProfile().games.word_quest;
         isNewBest = score > (prev ? prev.bestScore : 0) && score > 0;
-        window.ArcadeProfile.recordSession({
+        const res = window.ArcadeProfile.recordSession({
             gameId: 'word_quest',
             accuracy: acc,
             score,
@@ -315,6 +321,9 @@ function finishQuest(completed = true) {
             missedItems: Array.from(missedKeys),
             badgeId: completed ? 'word_wizard' : null
         });
+        if (res && typeof res.starsEarned === 'number') {
+            stars = res.starsEarned;
+        }
     }
 
     const starsEl = document.getElementById('final-stars-val');
@@ -343,16 +352,14 @@ function finishQuest(completed = true) {
 function returnToMenu() {
     gameActive = false;
     gamePaused = false;
+    clearTimeout(nextQuestionTimer);
+    nextQuestionTimer = null;
     stopTimedRun();
     sounds.stopSpeech();
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     endScreen.classList.remove('active');
-    const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
-if (urlGrade && gradeSelect) {
-    gradeSelect.value = urlGrade;
-}
-updateQuestBanner();
+    updateQuestBanner();
     startScreen.classList.add('active');
 }
 

@@ -235,7 +235,13 @@ function applyDinoHat() {
     hatEl.innerText = hatMap[equipped] || '';
 }
 
+let pendingTransitionTimer = null;
+
 function startGame(drillWords = null) {
+    clearTimeout(walkingTimeout);
+    walkingTimeout = null;
+    clearTimeout(pendingTransitionTimer);
+    pendingTransitionTimer = null;
     sounds.init();
     if (sounds.playGameStart) sounds.playGameStart('roar');
     applyDinoHat();
@@ -376,17 +382,17 @@ function togglePause() {
 
 function returnToMenu() {
     stopTimedRun();
+    clearTimeout(walkingTimeout);
+    walkingTimeout = null;
+    clearTimeout(pendingTransitionTimer);
+    pendingTransitionTimer = null;
     gameActive = false;
     gamePaused = false;
     sounds.stopSpeech();
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     victoryScreen.classList.remove('active');
-    const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
-if (urlGrade && gradeSelect) {
-    gradeSelect.value = `grade${urlGrade}`;
-}
-updateBestBanner();
+    updateBestBanner();
     startScreen.classList.add('active');
 }
 
@@ -483,10 +489,11 @@ function finishSentence() {
     dinoSprite.classList.add('dino-jump');
 
     currentSentenceIndex++;
+    clearTimeout(pendingTransitionTimer);
     if (currentSentenceIndex >= activeLevelSentences.length) {
-        setTimeout(nextLevel, 420);
+        pendingTransitionTimer = setTimeout(nextLevel, 420);
     } else {
-        setTimeout(loadSentence, 420);
+        pendingTransitionTimer = setTimeout(loadSentence, 420);
     }
 }
 
@@ -556,7 +563,7 @@ function showVictory(completed = true) {
 
     const finalWpm = getWpm();
     const finalAcc = getAccuracy();
-    const stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(finalAcc, completed) : 3;
+    let stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(finalAcc, true) : 3;
     const isNewBest = practiceDrillMode ? false : saveBestStats(finalWpm, finalAcc);
     updateBestBanner();
 
@@ -564,7 +571,7 @@ function showVictory(completed = true) {
     practiceMissedBtn.style.display = lastMissedWords.length > 0 ? 'inline-block' : 'none';
 
     if (window.ArcadeProfile && !practiceDrillMode) {
-        window.ArcadeProfile.recordSession({
+        const res = window.ArcadeProfile.recordSession({
             gameId: 'dino',
             accuracy: finalAcc,
             score: finalWpm * 10,
@@ -572,6 +579,9 @@ function showVictory(completed = true) {
             missedItems: lastMissedWords,
             badgeId: completed ? 'dino_explorer' : null
         });
+        if (res && typeof res.starsEarned === 'number') {
+            stars = res.starsEarned;
+        }
     }
 
     const starsEl = document.getElementById('final-stars-val');

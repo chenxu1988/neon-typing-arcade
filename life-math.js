@@ -478,10 +478,15 @@ function finishRound(isCorrect, hint) {
     }
     updateHUD();
     roundIdx++;
-    setTimeout(loadNextChallenge, 1150);
+    clearTimeout(nextChallengeTimer);
+    nextChallengeTimer = setTimeout(loadNextChallenge, 1150);
 }
 
+let nextChallengeTimer = null;
+
 function startGame() {
+    clearTimeout(nextChallengeTimer);
+    nextChallengeTimer = null;
     sounds.init();
     if (sounds.playGameStart) sounds.playGameStart('chime');
     if (window.ArcadeProfile && visualWorkspace) {
@@ -551,12 +556,12 @@ function finishDash(completed = true) {
 
     if (completed && timedMode && timeLeft > 0) score += timeLeft * 2;
     const acc = totalAttempts === 0 ? 100 : Math.max(0, Math.round(((totalAttempts - wrongAttempts) / totalAttempts) * 100));
-    const stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(acc, completed) : 3;
+    let stars = window.ArcadeProfile ? window.ArcadeProfile.computeMasteryStars(acc, true) : 3;
     let isNewBest = false;
     if (window.ArcadeProfile) {
         const prev = window.ArcadeProfile.loadProfile().games.life_math;
         isNewBest = score > (prev ? prev.bestScore : 0) && score > 0;
-        window.ArcadeProfile.recordSession({
+        const res = window.ArcadeProfile.recordSession({
             gameId: 'life_math',
             accuracy: acc,
             score,
@@ -564,6 +569,9 @@ function finishDash(completed = true) {
             missedItems: Array.from(missedItems),
             badgeId: completed ? 'time_master' : null
         });
+        if (res && typeof res.starsEarned === 'number') {
+            stars = res.starsEarned;
+        }
     }
 
     const starsEl = document.getElementById('final-stars-val');
@@ -602,18 +610,14 @@ function togglePause() {
 function returnToMenu() {
     gameActive = false;
     gamePaused = false;
+    clearTimeout(nextChallengeTimer);
+    nextChallengeTimer = null;
     stopTimedRun();
+    sounds.stopSpeech();
     sounds.bgmController.stop();
     pauseScreen.classList.remove('active');
     endScreen.classList.remove('active');
-    challengePrompt.addEventListener('click', () => {
-    if (gameActive && currentChallenge) sounds.speak(currentChallenge.prompt, true);
-});
-const urlGrade = window.ArcadeProfile && window.ArcadeProfile.getGradeParam ? window.ArcadeProfile.getGradeParam() : null;
-if (urlGrade && gradeSelect) {
-    gradeSelect.value = urlGrade;
-}
-updateLifeBanner();
+    updateLifeBanner();
     startScreen.classList.add('active');
 }
 
@@ -629,6 +633,10 @@ window.addEventListener('keydown', e => {
         const btns = inputWorkspace.querySelectorAll('.choice-btn');
         const idx = Number(e.key) - 1;
         if (btns[idx]) btns[idx].click();
+    } else if (e.key === 'Enter' && currentChallenge && (currentChallenge.type === 'money' || currentChallenge.type === 'area')) {
+        e.preventDefault();
+        const submitBtn = inputWorkspace.querySelector('.dash-btn:not(.secondary)');
+        if (submitBtn) submitBtn.click();
     }
 });
 
